@@ -22,11 +22,14 @@ export default function ResultatenTabel({ resultaat }: Props) {
   const isLocatie = isLocatieResultaat(resultaat)
   const verg = isLocatie ? resultaat.vergelijking : resultaat
 
-  // Bouw een lookup: supermarktnaam → locatiedata
+  // Bouw een lookup: supermarktnaam → dichtstbijzijnde vestiging
   const locatieMap: Record<string, SupermarktLocatie> = {}
   if (isLocatie) {
     for (const sm of resultaat.supermarkten_nabij ?? []) {
-      locatieMap[sm.naam] = sm
+      const huidig = locatieMap[sm.naam]
+      if (!huidig || (sm.afstand_km ?? Infinity) < (huidig.afstand_km ?? Infinity)) {
+        locatieMap[sm.naam] = sm
+      }
     }
   }
 
