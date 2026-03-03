@@ -34,8 +34,11 @@ export default function Nav() {
     <>
       <header className="border-b bg-background">
         <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="font-semibold text-sm">
+          <Link href="/" className="font-semibold text-sm flex items-center gap-2">
             Supermarkt Vergelijker
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+              beta
+            </span>
           </Link>
           <nav className="flex items-center gap-3">
             {email ? (
