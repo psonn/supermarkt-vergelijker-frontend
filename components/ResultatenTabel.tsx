@@ -106,19 +106,16 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 <div key={sm} className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{sm}</span>
                   <span>
-                    {product.url ? (
-                      <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                        {product.naam}
-                      </a>
-                    ) : product.naam} — €{product.prijs.toFixed(2)}
+                    {product === null ? (
+                      <span className="text-muted-foreground italic">niet gevonden</span>
+                    ) : product.url ? (
+                      <><a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{product.naam}</a> — €{product.prijs.toFixed(2)}</>
+                    ) : (
+                      <>{product.naam} — €{product.prijs.toFixed(2)}</>
+                    )}
                   </span>
                 </div>
               ))}
-              {gematched.niet_gevonden?.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Niet gevonden bij: {gematched.niet_gevonden.join(", ")}
-                </p>
-              )}
             </div>
           </div>
         ))}

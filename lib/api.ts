@@ -26,8 +26,7 @@ export interface Product {
 
 export interface GematchedProduct {
   zoekopdracht: string
-  matches: Record<string, Product>
-  niet_gevonden: string[]
+  matches: Record<string, Product | null>
   llm_gered?: string[]
 }
 
