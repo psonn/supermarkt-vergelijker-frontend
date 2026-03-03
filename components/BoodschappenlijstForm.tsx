@@ -32,12 +32,14 @@ export default function BoodschappenlijstForm() {
   const [fout, setFout] = useState<string | null>(null)
   const [gebruikerProducten, setGebruikerProducten] = useState<string[]>([])
 
-  // Pre-fill vanuit URL params (?producten=melk%0Abrood)
+  // Pre-fill vanuit URL params — dedupliceert duplicaten naar hoeveelheid
   useEffect(() => {
     const param = searchParams.get("producten")
     if (param) {
       const namen = param.split("\n").map((r) => r.trim()).filter(Boolean)
-      setChips(namen.map((naam) => ({ naam, aantal: 1 })))
+      const freq: Record<string, number> = {}
+      for (const naam of namen) freq[naam] = (freq[naam] ?? 0) + 1
+      setChips(Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal })))
     }
   }, [])
 

@@ -21,10 +21,18 @@ interface Props {
   bestaandeAlert: PrijsAlert | null
 }
 
+// Groepeer duplicaten: ["melk","melk","brood"] → [{naam:"melk",aantal:2},{naam:"brood",aantal:1}]
+function groepeerProducten(producten: string[]) {
+  const freq: Record<string, number> = {}
+  for (const p of producten) freq[p] = (freq[p] ?? 0) + 1
+  return Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal }))
+}
+
 export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: initieleAlert }: Props) {
   const [alertOpen, setAlertOpen] = useState(false)
   const [alert, setAlert] = useState<PrijsAlert | null>(initieleAlert)
 
+  const gegroepeerd = groepeerProducten(lijst.producten)
   const params = new URLSearchParams()
   params.set("producten", lijst.producten.join("\n"))
 
@@ -45,7 +53,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
           <div>
             <CardTitle className="text-base">{lijst.naam}</CardTitle>
             <CardDescription>
-              {lijst.producten.length} producten ·{" "}
+              {gegroepeerd.length} producten ·{" "}
               {new Date(lijst.aangemaakt_op).toLocaleDateString("nl-NL")}
             </CardDescription>
           </div>
@@ -63,7 +71,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-3">
-          {lijst.producten.join(", ")}
+          {gegroepeerd.map((p) => p.aantal > 1 ? `${p.naam} ×${p.aantal}` : p.naam).join(", ")}
         </p>
 
         {alert && !alertOpen && (
