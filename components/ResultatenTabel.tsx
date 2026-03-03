@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie } from "@/lib/api"
@@ -14,6 +15,60 @@ const VERVOER_LABELS: Record<string, string> = {
   walking: "lopen",
 }
 
+// Merkidentiteit per supermarkt
+const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; domain: string }> = {
+  "Albert Heijn": { bg: "#0056A8", fg: "#fff", kort: "AH", domain: "ah.nl" },
+  "Jumbo":        { bg: "#FFC800", fg: "#222", kort: "JU", domain: "jumbo.com" },
+  "Dirk":         { bg: "#D91B1B", fg: "#fff", kort: "DK", domain: "dirk.nl" },
+  "Aldi":         { bg: "#003087", fg: "#fff", kort: "AL", domain: "aldi.nl" },
+  "Ekoplaza":     { bg: "#3D8127", fg: "#fff", kort: "EK", domain: "ekoplaza.nl" },
+  "Dekamarkt":    { bg: "#E8511E", fg: "#fff", kort: "DM", domain: "dekamarkt.nl" },
+  "Spar":         { bg: "#007B3E", fg: "#fff", kort: "SP", domain: "spar.nl" },
+}
+
+function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md" }) {
+  const stijl = SUPERMARKT_STIJL[naam]
+  const [imgFout, setImgFout] = useState(false)
+
+  const dim = size === "md" ? 40 : 28
+  const cls = size === "md"
+    ? "rounded-lg flex-shrink-0"
+    : "rounded flex-shrink-0"
+
+  if (stijl && !imgFout) {
+    return (
+      <img
+        src={`https://logo.clearbit.com/${stijl.domain}`}
+        alt={naam}
+        width={dim}
+        height={dim}
+        className={`${cls} object-contain bg-white border border-border`}
+        style={{ width: dim, height: dim }}
+        onError={() => setImgFout(true)}
+      />
+    )
+  }
+
+  const bg = stijl?.bg ?? "#888"
+  const fg = stijl?.fg ?? "#fff"
+  const kort = stijl?.kort ?? naam.slice(0, 2).toUpperCase()
+
+  return (
+    <div
+      style={{ backgroundColor: bg, color: fg, width: dim, height: dim }}
+      className={`${cls} flex items-center justify-center font-bold text-[11px] select-none`}
+    >
+      {kort}
+    </div>
+  )
+}
+
+function AdresTekst({ loc }: { loc: SupermarktLocatie }) {
+  const delen = [loc.adres, [loc.postcode, loc.stad].filter(Boolean).join(" ")].filter(Boolean)
+  if (delen.length === 0) return null
+  return <span className="block text-xs text-muted-foreground truncate">{delen.join(", ")}</span>
+}
+
 interface Props {
   resultaat: VergelijkingsResultaat | LocatieResultaat
 }
@@ -22,7 +77,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
   const isLocatie = isLocatieResultaat(resultaat)
   const verg = isLocatie ? resultaat.vergelijking : resultaat
 
-  // Bouw een lookup: supermarktnaam → dichtstbijzijnde vestiging
+  // Dichtstbijzijnde vestiging per keten
   const locatieMap: Record<string, SupermarktLocatie> = {}
   if (isLocatie) {
     for (const sm of resultaat.supermarkten_nabij ?? []) {
@@ -47,6 +102,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
   const aanbevelingReden = isLocatie ? resultaat.aanbeveling_reden : undefined
   const aantalProducten = verg.producten.length
   const heeftLocatieData = isLocatie && (resultaat.supermarkten_nabij?.length ?? 0) > 0
+  const vervoer = isLocatie ? resultaat.vervoer : "driving"
 
   return (
     <div className="space-y-6">
@@ -59,9 +115,15 @@ export default function ResultatenTabel({ resultaat }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">{aanbevolen}</p>
+            <div className="flex items-center gap-3">
+              <SupermarktLogo naam={aanbevolen} size="md" />
+              <div>
+                <p className="text-xl font-bold">{aanbevolen}</p>
+                {locatieMap[aanbevolen] && <AdresTekst loc={locatieMap[aanbevolen]} />}
+              </div>
+            </div>
             {aanbevelingReden && (
-              <p className="text-sm text-muted-foreground mt-0.5">{aanbevelingReden}</p>
+              <p className="text-sm text-muted-foreground mt-2">{aanbevelingReden}</p>
             )}
           </CardContent>
         </Card>
@@ -75,15 +137,20 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <CardTitle className="text-sm font-medium text-muted-foreground">💰 Goedkoopste</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xl font-bold">{goedkoopste}</p>
+              <div className="flex items-center gap-3 mb-1">
+                <SupermarktLogo naam={goedkoopste} size="md" />
+                <div>
+                  <p className="text-xl font-bold">{goedkoopste}</p>
+                  {locatieMap[goedkoopste] && <AdresTekst loc={locatieMap[goedkoopste]} />}
+                </div>
+              </div>
               <p className="text-sm text-muted-foreground">
                 €{verg.totaal_per_supermarkt[goedkoopste].toFixed(2)} · {verg.dekking_per_supermarkt[goedkoopste] ?? "?"}/{aantalProducten} producten
               </p>
               {locatieMap[goedkoopste] && (
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {locatieMap[goedkoopste].afstand_km?.toFixed(1)} km ·{" "}
-                  {Math.round(locatieMap[goedkoopste].reistijd_min ?? 0)} min{" "}
-                  {VERVOER_LABELS[resultaat && isLocatie ? resultaat.vervoer : "driving"]}
+                  {Math.round(locatieMap[goedkoopste].reistijd_min ?? 0)} min {VERVOER_LABELS[vervoer]}
                 </p>
               )}
             </CardContent>
@@ -95,15 +162,20 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <CardTitle className="text-sm font-medium text-muted-foreground">📦 Meeste producten</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xl font-bold">{besteMatch}</p>
+              <div className="flex items-center gap-3 mb-1">
+                <SupermarktLogo naam={besteMatch} size="md" />
+                <div>
+                  <p className="text-xl font-bold">{besteMatch}</p>
+                  {locatieMap[besteMatch] && <AdresTekst loc={locatieMap[besteMatch]} />}
+                </div>
+              </div>
               <p className="text-sm text-muted-foreground">
                 €{verg.totaal_per_supermarkt[besteMatch].toFixed(2)} · {verg.dekking_per_supermarkt[besteMatch] ?? "?"}/{aantalProducten} producten
               </p>
               {locatieMap[besteMatch] && (
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {locatieMap[besteMatch].afstand_km?.toFixed(1)} km ·{" "}
-                  {Math.round(locatieMap[besteMatch].reistijd_min ?? 0)} min{" "}
-                  {VERVOER_LABELS[resultaat && isLocatie ? resultaat.vervoer : "driving"]}
+                  {Math.round(locatieMap[besteMatch].reistijd_min ?? 0)} min {VERVOER_LABELS[vervoer]}
                 </p>
               )}
             </CardContent>
@@ -138,39 +210,47 @@ export default function ResultatenTabel({ resultaat }: Props) {
 
               return (
                 <tr key={sm} className={isGoedkoopste ? "bg-green-50/50 dark:bg-green-950/10" : ""}>
-                  <td className="px-4 py-3 font-medium">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {sm}
-                      {isAanbevolen && (
-                        <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">aanbevolen</Badge>
-                      )}
-                      {isGoedkoopste && !isAanbevolen && (
-                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">goedkoopst</Badge>
-                      )}
-                      {isBesteMatch && !isGoedkoopste && !isAanbevolen && (
-                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">meeste producten</Badge>
-                      )}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <SupermarktLogo naam={sm} />
+                      <div>
+                        <div className="flex flex-wrap items-center gap-1.5 font-medium">
+                          {sm}
+                          {isAanbevolen && (
+                            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">aanbevolen</Badge>
+                          )}
+                          {isGoedkoopste && !isAanbevolen && (
+                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">goedkoopst</Badge>
+                          )}
+                          {isBesteMatch && !isGoedkoopste && !isAanbevolen && (
+                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">meeste producten</Badge>
+                          )}
+                        </div>
+                        {/* Adres altijd zichtbaar onder naam */}
+                        {loc && <AdresTekst loc={loc} />}
+                        {/* Afstand op mobiel */}
+                        {heeftLocatieData && loc?.afstand_km != null && (
+                          <span className="block text-xs text-muted-foreground sm:hidden">
+                            {loc.afstand_km.toFixed(1)} km · {Math.round(loc.reistijd_min ?? 0)} min
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    {loc?.adres && (
-                      <p className="text-xs text-muted-foreground font-normal mt-0.5 sm:hidden">
-                        {loc.afstand_km?.toFixed(1)} km · {Math.round(loc.reistijd_min ?? 0)} min
-                      </p>
-                    )}
                   </td>
                   {heeftLocatieData && (
-                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell">
+                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell align-top">
                       {loc?.afstand_km != null ? `${loc.afstand_km.toFixed(1)} km` : "—"}
                     </td>
                   )}
                   {heeftLocatieData && (
-                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell">
+                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell align-top">
                       {loc?.reistijd_min != null ? `${Math.round(loc.reistijd_min)} min` : "—"}
                     </td>
                   )}
-                  <td className="px-4 py-3 text-right text-muted-foreground">
+                  <td className="px-4 py-3 text-right text-muted-foreground align-top">
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : "—"}
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold">
+                  <td className="px-4 py-3 text-right font-semibold align-top">
                     €{totaal.toFixed(2)}
                   </td>
                 </tr>
@@ -180,7 +260,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
         </table>
       </div>
 
-      {/* Per product — groepeer duplicaten (bij hoeveelheid >1) */}
+      {/* Per product */}
       <div className="space-y-3">
         <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Per product</h3>
         {verg.producten
@@ -199,9 +279,12 @@ export default function ResultatenTabel({ resultaat }: Props) {
             </p>
             <div className="space-y-1">
               {Object.entries(gematched.matches).map(([sm, product]) => (
-                <div key={sm} className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{sm}</span>
-                  <span>
+                <div key={sm} className="flex items-center justify-between text-sm gap-2">
+                  <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
+                    <SupermarktLogo naam={sm} size="sm" />
+                    <span className="truncate">{sm}</span>
+                  </div>
+                  <span className="shrink-0">
                     {product === null ? (
                       <span className="text-muted-foreground italic">niet gevonden</span>
                     ) : product.url ? (

@@ -44,6 +44,7 @@ export interface SupermarktLocatie {
   afstand_km?: number
   reistijd_min?: number
   adres?: string
+  postcode?: string
   stad?: string
 }
 
