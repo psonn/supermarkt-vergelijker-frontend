@@ -37,7 +37,11 @@ function LoginFormulier() {
         router.refresh()
       }
     } else {
-      const { error } = await supabase.auth.signUp({ email, password: wachtwoord })
+      const { error } = await supabase.auth.signUp({
+        email,
+        password: wachtwoord,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      })
       if (error) {
         setFout(error.message)
       } else {
