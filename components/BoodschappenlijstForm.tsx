@@ -1,38 +1,104 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
 import { startVergelijking } from "@/lib/api"
+import { createClient } from "@/lib/supabase/client"
+
+const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
+const STRAAL_OPTIES = [1, 2, 5, 10, 25]
+
+const VERVOER_LABELS: Record<string, { label: string; icon: string }> = {
+  driving: { label: "Auto", icon: "🚗" },
+  cycling: { label: "Fiets", icon: "🚲" },
+  walking: { label: "Lopen", icon: "🚶" },
+}
 
 export default function BoodschappenlijstForm() {
   const router = useRouter()
-  const [invoer, setInvoer] = useState("")
+  const searchParams = useSearchParams()
+
+  const [chips, setChips] = useState<ChipItem[]>([])
   const [locatie, setLocatie] = useState("")
+  const [straal, setStraal] = useState(5)
+  const [vervoer, setVervoer] = useState<"driving" | "walking" | "cycling">("driving")
+  const [supermarkten, setSupermarkten] = useState<string[]>(ALLE_SUPERMARKTEN)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [laden, setLaden] = useState(false)
   const [fout, setFout] = useState<string | null>(null)
+  const [gebruikerProducten, setGebruikerProducten] = useState<string[]>([])
+
+  // Pre-fill vanuit URL params (?producten=melk%0Abrood)
+  useEffect(() => {
+    const param = searchParams.get("producten")
+    if (param) {
+      const namen = param.split("\n").map((r) => r.trim()).filter(Boolean)
+      setChips(namen.map((naam) => ({ naam, aantal: 1 })))
+    }
+  }, [])
+
+  // Laad gebruikersgeschiedenis voor ingelogde gebruikers
+  useEffect(() => {
+    try {
+      const supabase = createClient()
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) return
+        const { data: lijsten } = await supabase
+          .from("lijsten")
+          .select("producten")
+          .eq("user_id", user.id)
+          .order("aangemaakt_op", { ascending: false })
+          .limit(20)
+
+        if (!lijsten) return
+        const frequentie: Record<string, number> = {}
+        for (const lijst of lijsten) {
+          for (const product of lijst.producten ?? []) {
+            frequentie[product] = (frequentie[product] ?? 0) + 1
+          }
+        }
+        const gesorteerd = Object.entries(frequentie)
+          .sort((a, b) => b[1] - a[1])
+          .map(([naam]) => naam)
+        setGebruikerProducten(gesorteerd)
+      })
+    } catch {
+      // Supabase niet geconfigureerd
+    }
+  }, [])
+
+  function toggleSupermarkt(naam: string) {
+    setSupermarkten((prev) =>
+      prev.includes(naam)
+        ? prev.length > 1 ? prev.filter((s) => s !== naam) : prev
+        : [...prev, naam]
+    )
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setFout(null)
 
-    const producten = invoer
-      .split("\n")
-      .map((r) => r.trim())
-      .filter(Boolean)
-
-    if (producten.length === 0) {
+    if (chips.length === 0) {
       setFout("Voer minimaal één product in.")
       return
     }
+
+    const producten = chips.flatMap((c) => Array(c.aantal).fill(c.naam))
+    const alleGeselecteerd = supermarkten.length === ALLE_SUPERMARKTEN.length
 
     setLaden(true)
     try {
       const job = await startVergelijking({
         producten,
         locatie: locatie.trim() || undefined,
+        straal: locatie.trim() ? straal : undefined,
+        vervoer: locatie.trim() ? vervoer : undefined,
+        supermarkten: alleGeselecteerd ? undefined : supermarkten,
       })
       router.push(`/resultaten/${job.job_id}`)
     } catch (err: unknown) {
@@ -44,21 +110,19 @@ export default function BoodschappenlijstForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="producten">Boodschappenlijst</Label>
-        <textarea
-          id="producten"
-          value={invoer}
-          onChange={(e) => setInvoer(e.target.value)}
-          placeholder={"melk\nbrood\neieren\nkaas"}
-          rows={6}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+        <Label>Boodschappenlijst</Label>
+        <ProductChipInput
+          waarde={chips}
+          onChange={setChips}
+          gebruikerProducten={gebruikerProducten}
           disabled={laden}
         />
-        <p className="text-xs text-muted-foreground">Één product per regel</p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="locatie">Locatie <span className="text-muted-foreground">(optioneel)</span></Label>
+        <Label htmlFor="locatie">
+          Locatie <span className="text-muted-foreground font-normal">(optioneel)</span>
+        </Label>
         <Input
           id="locatie"
           value={locatie}
@@ -67,13 +131,98 @@ export default function BoodschappenlijstForm() {
           disabled={laden}
         />
         <p className="text-xs text-muted-foreground">
-          Geef een adres op voor supermarkten in de buurt
+          Voor supermarkten in de buurt met afstand en reistijd
         </p>
       </div>
 
-      {fout && (
-        <p className="text-sm text-destructive">{fout}</p>
-      )}
+      {/* Filters */}
+      <div className="rounded-md border">
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium hover:bg-muted/50 transition-colors rounded-md"
+        >
+          <span>Filters</span>
+          <span className="text-muted-foreground text-xs flex items-center gap-2">
+            {supermarkten.length < ALLE_SUPERMARKTEN.length && (
+              <span className="text-primary">
+                {supermarkten.length}/{ALLE_SUPERMARKTEN.length} supermarkten
+              </span>
+            )}
+            {filtersOpen ? "▲" : "▼"}
+          </span>
+        </button>
+
+        {filtersOpen && (
+          <div className="px-4 pb-4 space-y-4 border-t pt-3">
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground uppercase tracking-wide">Supermarkten</Label>
+              <div className="flex flex-wrap gap-2">
+                {ALLE_SUPERMARKTEN.map((sm) => {
+                  const actief = supermarkten.includes(sm)
+                  return (
+                    <button
+                      key={sm}
+                      type="button"
+                      onClick={() => toggleSupermarkt(sm)}
+                      disabled={laden}
+                      className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
+                        actief
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background border-input hover:bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {sm}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {locatie.trim() && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground uppercase tracking-wide">Straal</Label>
+                  <select
+                    value={straal}
+                    onChange={(e) => setStraal(Number(e.target.value))}
+                    disabled={laden}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    {STRAAL_OPTIES.map((km) => (
+                      <option key={km} value={km}>{km} km</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground uppercase tracking-wide">Vervoer</Label>
+                  <div className="flex gap-1">
+                    {(["driving", "cycling", "walking"] as const).map((v) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setVervoer(v)}
+                        disabled={laden}
+                        title={VERVOER_LABELS[v].label}
+                        className={`flex-1 py-2 rounded-md text-base border transition-colors ${
+                          vervoer === v
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background border-input hover:bg-muted"
+                        }`}
+                      >
+                        {VERVOER_LABELS[v].icon}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {fout && <p className="text-sm text-destructive">{fout}</p>}
 
       <Button type="submit" disabled={laden} className="w-full">
         {laden ? "Vergelijking starten…" : "Vergelijk prijzen"}

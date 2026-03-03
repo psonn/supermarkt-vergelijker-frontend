@@ -39,9 +39,19 @@ export interface VergelijkingsResultaat {
   beste_match_supermarkt?: string
 }
 
+export interface SupermarktLocatie {
+  naam: string
+  afstand_km?: number
+  reistijd_min?: number
+  adres?: string
+  stad?: string
+}
+
 export interface LocatieResultaat {
   vergelijking: VergelijkingsResultaat
-  supermarkten_in_buurt: Record<string, unknown>[]
+  supermarkten_nabij: SupermarktLocatie[]
+  aanbevolen_supermarkt?: string
+  aanbeveling_reden?: string
   vervoer: string
 }
 

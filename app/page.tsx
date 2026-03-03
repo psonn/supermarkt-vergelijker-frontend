@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import BoodschappenlijstForm from "@/components/BoodschappenlijstForm"
 
@@ -22,7 +23,9 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <BoodschappenlijstForm />
+            <Suspense>
+              <BoodschappenlijstForm />
+            </Suspense>
           </CardContent>
         </Card>
       </div>

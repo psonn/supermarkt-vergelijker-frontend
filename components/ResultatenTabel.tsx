@@ -2,10 +2,16 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { VergelijkingsResultaat, LocatieResultaat } from "@/lib/api"
+import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie } from "@/lib/api"
 
 function isLocatieResultaat(r: unknown): r is LocatieResultaat {
   return typeof r === "object" && r !== null && "vergelijking" in r
+}
+
+const VERVOER_LABELS: Record<string, string> = {
+  driving: "rijden",
+  cycling: "fietsen",
+  walking: "lopen",
 }
 
 interface Props {
@@ -13,7 +19,17 @@ interface Props {
 }
 
 export default function ResultatenTabel({ resultaat }: Props) {
-  const verg = isLocatieResultaat(resultaat) ? resultaat.vergelijking : resultaat
+  const isLocatie = isLocatieResultaat(resultaat)
+  const verg = isLocatie ? resultaat.vergelijking : resultaat
+
+  // Bouw een lookup: supermarktnaam → locatiedata
+  const locatieMap: Record<string, SupermarktLocatie> = {}
+  if (isLocatie) {
+    for (const sm of resultaat.supermarkten_nabij ?? []) {
+      locatieMap[sm.naam] = sm
+    }
+  }
+
   const supermarkten = Object.keys(verg.totaal_per_supermarkt).sort(
     (a, b) => verg.totaal_per_supermarkt[a] - verg.totaal_per_supermarkt[b]
   )
@@ -24,11 +40,31 @@ export default function ResultatenTabel({ resultaat }: Props) {
 
   const goedkoopste = verg.goedkoopste_supermarkt
   const besteMatch = verg.beste_match_supermarkt
+  const aanbevolen = isLocatie ? resultaat.aanbevolen_supermarkt : undefined
+  const aanbevelingReden = isLocatie ? resultaat.aanbeveling_reden : undefined
   const aantalProducten = verg.producten.length
+  const heeftLocatieData = isLocatie && (resultaat.supermarkten_nabij?.length ?? 0) > 0
 
   return (
     <div className="space-y-6">
-      {/* Samenvatting */}
+      {/* Aanbeveling (alleen bij locatie) */}
+      {aanbevolen && (
+        <Card className="border-purple-200 bg-purple-50 dark:bg-purple-950/20">
+          <CardHeader className="pb-1">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              🏆 Aanbeveling
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">{aanbevolen}</p>
+            {aanbevelingReden && (
+              <p className="text-sm text-muted-foreground mt-0.5">{aanbevelingReden}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Samenvatting kaarten */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {goedkoopste && (
           <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
@@ -40,6 +76,13 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <p className="text-sm text-muted-foreground">
                 €{verg.totaal_per_supermarkt[goedkoopste].toFixed(2)} · {verg.dekking_per_supermarkt[goedkoopste] ?? "?"}/{aantalProducten} producten
               </p>
+              {locatieMap[goedkoopste] && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {locatieMap[goedkoopste].afstand_km?.toFixed(1)} km ·{" "}
+                  {Math.round(locatieMap[goedkoopste].reistijd_min ?? 0)} min{" "}
+                  {VERVOER_LABELS[resultaat && isLocatie ? resultaat.vervoer : "driving"]}
+                </p>
+              )}
             </CardContent>
           </Card>
         )}
@@ -53,6 +96,13 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <p className="text-sm text-muted-foreground">
                 €{verg.totaal_per_supermarkt[besteMatch].toFixed(2)} · {verg.dekking_per_supermarkt[besteMatch] ?? "?"}/{aantalProducten} producten
               </p>
+              {locatieMap[besteMatch] && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {locatieMap[besteMatch].afstand_km?.toFixed(1)} km ·{" "}
+                  {Math.round(locatieMap[besteMatch].reistijd_min ?? 0)} min{" "}
+                  {VERVOER_LABELS[resultaat && isLocatie ? resultaat.vervoer : "driving"]}
+                </p>
+              )}
             </CardContent>
           </Card>
         )}
@@ -64,6 +114,12 @@ export default function ResultatenTabel({ resultaat }: Props) {
           <thead className="bg-muted/50">
             <tr>
               <th className="px-4 py-3 text-left font-medium">Supermarkt</th>
+              {heeftLocatieData && (
+                <th className="px-4 py-3 text-right font-medium hidden sm:table-cell">Afstand</th>
+              )}
+              {heeftLocatieData && (
+                <th className="px-4 py-3 text-right font-medium hidden sm:table-cell">Reistijd</th>
+              )}
               <th className="px-4 py-3 text-right font-medium">Producten</th>
               <th className="px-4 py-3 text-right font-medium">Totaal</th>
             </tr>
@@ -74,14 +130,40 @@ export default function ResultatenTabel({ resultaat }: Props) {
               const dekking = verg.dekking_per_supermarkt?.[sm]
               const isGoedkoopste = sm === goedkoopste
               const isBesteMatch = sm === besteMatch
+              const isAanbevolen = sm === aanbevolen
+              const loc = locatieMap[sm]
 
               return (
                 <tr key={sm} className={isGoedkoopste ? "bg-green-50/50 dark:bg-green-950/10" : ""}>
-                  <td className="px-4 py-3 font-medium flex items-center gap-2">
-                    {sm}
-                    {isGoedkoopste && <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">goedkoopst</Badge>}
-                    {isBesteMatch && !isGoedkoopste && <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">meeste producten</Badge>}
+                  <td className="px-4 py-3 font-medium">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {sm}
+                      {isAanbevolen && (
+                        <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">aanbevolen</Badge>
+                      )}
+                      {isGoedkoopste && !isAanbevolen && (
+                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">goedkoopst</Badge>
+                      )}
+                      {isBesteMatch && !isGoedkoopste && !isAanbevolen && (
+                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">meeste producten</Badge>
+                      )}
+                    </div>
+                    {loc?.adres && (
+                      <p className="text-xs text-muted-foreground font-normal mt-0.5 sm:hidden">
+                        {loc.afstand_km?.toFixed(1)} km · {Math.round(loc.reistijd_min ?? 0)} min
+                      </p>
+                    )}
                   </td>
+                  {heeftLocatieData && (
+                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell">
+                      {loc?.afstand_km != null ? `${loc.afstand_km.toFixed(1)} km` : "—"}
+                    </td>
+                  )}
+                  {heeftLocatieData && (
+                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell">
+                      {loc?.reistijd_min != null ? `${Math.round(loc.reistijd_min)} min` : "—"}
+                    </td>
+                  )}
                   <td className="px-4 py-3 text-right text-muted-foreground">
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : "—"}
                   </td>
