@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
-const API_URL = process.env.SUPERMARKT_API_URL
-const API_KEY = process.env.SUPERMARKT_API_KEY
+const API_URL = process.env.SUPERMARKET_API_URL
+const API_KEY = process.env.SUPERMARKET_API_KEY
 
 export async function GET(
   _request: Request,

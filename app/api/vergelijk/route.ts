@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server"
 
-const API_URL = process.env.SUPERMARKT_API_URL
-const API_KEY = process.env.SUPERMARKT_API_KEY
+const API_URL = process.env.SUPERMARKET_API_URL
+const API_KEY = process.env.SUPERMARKET_API_KEY
 
 export async function POST(request: Request) {
   if (!API_URL) {
-    console.error("[vergelijk] SUPERMARKT_API_URL is niet ingesteld")
-    return NextResponse.json({ detail: "SUPERMARKT_API_URL niet geconfigureerd" }, { status: 503 })
+    console.error("[vergelijk] SUPERMARKET_API_URL is niet ingesteld")
+    return NextResponse.json({ detail: "SUPERMARKET_API_URL niet geconfigureerd" }, { status: 503 })
   }
   if (!API_KEY) {
-    console.error("[vergelijk] SUPERMARKT_API_KEY is niet ingesteld")
-    return NextResponse.json({ detail: "SUPERMARKT_API_KEY niet geconfigureerd" }, { status: 503 })
+    console.error("[vergelijk] SUPERMARKET_API_KEY is niet ingesteld")
+    return NextResponse.json({ detail: "SUPERMARKET_API_KEY niet geconfigureerd" }, { status: 503 })
   }
 
   try {

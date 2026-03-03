@@ -6,12 +6,12 @@ import { NextResponse } from "next/server"
  * Alleen voor debugging — verwijder of beveilig dit in productie.
  */
 export async function GET() {
-  const API_URL = process.env.SUPERMARKT_API_URL
-  const API_KEY = process.env.SUPERMARKT_API_KEY
+  const API_URL = process.env.SUPERMARKET_API_URL
+  const API_KEY = process.env.SUPERMARKET_API_KEY
 
   const resultaat: Record<string, unknown> = {
-    SUPERMARKT_API_URL: API_URL ? `${API_URL.slice(0, 30)}…` : "❌ NIET INGESTELD",
-    SUPERMARKT_API_KEY: API_KEY ? `${API_KEY.slice(0, 4)}…(${API_KEY.length} tekens)` : "❌ NIET INGESTELD",
+    SUPERMARKET_API_URL: API_URL ? `${API_URL.slice(0, 30)}…` : "❌ NIET INGESTELD",
+    SUPERMARKET_API_KEY: API_KEY ? `${API_KEY.slice(0, 4)}…(${API_KEY.length} tekens)` : "❌ NIET INGESTELD",
     // Vercel-eigen vars — altijd aanwezig als je op Vercel draait
     VERCEL_ENV: process.env.VERCEL_ENV ?? "❌ ontbreekt",
     VERCEL: process.env.VERCEL ?? "❌ ontbreekt",
