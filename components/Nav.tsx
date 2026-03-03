@@ -12,12 +12,16 @@ export default function Nav() {
   const [email, setEmail] = useState<string | null>(null)
 
   useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setEmail(session?.user?.email ?? null)
-    })
-    return () => subscription.unsubscribe()
+    try {
+      const supabase = createClient()
+      supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null))
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+        setEmail(session?.user?.email ?? null)
+      })
+      return () => subscription.unsubscribe()
+    } catch {
+      // Supabase niet geconfigureerd — auth niet beschikbaar
+    }
   }, [])
 
   async function uitloggen() {

@@ -21,9 +21,13 @@ export default function ResultatenPagina() {
 
   // Haal ingelogde gebruiker op
   useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => {
-      setGebruiker(data.user as { id: string } | null)
-    })
+    try {
+      createClient().auth.getUser().then(({ data }) => {
+        setGebruiker(data.user as { id: string } | null)
+      })
+    } catch {
+      // Supabase niet geconfigureerd — doorgaan zonder auth
+    }
   }, [])
 
   // Poll job status
@@ -50,7 +54,8 @@ export default function ResultatenPagina() {
 
   async function slaOp() {
     if (!job?.resultaat || !gebruiker) return
-    const supabase = createClient()
+    let supabase: ReturnType<typeof createClient>
+    try { supabase = createClient() } catch { return }
     const producten = job.resultaat
       ? "vergelijking" in job.resultaat
         ? job.resultaat.vergelijking.producten.map((p) => p.zoekopdracht)
