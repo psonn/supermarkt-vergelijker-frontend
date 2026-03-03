@@ -12,6 +12,10 @@ export async function GET() {
   const resultaat: Record<string, unknown> = {
     SUPERMARKT_API_URL: API_URL ? `${API_URL.slice(0, 30)}…` : "❌ NIET INGESTELD",
     SUPERMARKT_API_KEY: API_KEY ? `${API_KEY.slice(0, 4)}…(${API_KEY.length} tekens)` : "❌ NIET INGESTELD",
+    // Vercel-eigen vars — altijd aanwezig als je op Vercel draait
+    VERCEL_ENV: process.env.VERCEL_ENV ?? "❌ ontbreekt",
+    VERCEL: process.env.VERCEL ?? "❌ ontbreekt",
+    NODE_ENV: process.env.NODE_ENV ?? "❌ ontbreekt",
   }
 
   if (!API_URL || !API_KEY) {
