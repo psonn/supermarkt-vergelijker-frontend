@@ -1,6 +1,8 @@
 "use client"
 
-/** Flat-UI winkelwagentje dat van links naar rechts rijdt als laadanimatie. */
+const SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
+
+/** Flat-UI winkelwagentje dat over een track rijdt als laadanimatie. */
 export default function WinkelwagenLader({
   tekst = "Supermarktprijzen ophalen…",
 }: {
@@ -8,9 +10,12 @@ export default function WinkelwagenLader({
 }) {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center gap-10 px-4">
-      <div className="text-center space-y-2">
-        <p className="text-lg font-semibold text-foreground">{tekst}</p>
-        <p className="text-sm text-muted-foreground">Even geduld — we vergelijken 7 supermarkten</p>
+      {/* Tekst */}
+      <div className="text-center space-y-1.5">
+        <p className="font-display text-xl font-bold text-foreground">{tekst}</p>
+        <p className="text-sm text-muted-foreground">
+          Even geduld — we vergelijken {SUPERMARKTEN.length} supermarkten
+        </p>
       </div>
 
       {/* Track + winkelwagentje */}
@@ -20,21 +25,21 @@ export default function WinkelwagenLader({
           <div className="h-full rounded-full bg-primary track-vult" />
         </div>
 
-        {/* Wagentje loopt boven het spoor */}
-        <div className="absolute wagen-container" style={{ top: "-36px" }}>
+        {/* Wagentje boven het spoor */}
+        <div className="absolute wagen-container" style={{ top: "-38px" }}>
           <div className="wagen-stuitert text-primary">
             <WinkelwagenSVG />
           </div>
         </div>
       </div>
 
-      {/* Laadtips */}
-      <div className="flex gap-3 flex-wrap justify-center">
-        {["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Spar"].map((sm, i) => (
+      {/* Supermarkt-pills — met werkende fade-in animatie */}
+      <div className="flex gap-2.5 flex-wrap justify-center">
+        {SUPERMARKTEN.map((sm, i) => (
           <span
             key={sm}
-            className="text-xs text-muted-foreground px-2.5 py-1 rounded-full border bg-card"
-            style={{ animationDelay: `${i * 0.4}s` }}
+            className="pill-verschijnt text-xs text-muted-foreground px-3 py-1 rounded-full border border-border/70 bg-card shadow-sm"
+            style={{ animationDelay: `${300 + i * 120}ms` }}
           >
             {sm}
           </span>
@@ -63,17 +68,13 @@ function WinkelwagenSVG() {
         strokeLinejoin="round"
       />
       {/* Karrenlichaam */}
-      <path
-        d="M16 12 L46 12 L41 30 L21 30 Z"
-        fill="currentColor"
-      />
-      {/* Producten in de kar */}
+      <path d="M16 12 L46 12 L41 30 L21 30 Z" fill="currentColor" />
+      {/* Producten */}
       <rect x="22" y="15" width="8" height="10" rx="2" fill="white" fillOpacity="0.45" />
       <rect x="32" y="17" width="7" height="8" rx="2" fill="white" fillOpacity="0.45" />
       {/* Wielen */}
       <circle cx="25" cy="37" r="5" fill="currentColor" />
       <circle cx="39" cy="37" r="5" fill="currentColor" />
-      {/* Wiel-highlight */}
       <circle cx="25" cy="37" r="2.5" fill="white" fillOpacity="0.35" />
       <circle cx="39" cy="37" r="2.5" fill="white" fillOpacity="0.35" />
     </svg>

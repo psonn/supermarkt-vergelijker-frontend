@@ -221,7 +221,10 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                €{verg.totaal_per_supermarkt[goedkoopste].toFixed(2)} · {verg.dekking_per_supermarkt[goedkoopste] ?? "?"}/{aantalProducten} producten
+                <span className="font-display font-bold text-lg nums text-emerald-700 dark:text-emerald-400">
+                  €{verg.totaal_per_supermarkt[goedkoopste].toFixed(2)}
+                </span>
+                {" "}· {verg.dekking_per_supermarkt[goedkoopste] ?? "?"}/{aantalProducten} producten
               </p>
               {locatieMap[goedkoopste] && (
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -248,7 +251,10 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                €{verg.totaal_per_supermarkt[besteMatch].toFixed(2)} · {verg.dekking_per_supermarkt[besteMatch] ?? "?"}/{aantalProducten} producten
+                <span className="font-display font-bold text-lg nums">
+                  €{verg.totaal_per_supermarkt[besteMatch].toFixed(2)}
+                </span>
+                {" "}· {verg.dekking_per_supermarkt[besteMatch] ?? "?"}/{aantalProducten} producten
               </p>
               {locatieMap[besteMatch] && (
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -312,7 +318,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <span className={`font-bold text-base ${isGoedkoopste ? "text-emerald-700" : ""}`}>
+                <span className={`nums font-bold ${isGoedkoopste ? "font-display text-lg text-emerald-700" : "text-base"}`}>
                   €{totaal.toFixed(2)}
                 </span>
               </div>
@@ -383,7 +389,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : "—"}
                   </td>
                   <td className="px-4 py-3 text-right align-top">
-                    <span className={`font-bold text-base ${isGoedkoopste ? "text-emerald-700 dark:text-emerald-400" : ""}`}>
+                    <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-emerald-700 dark:text-emerald-400" : "text-base"}`}>
                       €{totaal.toFixed(2)}
                     </span>
                   </td>
@@ -396,7 +402,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
 
       {/* Per product */}
       <div className="space-y-3">
-        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Per product</h3>
+        <h3 className="font-display font-semibold text-sm text-muted-foreground uppercase tracking-widest">Per product</h3>
         {verg.producten
           .reduce<{ item: typeof verg.producten[0]; aantal: number }[]>((acc, p) => {
             const bestaand = acc.find((g) => g.item.zoekopdracht === p.zoekopdracht)
@@ -432,11 +438,11 @@ export default function ResultatenTabel({ resultaat }: Props) {
                             <span>{product.naam}</span>
                           )}
                           {" "}
-                          <span className="font-semibold">
+                          <span className="font-semibold nums">
                             €{(product.prijs * aantal).toFixed(2)}
                           </span>
                           {aantal > 1 && (
-                            <span className="text-muted-foreground text-xs ml-1">
+                            <span className="text-muted-foreground text-xs ml-1 nums">
                               (€{product.prijs.toFixed(2)} × {aantal})
                             </span>
                           )}

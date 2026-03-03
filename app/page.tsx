@@ -5,58 +5,99 @@ import BoodschappenlijstForm from "@/components/BoodschappenlijstForm"
 export default function Home() {
   return (
     <main className="min-h-screen bg-background relative overflow-hidden">
-      {/* Achtergrond glow-blobs */}
+      {/* Dot grid */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 dot-grid" />
+
+      {/* Glow-blobs */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-[0.07]"
-        style={{ background: "radial-gradient(circle, oklch(0.52 0.19 152), transparent 70%)" }}
+        className="pointer-events-none absolute -top-48 -left-48 w-[640px] h-[640px] rounded-full"
+        style={{ background: "radial-gradient(circle, oklch(0.50 0.19 152 / 0.10), transparent 65%)" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-16 -right-16 w-[400px] h-[400px] rounded-full opacity-[0.06]"
-        style={{ background: "radial-gradient(circle, oklch(0.65 0.18 200), transparent 70%)" }}
+        className="pointer-events-none absolute bottom-0 -right-32 w-[480px] h-[480px] rounded-full"
+        style={{ background: "radial-gradient(circle, oklch(0.62 0.17 200 / 0.07), transparent 65%)" }}
       />
 
       <div className="container max-w-xl mx-auto px-4 py-14 relative">
         {/* Hero */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 rounded-full px-4 py-1.5 text-xs font-semibold mb-5">
+        <div className="text-center mb-10 space-y-5">
+          {/* Pill badge */}
+          <div
+            className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide animate-fade-up"
+            style={{ animationDelay: "0ms" }}
+          >
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             Real-time prijzen · 7 supermarkten
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight mb-3 leading-tight">
+
+          {/* Headline */}
+          <h1
+            className="font-display text-5xl font-extrabold tracking-tight leading-[1.08] animate-fade-up"
+            style={{ animationDelay: "70ms" }}
+          >
             Bespaar op je{" "}
             <span
               className="bg-clip-text text-transparent"
-              style={{ backgroundImage: "linear-gradient(135deg, oklch(0.52 0.19 152), oklch(0.65 0.18 200))" }}
+              style={{
+                backgroundImage:
+                  "linear-gradient(130deg, oklch(0.50 0.19 152) 0%, oklch(0.62 0.17 185) 100%)",
+              }}
             >
-              boodschappen
+              boodschappen.
             </span>
           </h1>
-          <p className="text-muted-foreground text-base">
-            Vergelijk prijzen bij Albert Heijn, Jumbo, Dirk en meer —
-            <br className="hidden sm:block" /> vind de goedkoopste supermarkt bij jou in de buurt.
+
+          {/* Subtext */}
+          <p
+            className="text-muted-foreground text-[15px] max-w-[340px] mx-auto leading-relaxed animate-fade-up"
+            style={{ animationDelay: "130ms" }}
+          >
+            Vergelijk prijzen bij AH, Jumbo, Dirk en meer — vind de goedkoopste
+            supermarkt bij jou in de buurt.
           </p>
         </div>
 
-        <Card className="shadow-lg border-border/50">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Jouw boodschappenlijst</CardTitle>
-            <CardDescription>
-              Voer je producten in en zie direct waar je het goedkoopst uit bent.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Suspense>
-              <BoodschappenlijstForm />
-            </Suspense>
-          </CardContent>
-        </Card>
+        {/* Form card */}
+        <div className="animate-fade-up" style={{ animationDelay: "190ms" }}>
+          <Card className="shadow-xl border-border/50 overflow-hidden">
+            {/* Top accent streep */}
+            <div
+              className="h-[3px]"
+              style={{
+                background:
+                  "linear-gradient(90deg, oklch(0.50 0.19 152), oklch(0.62 0.17 185), oklch(0.72 0.20 50))",
+              }}
+            />
+            <CardHeader className="pb-4 pt-5">
+              <CardTitle className="font-display text-lg">Jouw boodschappenlijst</CardTitle>
+              <CardDescription>
+                Voer je producten in en zie direct waar je het goedkoopst uit bent.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Suspense>
+                <BoodschappenlijstForm />
+              </Suspense>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Supermarkt-logo strip */}
-        <div className="mt-8 flex items-center justify-center gap-3 flex-wrap opacity-40">
+        <div
+          className="mt-8 flex items-center justify-center gap-3.5 flex-wrap animate-fade-up"
+          style={{ animationDelay: "280ms" }}
+        >
           {["ah", "jumbo", "dirk", "aldi", "spar", "dekamarkt", "ekoplaza"].map((s) => (
-            <img key={s} src={`/logos/${s}.svg`} alt={s} width={28} height={28} className="grayscale" />
+            <img
+              key={s}
+              src={`/logos/${s}.svg`}
+              alt={s}
+              width={26}
+              height={26}
+              className="grayscale opacity-30 hover:opacity-60 hover:grayscale-0 transition-all duration-300"
+            />
           ))}
         </div>
       </div>
