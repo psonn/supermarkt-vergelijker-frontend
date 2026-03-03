@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
-import LocatieInput from "@/components/LocatieInput"
+import LocatieInput, { type OpgeslagenAdres } from "@/components/LocatieInput"
 import { startVergelijking } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
 
@@ -32,7 +32,14 @@ export default function BoodschappenlijstForm() {
   const [fout, setFout] = useState<string | null>(null)
   const [gebruikerProducten, setGebruikerProducten] = useState<string[]>([])
 
-  // Pre-fill vanuit URL params — dedupliceert duplicaten naar hoeveelheid
+  // Opgeslagen adressen
+  const [opgeslagenAdressen, setOpgeslagenAdressen] = useState<OpgeslagenAdres[]>([])
+  const [gebruikerId, setGebruikerId] = useState<string | null>(null)
+  const [adresOpslaanNaam, setAdresOpslaanNaam] = useState("")
+  const [adresOpslaanOpen, setAdresOpslaanOpen] = useState(false)
+  const [adresOpgeslagen, setAdresOpgeslagen] = useState(false)
+
+  // Pre-fill vanuit URL params
   useEffect(() => {
     const param = searchParams.get("producten")
     if (param) {
@@ -45,35 +52,82 @@ export default function BoodschappenlijstForm() {
     if (locatieParam) setLocatie(locatieParam)
   }, [])
 
-  // Laad gebruikersgeschiedenis voor ingelogde gebruikers
+  // Laad gebruikersdata (productgeschiedenis + opgeslagen adressen)
   useEffect(() => {
     try {
       const supabase = createClient()
       supabase.auth.getUser().then(async ({ data: { user } }) => {
         if (!user) return
-        const { data: lijsten } = await supabase
-          .from("lijsten")
-          .select("producten")
-          .eq("user_id", user.id)
-          .order("aangemaakt_op", { ascending: false })
-          .limit(20)
+        setGebruikerId(user.id)
 
-        if (!lijsten) return
-        const frequentie: Record<string, number> = {}
-        for (const lijst of lijsten) {
-          for (const product of lijst.producten ?? []) {
-            frequentie[product] = (frequentie[product] ?? 0) + 1
+        const [{ data: lijsten }, { data: adressen }] = await Promise.all([
+          supabase
+            .from("lijsten")
+            .select("producten")
+            .eq("user_id", user.id)
+            .order("aangemaakt_op", { ascending: false })
+            .limit(20),
+          supabase
+            .from("adressen")
+            .select("id, naam, adres")
+            .eq("user_id", user.id)
+            .order("aangemaakt_op", { ascending: false }),
+        ])
+
+        if (lijsten) {
+          const frequentie: Record<string, number> = {}
+          for (const lijst of lijsten) {
+            for (const product of lijst.producten ?? []) {
+              frequentie[product] = (frequentie[product] ?? 0) + 1
+            }
           }
+          setGebruikerProducten(
+            Object.entries(frequentie)
+              .sort((a, b) => b[1] - a[1])
+              .map(([naam]) => naam)
+          )
         }
-        const gesorteerd = Object.entries(frequentie)
-          .sort((a, b) => b[1] - a[1])
-          .map(([naam]) => naam)
-        setGebruikerProducten(gesorteerd)
+
+        if (adressen) setOpgeslagenAdressen(adressen)
       })
     } catch {
       // Supabase niet geconfigureerd
     }
   }, [])
+
+  async function slaAdresOp() {
+    if (!locatie.trim() || !adresOpslaanNaam.trim() || !gebruikerId) return
+    try {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from("adressen")
+        .insert({ user_id: gebruikerId, naam: adresOpslaanNaam.trim(), adres: locatie.trim() })
+        .select("id, naam, adres")
+        .single()
+      if (data) {
+        setOpgeslagenAdressen((prev) => [data, ...prev])
+        setAdresOpslaanOpen(false)
+        setAdresOpslaanNaam("")
+        setAdresOpgeslagen(true)
+        setTimeout(() => setAdresOpgeslagen(false), 2000)
+      }
+    } catch { /* negeer */ }
+  }
+
+  async function verwijderAdres(id: string) {
+    try {
+      const supabase = createClient()
+      await supabase.from("adressen").delete().eq("id", id)
+      setOpgeslagenAdressen((prev) => prev.filter((a) => a.id !== id))
+    } catch { /* negeer */ }
+  }
+
+  function handleLocatieChange(nieuw: string) {
+    setLocatie(nieuw)
+    setAdresOpgeslagen(false)
+    // Reset "adres opslaan" als locatie leeg wordt
+    if (!nieuw.trim()) setAdresOpslaanOpen(false)
+  }
 
   function toggleSupermarkt(naam: string) {
     setSupermarkten((prev) =>
@@ -114,6 +168,10 @@ export default function BoodschappenlijstForm() {
     }
   }
 
+  const isAlOpgeslagen = locatie.trim()
+    ? opgeslagenAdressen.some((a) => a.adres === locatie.trim())
+    : false
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
@@ -132,9 +190,48 @@ export default function BoodschappenlijstForm() {
         </Label>
         <LocatieInput
           waarde={locatie}
-          onChange={setLocatie}
+          onChange={handleLocatieChange}
           disabled={laden}
+          opgeslagenAdressen={opgeslagenAdressen}
+          onVerwijderAdres={verwijderAdres}
         />
+
+        {/* Adres opslaan */}
+        {gebruikerId && locatie.trim() && !isAlOpgeslagen && !adresOpgeslagen && (
+          <div>
+            {adresOpslaanOpen ? (
+              <div className="flex gap-2 mt-1">
+                <input
+                  type="text"
+                  value={adresOpslaanNaam}
+                  onChange={(e) => setAdresOpslaanNaam(e.target.value)}
+                  placeholder="Naam (bijv. Thuis)"
+                  className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); slaAdresOp() } }}
+                  autoFocus
+                />
+                <Button type="button" size="sm" onClick={slaAdresOp} disabled={!adresOpslaanNaam.trim()}>
+                  Opslaan
+                </Button>
+                <Button type="button" size="sm" variant="ghost" onClick={() => setAdresOpslaanOpen(false)}>
+                  Annuleer
+                </Button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAdresOpslaanOpen(true)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                📍 Adres opslaan
+              </button>
+            )}
+          </div>
+        )}
+        {adresOpgeslagen && (
+          <p className="text-xs text-green-600">Adres opgeslagen!</p>
+        )}
+
         <p className="text-xs text-muted-foreground">
           Voor supermarkten in de buurt met afstand en reistijd
         </p>
