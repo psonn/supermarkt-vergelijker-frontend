@@ -177,12 +177,23 @@ export default function ResultatenTabel({ resultaat }: Props) {
         </table>
       </div>
 
-      {/* Per product */}
+      {/* Per product — groepeer duplicaten (bij hoeveelheid >1) */}
       <div className="space-y-3">
         <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Per product</h3>
-        {verg.producten.map((gematched) => (
+        {verg.producten
+          .reduce<{ item: typeof verg.producten[0]; aantal: number }[]>((acc, p) => {
+            const bestaand = acc.find((g) => g.item.zoekopdracht === p.zoekopdracht)
+            if (bestaand) { bestaand.aantal++ } else { acc.push({ item: p, aantal: 1 }) }
+            return acc
+          }, [])
+          .map(({ item: gematched, aantal }) => (
           <div key={gematched.zoekopdracht} className="rounded-lg border p-4">
-            <p className="font-medium mb-2">{gematched.zoekopdracht}</p>
+            <p className="font-medium mb-2">
+              {gematched.zoekopdracht}
+              {aantal > 1 && (
+                <span className="ml-2 text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded">×{aantal}</span>
+              )}
+            </p>
             <div className="space-y-1">
               {Object.entries(gematched.matches).map(([sm, product]) => (
                 <div key={sm} className="flex justify-between text-sm">
@@ -191,9 +202,15 @@ export default function ResultatenTabel({ resultaat }: Props) {
                     {product === null ? (
                       <span className="text-muted-foreground italic">niet gevonden</span>
                     ) : product.url ? (
-                      <><a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{product.naam}</a> — €{product.prijs.toFixed(2)}</>
+                      <><a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{product.naam}</a>
+                        {" — "}€{(product.prijs * aantal).toFixed(2)}
+                        {aantal > 1 && <span className="text-muted-foreground"> (€{product.prijs.toFixed(2)} × {aantal})</span>}
+                      </>
                     ) : (
-                      <>{product.naam} — €{product.prijs.toFixed(2)}</>
+                      <>{product.naam}
+                        {" — "}€{(product.prijs * aantal).toFixed(2)}
+                        {aantal > 1 && <span className="text-muted-foreground"> (€{product.prijs.toFixed(2)} × {aantal})</span>}
+                      </>
                     )}
                   </span>
                 </div>
