@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
-import { Separator } from "@/components/ui/separator"
 
 export default function Nav() {
   const router = useRouter()
@@ -31,34 +30,40 @@ export default function Nav() {
   }
 
   return (
-    <>
-      <header className="border-b bg-background">
-        <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="font-semibold text-sm flex items-center gap-2">
-            Supermarkt Vergelijker
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
-              beta
-            </span>
-          </Link>
-          <nav className="flex items-center gap-3">
-            {email ? (
-              <>
-                <Link href="/mijn-lijsten">
-                  <Button variant="ghost" size="sm">Mijn lijsten</Button>
-                </Link>
-                <Button variant="outline" size="sm" onClick={uitloggen}>
-                  Uitloggen
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-md">
+      <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-base shadow-sm group-hover:scale-105 transition-transform">
+            🛒
+          </div>
+          <span className="font-bold text-sm tracking-tight">
+            Supermarkt<span className="text-primary">Vergelijker</span>
+          </span>
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            beta
+          </span>
+        </Link>
+        <nav className="flex items-center gap-2">
+          {email ? (
+            <>
+              <Link href="/mijn-lijsten">
+                <Button variant="ghost" size="sm" className="text-sm">
+                  Mijn lijsten
                 </Button>
-              </>
-            ) : (
-              <Link href="/login">
-                <Button variant="outline" size="sm">Inloggen</Button>
               </Link>
-            )}
-          </nav>
-        </div>
-      </header>
-      <Separator />
-    </>
+              <Button variant="outline" size="sm" onClick={uitloggen} className="text-sm border-border/60">
+                Uitloggen
+              </Button>
+            </>
+          ) : (
+            <Link href="/login">
+              <Button size="sm" variant="outline" className="text-sm border-border/60">
+                Inloggen
+              </Button>
+            </Link>
+          )}
+        </nav>
+      </div>
+    </header>
   )
 }

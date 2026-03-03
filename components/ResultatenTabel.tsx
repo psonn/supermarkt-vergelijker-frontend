@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie } from "@/lib/api"
+import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie, Product } from "@/lib/api"
 
 function isLocatieResultaat(r: unknown): r is LocatieResultaat {
   return typeof r === "object" && r !== null && "vergelijking" in r
@@ -15,7 +15,6 @@ const VERVOER_LABELS: Record<string, string> = {
   walking: "lopen",
 }
 
-// Lokale SVG-logo's + fallback merkkleur
 const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; logo: string }> = {
   "Albert Heijn": { bg: "#0057A8", fg: "#fff", kort: "AH", logo: "/logos/ah.svg" },
   "Jumbo":        { bg: "#FFC800", fg: "#222", kort: "JU", logo: "/logos/jumbo.svg" },
@@ -29,7 +28,6 @@ const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; l
 function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md" }) {
   const stijl = SUPERMARKT_STIJL[naam]
   const [imgFout, setImgFout] = useState(false)
-
   const dim = size === "md" ? 40 : 28
 
   if (stijl && !imgFout) {
@@ -66,6 +64,83 @@ function AdresTekst({ loc }: { loc: SupermarktLocatie }) {
   return <span className="block text-xs text-muted-foreground truncate">{delen.join(", ")}</span>
 }
 
+/** Toon prijstrend t.o.v. vorige_prijs als pijl + percentage. */
+function PrijsTrend({ product }: { product: Product }) {
+  const badges: React.ReactNode[] = []
+
+  // Aanbieding-badge
+  if (product.in_aanbieding || (product.actie_prijs && product.actie_prijs < product.prijs)) {
+    badges.push(
+      <span key="sale" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 border border-orange-200">
+        aanbieding
+      </span>
+    )
+  }
+
+  // Historisch laag
+  if (product.prijs_historisch_laag) {
+    badges.push(
+      <span key="low" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200">
+        historisch laag 🔥
+      </span>
+    )
+  }
+
+  // Historisch hoog
+  if (product.prijs_historisch_hoog) {
+    badges.push(
+      <span key="high" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">
+        historisch hoog ⚠️
+      </span>
+    )
+  }
+
+  // Trend t.o.v. vorige prijs
+  if (product.vorige_prijs && product.vorige_prijs > 0) {
+    const verschil = product.prijs - product.vorige_prijs
+    const pct = (verschil / product.vorige_prijs) * 100
+    if (Math.abs(pct) >= 0.5) {
+      const omhoog = verschil > 0
+      badges.push(
+        <span
+          key="trend"
+          className={`text-[10px] font-semibold flex items-center gap-0.5 ${omhoog ? "text-red-600" : "text-emerald-600"}`}
+        >
+          {omhoog ? "↑" : "↓"}{Math.abs(pct).toFixed(0)}%
+        </span>
+      )
+    }
+  }
+
+  if (badges.length === 0) return null
+  return <span className="flex flex-wrap items-center gap-1 mt-0.5">{badges}</span>
+}
+
+/** Tooltip-achtige prijshistorie op hover. */
+function PrijsHistorieTip({ product }: { product: Product }) {
+  const heeftData = product.prijs_n_datapunten && product.prijs_n_datapunten > 1
+  if (!heeftData) return null
+
+  return (
+    <span className="group relative inline-block">
+      <span className="text-[10px] text-muted-foreground cursor-help border-b border-dashed border-muted-foreground/40">
+        {product.prijs_n_datapunten}× gemeten
+      </span>
+      <span className="absolute bottom-full left-0 mb-1 z-50 hidden group-hover:flex flex-col gap-0.5 min-w-max bg-popover border rounded-md shadow-lg p-2 text-xs">
+        {product.prijs_min_jaar != null && (
+          <span className="text-emerald-600">Laagste: €{product.prijs_min_jaar.toFixed(2)}</span>
+        )}
+        {product.prijs_gem_jaar != null && (
+          <span className="text-muted-foreground">Gem: €{product.prijs_gem_jaar.toFixed(2)}</span>
+        )}
+        {product.prijs_max_jaar != null && (
+          <span className="text-red-600">Hoogste: €{product.prijs_max_jaar.toFixed(2)}</span>
+        )}
+      </span>
+    </span>
+  )
+}
+
 interface Props {
   resultaat: VergelijkingsResultaat | LocatieResultaat
 }
@@ -74,7 +149,6 @@ export default function ResultatenTabel({ resultaat }: Props) {
   const isLocatie = isLocatieResultaat(resultaat)
   const verg = isLocatie ? resultaat.vergelijking : resultaat
 
-  // Dichtstbijzijnde vestiging per keten
   const locatieMap: Record<string, SupermarktLocatie> = {}
   if (isLocatie) {
     for (const sm of resultaat.supermarkten_nabij ?? []) {
@@ -101,13 +175,16 @@ export default function ResultatenTabel({ resultaat }: Props) {
   const heeftLocatieData = isLocatie && (resultaat.supermarkten_nabij?.length ?? 0) > 0
   const vervoer = isLocatie ? resultaat.vervoer : "driving"
 
+  // Besparing tonen als er meerdere supermarkten zijn
+  const besparing = (verg as { besparing?: number }).besparing
+
   return (
     <div className="space-y-6">
-      {/* Aanbeveling (alleen bij locatie) */}
+      {/* Aanbeveling */}
       {aanbevolen && (
-        <Card className="border-purple-200 bg-purple-50 dark:bg-purple-950/20">
+        <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10">
           <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-semibold text-purple-700 dark:text-purple-400">
               🏆 Aanbeveling
             </CardTitle>
           </CardHeader>
@@ -129,9 +206,11 @@ export default function ResultatenTabel({ resultaat }: Props) {
       {/* Samenvatting kaarten */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {goedkoopste && (
-          <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
+          <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-100/40 dark:from-emerald-950/20 dark:to-green-900/10">
             <CardHeader className="pb-1">
-              <CardTitle className="text-sm font-medium text-muted-foreground">💰 Goedkoopste</CardTitle>
+              <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                💰 Goedkoopste
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3 mb-1">
@@ -154,9 +233,11 @@ export default function ResultatenTabel({ resultaat }: Props) {
           </Card>
         )}
         {besteMatch && besteMatch !== goedkoopste && (
-          <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950/20">
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-sky-100/40 dark:from-blue-950/20 dark:to-sky-900/10">
             <CardHeader className="pb-1">
-              <CardTitle className="text-sm font-medium text-muted-foreground">📦 Meeste producten</CardTitle>
+              <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400">
+                📦 Meeste producten
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3 mb-1">
@@ -180,9 +261,19 @@ export default function ResultatenTabel({ resultaat }: Props) {
         )}
       </div>
 
+      {/* Besparingsbanner */}
+      {besparing != null && besparing > 0.10 && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-3">
+          <span className="text-xl">💡</span>
+          <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
+            Je kunt <strong>€{besparing.toFixed(2)}</strong> besparen door de goedkoopste supermarkt te kiezen.
+          </p>
+        </div>
+      )}
+
       {/* Mobiel: cards per supermarkt */}
       <div className="sm:hidden space-y-2">
-        {supermarkten.map((sm) => {
+        {supermarkten.map((sm, idx) => {
           const totaal = verg.totaal_per_supermarkt[sm]
           const dekking = verg.dekking_per_supermarkt?.[sm]
           const isGoedkoopste = sm === goedkoopste
@@ -193,15 +284,24 @@ export default function ResultatenTabel({ resultaat }: Props) {
           return (
             <div
               key={sm}
-              className={`rounded-lg border p-3 flex items-center gap-3 ${isGoedkoopste ? "border-green-200 bg-green-50/50" : "bg-card"}`}
+              className={`rounded-xl border p-3 flex items-center gap-3 ${
+                isGoedkoopste
+                  ? "border-emerald-200 bg-gradient-to-r from-emerald-50/80 to-transparent"
+                  : "bg-card"
+              }`}
             >
+              {idx === 0 && (
+                <span className="absolute ml-[-8px] mt-[-8px] w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  1
+                </span>
+              )}
               <SupermarktLogo naam={sm} size="md" />
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-1 mb-0.5">
                   <span className="font-semibold text-sm">{sm}</span>
-                  {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800">aanbevolen</Badge>}
-                  {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-green-100 text-green-800">goedkoopst</Badge>}
-                  {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-blue-100 text-blue-800">meeste producten</Badge>}
+                  {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">aanbevolen</Badge>}
+                  {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">goedkoopst</Badge>}
+                  {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-blue-100 text-blue-800 border border-blue-200">meeste producten</Badge>}
                 </div>
                 {loc && <AdresTekst loc={loc} />}
                 <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
@@ -212,7 +312,9 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <span className="font-bold text-base">€{totaal.toFixed(2)}</span>
+                <span className={`font-bold text-base ${isGoedkoopste ? "text-emerald-700" : ""}`}>
+                  €{totaal.toFixed(2)}
+                </span>
               </div>
             </div>
           )
@@ -220,19 +322,20 @@ export default function ResultatenTabel({ resultaat }: Props) {
       </div>
 
       {/* Desktop: tabel */}
-      <div className="hidden sm:block overflow-x-auto rounded-lg border">
+      <div className="hidden sm:block overflow-x-auto rounded-xl border shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-muted/50">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium">Supermarkt</th>
-              {heeftLocatieData && <th className="px-4 py-3 text-right font-medium">Afstand</th>}
-              {heeftLocatieData && <th className="px-4 py-3 text-right font-medium">Reistijd</th>}
-              <th className="px-4 py-3 text-right font-medium">Producten</th>
-              <th className="px-4 py-3 text-right font-medium">Totaal</th>
+          <thead>
+            <tr className="bg-muted/60 border-b">
+              <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">#</th>
+              <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">Supermarkt</th>
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Afstand</th>}
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Reistijd</th>}
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Producten</th>
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Totaal</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {supermarkten.map((sm) => {
+            {supermarkten.map((sm, idx) => {
               const totaal = verg.totaal_per_supermarkt[sm]
               const dekking = verg.dekking_per_supermarkt?.[sm]
               const isGoedkoopste = sm === goedkoopste
@@ -241,16 +344,26 @@ export default function ResultatenTabel({ resultaat }: Props) {
               const loc = locatieMap[sm]
 
               return (
-                <tr key={sm} className={isGoedkoopste ? "bg-green-50/50 dark:bg-green-950/10" : ""}>
+                <tr
+                  key={sm}
+                  className={isGoedkoopste ? "bg-emerald-50/60 dark:bg-emerald-950/10" : "hover:bg-muted/30 transition-colors"}
+                >
+                  <td className="px-4 py-3">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                      idx === 0 ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"
+                    }`}>
+                      {idx + 1}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
                       <SupermarktLogo naam={sm} />
                       <div>
                         <div className="flex flex-wrap items-center gap-1.5 font-medium">
                           {sm}
-                          {isAanbevolen && <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">aanbevolen</Badge>}
-                          {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">goedkoopst</Badge>}
-                          {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">meeste producten</Badge>}
+                          {isAanbevolen && <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800 border border-purple-200">aanbevolen</Badge>}
+                          {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-200">goedkoopst</Badge>}
+                          {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 border border-blue-200">meeste producten</Badge>}
                         </div>
                         {loc && <AdresTekst loc={loc} />}
                       </div>
@@ -269,8 +382,10 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   <td className="px-4 py-3 text-right text-muted-foreground align-top">
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : "—"}
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold align-top">
-                    €{totaal.toFixed(2)}
+                  <td className="px-4 py-3 text-right align-top">
+                    <span className={`font-bold text-base ${isGoedkoopste ? "text-emerald-700 dark:text-emerald-400" : ""}`}>
+                      €{totaal.toFixed(2)}
+                    </span>
                   </td>
                 </tr>
               )
@@ -289,35 +404,50 @@ export default function ResultatenTabel({ resultaat }: Props) {
             return acc
           }, [])
           .map(({ item: gematched, aantal }) => (
-          <div key={gematched.zoekopdracht} className="rounded-lg border p-4">
-            <p className="font-medium mb-2">
+          <div key={gematched.zoekopdracht} className="rounded-xl border p-4 bg-card hover:shadow-sm transition-shadow">
+            <p className="font-semibold mb-3">
               {gematched.zoekopdracht}
               {aantal > 1 && (
-                <span className="ml-2 text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded">×{aantal}</span>
+                <span className="ml-2 text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">×{aantal}</span>
               )}
             </p>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {Object.entries(gematched.matches).map(([sm, product]) => (
-                <div key={sm} className="flex items-center justify-between text-sm gap-2">
-                  <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
+                <div key={sm} className="flex items-start justify-between text-sm gap-2">
+                  <div className="flex items-center gap-1.5 text-muted-foreground min-w-0 pt-0.5">
                     <SupermarktLogo naam={sm} size="sm" />
                     <span className="truncate">{sm}</span>
                   </div>
-                  <span className="shrink-0">
+                  <div className="text-right shrink-0">
                     {product === null ? (
-                      <span className="text-muted-foreground italic">niet gevonden</span>
-                    ) : product.url ? (
-                      <><a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{product.naam}</a>
-                        {" — "}€{(product.prijs * aantal).toFixed(2)}
-                        {aantal > 1 && <span className="text-muted-foreground"> (€{product.prijs.toFixed(2)} × {aantal})</span>}
-                      </>
+                      <span className="text-muted-foreground italic text-xs">niet gevonden</span>
                     ) : (
-                      <>{product.naam}
-                        {" — "}€{(product.prijs * aantal).toFixed(2)}
-                        {aantal > 1 && <span className="text-muted-foreground"> (€{product.prijs.toFixed(2)} × {aantal})</span>}
+                      <>
+                        <div>
+                          {product.url ? (
+                            <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary transition-colors">
+                              {product.naam}
+                            </a>
+                          ) : (
+                            <span>{product.naam}</span>
+                          )}
+                          {" "}
+                          <span className="font-semibold">
+                            €{(product.prijs * aantal).toFixed(2)}
+                          </span>
+                          {aantal > 1 && (
+                            <span className="text-muted-foreground text-xs ml-1">
+                              (€{product.prijs.toFixed(2)} × {aantal})
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-end gap-2 mt-0.5">
+                          <PrijsTrend product={product} />
+                          <PrijsHistorieTip product={product} />
+                        </div>
                       </>
                     )}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>

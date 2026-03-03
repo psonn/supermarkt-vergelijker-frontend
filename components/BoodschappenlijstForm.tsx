@@ -326,8 +326,8 @@ export default function BoodschappenlijstForm() {
 
       {fout && <p className="text-sm text-destructive">{fout}</p>}
 
-      <Button type="submit" disabled={laden} className="w-full">
-        {laden ? "Vergelijking starten…" : "Vergelijk prijzen"}
+      <Button type="submit" disabled={laden} className="w-full font-semibold text-base py-5 shadow-sm">
+        {laden ? "Vergelijking starten…" : "🛒 Vergelijk prijzen"}
       </Button>
     </form>
   )

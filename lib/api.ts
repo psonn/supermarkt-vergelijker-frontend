@@ -22,6 +22,16 @@ export interface Product {
   prijs: number
   url?: string
   eenheid?: string
+  in_aanbieding?: boolean
+  actie_prijs?: number | null
+  vorige_prijs?: number | null
+  vorige_prijs_datum?: string | null
+  prijs_min_jaar?: number | null
+  prijs_max_jaar?: number | null
+  prijs_gem_jaar?: number | null
+  prijs_n_datapunten?: number
+  prijs_historisch_laag?: boolean
+  prijs_historisch_hoog?: boolean
 }
 
 export interface GematchedProduct {

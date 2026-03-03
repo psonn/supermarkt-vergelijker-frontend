@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import ResultatenTabel from "@/components/ResultatenTabel"
+import WinkelwagenLader from "@/components/WinkelwagenLader"
 import { haalJobOp, type JobResponse } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
 import { Suspense } from "react"
@@ -83,17 +84,7 @@ function ResultatenInhoud() {
   }
 
   if (!job || job.status === "bezig") {
-    return (
-      <div className="container max-w-xl mx-auto px-4 py-16 text-center">
-        <div className="animate-pulse space-y-3">
-          <div className="h-4 bg-muted rounded w-3/4 mx-auto" />
-          <div className="h-4 bg-muted rounded w-1/2 mx-auto" />
-        </div>
-        <p className="text-muted-foreground mt-6 text-sm">
-          Supermarktprijzen ophalen… even geduld.
-        </p>
-      </div>
-    )
+    return <WinkelwagenLader />
   }
 
   if (job.status === "fout") {
