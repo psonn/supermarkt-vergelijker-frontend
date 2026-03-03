@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
+import LocatieInput from "@/components/LocatieInput"
 import { startVergelijking } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
 
@@ -41,6 +41,8 @@ export default function BoodschappenlijstForm() {
       for (const naam of namen) freq[naam] = (freq[naam] ?? 0) + 1
       setChips(Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal })))
     }
+    const locatieParam = searchParams.get("locatie")
+    if (locatieParam) setLocatie(locatieParam)
   }, [])
 
   // Laad gebruikersgeschiedenis voor ingelogde gebruikers
@@ -102,7 +104,10 @@ export default function BoodschappenlijstForm() {
         vervoer: locatie.trim() ? vervoer : undefined,
         supermarkten: alleGeselecteerd ? undefined : supermarkten,
       })
-      router.push(`/resultaten/${job.job_id}`)
+      const resultatenUrl = locatie.trim()
+        ? `/resultaten/${job.job_id}?locatie=${encodeURIComponent(locatie.trim())}`
+        : `/resultaten/${job.job_id}`
+      router.push(resultatenUrl)
     } catch (err: unknown) {
       setFout(err instanceof Error ? err.message : "Er ging iets mis.")
       setLaden(false)
@@ -125,11 +130,9 @@ export default function BoodschappenlijstForm() {
         <Label htmlFor="locatie">
           Locatie <span className="text-muted-foreground font-normal">(optioneel)</span>
         </Label>
-        <Input
-          id="locatie"
-          value={locatie}
-          onChange={(e) => setLocatie(e.target.value)}
-          placeholder="Kalverstraat 1, Amsterdam"
+        <LocatieInput
+          waarde={locatie}
+          onChange={setLocatie}
           disabled={laden}
         />
         <p className="text-xs text-muted-foreground">

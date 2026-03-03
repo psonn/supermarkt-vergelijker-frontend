@@ -9,6 +9,7 @@ interface Lijst {
   id: string
   naam: string
   producten: string[]
+  locatie?: string | null
   aangemaakt_op: string
   laatste_vergelijking?: string
 }
@@ -22,7 +23,7 @@ export default async function MijnLijstenPagina() {
   const [{ data: lijsten }, { data: alerts }] = await Promise.all([
     supabase
       .from("lijsten")
-      .select("id, naam, producten, aangemaakt_op, laatste_vergelijking")
+      .select("id, naam, producten, locatie, aangemaakt_op, laatste_vergelijking")
       .eq("user_id", user.id)
       .order("aangemaakt_op", { ascending: false }),
     supabase

@@ -13,6 +13,7 @@ interface Lijst {
   producten: string[]
   aangemaakt_op: string
   laatste_vergelijking?: string
+  locatie?: string | null
 }
 
 interface Props {
@@ -35,6 +36,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
   const gegroepeerd = groepeerProducten(lijst.producten)
   const params = new URLSearchParams()
   params.set("producten", lijst.producten.join("\n"))
+  if (lijst.locatie) params.set("locatie", lijst.locatie)
 
   function handleOpgeslagen(nieuw: PrijsAlert) {
     setAlert(nieuw)

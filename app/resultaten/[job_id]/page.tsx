@@ -1,36 +1,38 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import ResultatenTabel from "@/components/ResultatenTabel"
 import { haalJobOp, type JobResponse } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
+import { Suspense } from "react"
 
 const POLL_INTERVAL_MS = 2000
 
-export default function ResultatenPagina() {
+function ResultatenInhoud() {
   const { job_id } = useParams<{ job_id: string }>()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const locatie = searchParams.get("locatie") ?? ""
+
   const [job, setJob] = useState<JobResponse | null>(null)
   const [fout, setFout] = useState<string | null>(null)
   const [lijstNaam, setLijstNaam] = useState("Mijn lijst")
   const [opgeslagen, setOpgeslagen] = useState(false)
   const [gebruiker, setGebruiker] = useState<{ id: string } | null>(null)
 
-  // Haal ingelogde gebruiker op
   useEffect(() => {
     try {
       createClient().auth.getUser().then(({ data }) => {
         setGebruiker(data.user as { id: string } | null)
       })
     } catch {
-      // Supabase niet geconfigureerd — doorgaan zonder auth
+      // Supabase niet geconfigureerd
     }
   }, [])
 
-  // Poll job status
   useEffect(() => {
     let actief = true
 
@@ -39,9 +41,7 @@ export default function ResultatenPagina() {
         const data = await haalJobOp(job_id)
         if (!actief) return
         setJob(data)
-        if (data.status === "bezig") {
-          setTimeout(poll, POLL_INTERVAL_MS)
-        }
+        if (data.status === "bezig") setTimeout(poll, POLL_INTERVAL_MS)
       } catch (err: unknown) {
         if (!actief) return
         setFout(err instanceof Error ? err.message : "Ophalen mislukt")
@@ -56,16 +56,16 @@ export default function ResultatenPagina() {
     if (!job?.resultaat || !gebruiker) return
     let supabase: ReturnType<typeof createClient>
     try { supabase = createClient() } catch { return }
-    const producten = job.resultaat
-      ? "vergelijking" in job.resultaat
-        ? job.resultaat.vergelijking.producten.map((p) => p.zoekopdracht)
-        : job.resultaat.producten.map((p) => p.zoekopdracht)
-      : []
+
+    const producten = "vergelijking" in job.resultaat
+      ? job.resultaat.vergelijking.producten.map((p) => p.zoekopdracht)
+      : job.resultaat.producten.map((p) => p.zoekopdracht)
 
     const { error } = await supabase.from("lijsten").insert({
       user_id: gebruiker.id,
       naam: lijstNaam,
       producten,
+      locatie: locatie || null,
       laatste_resultaat: job.resultaat,
       laatste_vergelijking: new Date().toISOString(),
     })
@@ -120,6 +120,9 @@ export default function ResultatenPagina() {
       {gebruiker && job.resultaat && !opgeslagen && (
         <div className="mt-8 rounded-lg border p-4 space-y-3">
           <p className="font-medium text-sm">Lijst opslaan</p>
+          {locatie && (
+            <p className="text-xs text-muted-foreground">Locatie wordt meegeslagen: {locatie}</p>
+          )}
           <div className="flex gap-2">
             <input
               value={lijstNaam}
@@ -142,5 +145,13 @@ export default function ResultatenPagina() {
         </p>
       )}
     </main>
+  )
+}
+
+export default function ResultatenPagina() {
+  return (
+    <Suspense>
+      <ResultatenInhoud />
+    </Suspense>
   )
 }
