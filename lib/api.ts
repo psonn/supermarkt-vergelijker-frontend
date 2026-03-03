@@ -45,6 +45,18 @@ export interface LocatieResultaat {
   vervoer: string
 }
 
+export interface PrijsAlert {
+  id: string
+  lijst_id: string
+  email: string
+  actief: boolean
+  drempel_procent: number
+  frequentie: "meteen" | "dagelijks" | "wekelijks" | "maandelijks"
+  check_dag?: number | null
+  check_uur: number
+  laatste_check?: string | null
+}
+
 export async function startVergelijking(req: VergelijkRequest): Promise<JobResponse> {
   const resp = await fetch("/api/vergelijk", {
     method: "POST",

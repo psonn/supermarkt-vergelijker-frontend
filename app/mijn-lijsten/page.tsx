@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/server"
+import LijstKaart from "@/components/LijstKaart"
+import type { PrijsAlert } from "@/lib/api"
 
 interface Lijst {
   id: string
@@ -18,11 +19,22 @@ export default async function MijnLijstenPagina() {
 
   if (!user) redirect("/login?redirect=/mijn-lijsten")
 
-  const { data: lijsten } = await supabase
-    .from("lijsten")
-    .select("id, naam, producten, aangemaakt_op, laatste_vergelijking")
-    .eq("user_id", user.id)
-    .order("aangemaakt_op", { ascending: false })
+  const [{ data: lijsten }, { data: alerts }] = await Promise.all([
+    supabase
+      .from("lijsten")
+      .select("id, naam, producten, aangemaakt_op, laatste_vergelijking")
+      .eq("user_id", user.id)
+      .order("aangemaakt_op", { ascending: false }),
+    supabase
+      .from("prijsalerts")
+      .select("*")
+      .eq("user_id", user.id),
+  ])
+
+  const alertsPerLijst = ((alerts ?? []) as PrijsAlert[]).reduce<Record<string, PrijsAlert>>(
+    (acc, a) => { acc[a.lijst_id] = a; return acc },
+    {}
+  )
 
   return (
     <main className="container max-w-2xl mx-auto px-4 py-12">
@@ -43,34 +55,15 @@ export default async function MijnLijstenPagina() {
       ) : (
         <div className="space-y-4">
           {(lijsten as Lijst[]).map((lijst) => (
-            <Card key={lijst.id}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{lijst.naam}</CardTitle>
-                <CardDescription>
-                  {lijst.producten.length} producten ·{" "}
-                  {new Date(lijst.aangemaakt_op).toLocaleDateString("nl-NL")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {lijst.producten.join(", ")}
-                </p>
-                <NieuweVergelijkingKnop producten={lijst.producten} />
-              </CardContent>
-            </Card>
+            <LijstKaart
+              key={lijst.id}
+              lijst={lijst}
+              gebruikerEmail={user.email ?? ""}
+              bestaandeAlert={alertsPerLijst[lijst.id] ?? null}
+            />
           ))}
         </div>
       )}
     </main>
-  )
-}
-
-function NieuweVergelijkingKnop({ producten }: { producten: string[] }) {
-  const params = new URLSearchParams()
-  params.set("producten", producten.join("\n"))
-  return (
-    <Link href={`/?${params}`}>
-      <Button variant="outline" size="sm">Opnieuw vergelijken</Button>
-    </Link>
   )
 }
