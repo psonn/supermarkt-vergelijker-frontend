@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="0" fill="#E8511E"/>
+  <text x="50" y="56" text-anchor="middle" fill="white"
+    font-family="'Arial Black','Helvetica Neue',Arial,sans-serif"
+    font-weight="900" font-size="28" letter-spacing="0.5">DEKA</text>
+  <text x="50" y="76" text-anchor="middle" fill="rgba(255,255,255,0.8)"
+    font-family="'Arial','Helvetica Neue',Arial,sans-serif"
+    font-weight="400" font-size="14" letter-spacing="2">MARKT</text>
+</svg>

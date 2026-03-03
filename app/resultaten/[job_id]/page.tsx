@@ -106,9 +106,9 @@ function ResultatenInhoud() {
   }
 
   return (
-    <main className="container max-w-3xl mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Vergelijkingsresultaten</h1>
+    <main className="w-full max-w-3xl mx-auto px-3 sm:px-6 py-6 sm:py-12">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold">Vergelijkingsresultaten</h1>
         <Link href="/">
           <Button variant="outline" size="sm">Nieuwe vergelijking</Button>
         </Link>

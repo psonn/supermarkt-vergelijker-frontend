@@ -15,15 +15,15 @@ const VERVOER_LABELS: Record<string, string> = {
   walking: "lopen",
 }
 
-// Merkidentiteit per supermarkt
-const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; domain: string }> = {
-  "Albert Heijn": { bg: "#0056A8", fg: "#fff", kort: "AH", domain: "ah.nl" },
-  "Jumbo":        { bg: "#FFC800", fg: "#222", kort: "JU", domain: "jumbo.com" },
-  "Dirk":         { bg: "#D91B1B", fg: "#fff", kort: "DK", domain: "dirk.nl" },
-  "Aldi":         { bg: "#003087", fg: "#fff", kort: "AL", domain: "aldi.nl" },
-  "Ekoplaza":     { bg: "#3D8127", fg: "#fff", kort: "EK", domain: "ekoplaza.nl" },
-  "Dekamarkt":    { bg: "#E8511E", fg: "#fff", kort: "DM", domain: "dekamarkt.nl" },
-  "Spar":         { bg: "#007B3E", fg: "#fff", kort: "SP", domain: "spar.nl" },
+// Lokale SVG-logo's + fallback merkkleur
+const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; logo: string }> = {
+  "Albert Heijn": { bg: "#0057A8", fg: "#fff", kort: "AH", logo: "/logos/ah.svg" },
+  "Jumbo":        { bg: "#FFC800", fg: "#222", kort: "JU", logo: "/logos/jumbo.svg" },
+  "Dirk":         { bg: "#D91B1B", fg: "#fff", kort: "DK", logo: "/logos/dirk.svg" },
+  "Aldi":         { bg: "#003087", fg: "#fff", kort: "AL", logo: "/logos/aldi.svg" },
+  "Ekoplaza":     { bg: "#3D8127", fg: "#fff", kort: "EK", logo: "/logos/ekoplaza.svg" },
+  "Dekamarkt":    { bg: "#E8511E", fg: "#fff", kort: "DM", logo: "/logos/dekamarkt.svg" },
+  "Spar":         { bg: "#007B3E", fg: "#fff", kort: "SP", logo: "/logos/spar.svg" },
 }
 
 function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md" }) {
@@ -31,18 +31,15 @@ function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md
   const [imgFout, setImgFout] = useState(false)
 
   const dim = size === "md" ? 40 : 28
-  const cls = size === "md"
-    ? "rounded-lg flex-shrink-0"
-    : "rounded flex-shrink-0"
 
   if (stijl && !imgFout) {
     return (
       <img
-        src={`https://logo.clearbit.com/${stijl.domain}`}
+        src={stijl.logo}
         alt={naam}
         width={dim}
         height={dim}
-        className={`${cls} object-contain bg-white border border-border`}
+        className="rounded flex-shrink-0 object-cover"
         style={{ width: dim, height: dim }}
         onError={() => setImgFout(true)}
       />
@@ -56,7 +53,7 @@ function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md
   return (
     <div
       style={{ backgroundColor: bg, color: fg, width: dim, height: dim }}
-      className={`${cls} flex items-center justify-center font-bold text-[11px] select-none`}
+      className="rounded flex-shrink-0 flex items-center justify-center font-bold text-[11px] select-none"
     >
       {kort}
     </div>
@@ -183,18 +180,53 @@ export default function ResultatenTabel({ resultaat }: Props) {
         )}
       </div>
 
-      {/* Tabel per supermarkt */}
-      <div className="overflow-x-auto rounded-lg border">
+      {/* Mobiel: cards per supermarkt */}
+      <div className="sm:hidden space-y-2">
+        {supermarkten.map((sm) => {
+          const totaal = verg.totaal_per_supermarkt[sm]
+          const dekking = verg.dekking_per_supermarkt?.[sm]
+          const isGoedkoopste = sm === goedkoopste
+          const isBesteMatch = sm === besteMatch
+          const isAanbevolen = sm === aanbevolen
+          const loc = locatieMap[sm]
+
+          return (
+            <div
+              key={sm}
+              className={`rounded-lg border p-3 flex items-center gap-3 ${isGoedkoopste ? "border-green-200 bg-green-50/50" : "bg-card"}`}
+            >
+              <SupermarktLogo naam={sm} size="md" />
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-1 mb-0.5">
+                  <span className="font-semibold text-sm">{sm}</span>
+                  {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800">aanbevolen</Badge>}
+                  {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-green-100 text-green-800">goedkoopst</Badge>}
+                  {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-blue-100 text-blue-800">meeste producten</Badge>}
+                </div>
+                {loc && <AdresTekst loc={loc} />}
+                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                  <span>{dekking ?? "?"}/{aantalProducten} producten</span>
+                  {loc?.afstand_km != null && (
+                    <><span>·</span><span>{loc.afstand_km.toFixed(1)} km</span><span>·</span><span>{Math.round(loc.reistijd_min ?? 0)} min</span></>
+                  )}
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-bold text-base">€{totaal.toFixed(2)}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Desktop: tabel */}
+      <div className="hidden sm:block overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
           <thead className="bg-muted/50">
             <tr>
               <th className="px-4 py-3 text-left font-medium">Supermarkt</th>
-              {heeftLocatieData && (
-                <th className="px-4 py-3 text-right font-medium hidden sm:table-cell">Afstand</th>
-              )}
-              {heeftLocatieData && (
-                <th className="px-4 py-3 text-right font-medium hidden sm:table-cell">Reistijd</th>
-              )}
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-medium">Afstand</th>}
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-medium">Reistijd</th>}
               <th className="px-4 py-3 text-right font-medium">Producten</th>
               <th className="px-4 py-3 text-right font-medium">Totaal</th>
             </tr>
@@ -216,34 +248,21 @@ export default function ResultatenTabel({ resultaat }: Props) {
                       <div>
                         <div className="flex flex-wrap items-center gap-1.5 font-medium">
                           {sm}
-                          {isAanbevolen && (
-                            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">aanbevolen</Badge>
-                          )}
-                          {isGoedkoopste && !isAanbevolen && (
-                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">goedkoopst</Badge>
-                          )}
-                          {isBesteMatch && !isGoedkoopste && !isAanbevolen && (
-                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">meeste producten</Badge>
-                          )}
+                          {isAanbevolen && <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">aanbevolen</Badge>}
+                          {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">goedkoopst</Badge>}
+                          {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">meeste producten</Badge>}
                         </div>
-                        {/* Adres altijd zichtbaar onder naam */}
                         {loc && <AdresTekst loc={loc} />}
-                        {/* Afstand op mobiel */}
-                        {heeftLocatieData && loc?.afstand_km != null && (
-                          <span className="block text-xs text-muted-foreground sm:hidden">
-                            {loc.afstand_km.toFixed(1)} km · {Math.round(loc.reistijd_min ?? 0)} min
-                          </span>
-                        )}
                       </div>
                     </div>
                   </td>
                   {heeftLocatieData && (
-                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell align-top">
+                    <td className="px-4 py-3 text-right text-muted-foreground align-top">
                       {loc?.afstand_km != null ? `${loc.afstand_km.toFixed(1)} km` : "—"}
                     </td>
                   )}
                   {heeftLocatieData && (
-                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell align-top">
+                    <td className="px-4 py-3 text-right text-muted-foreground align-top">
                       {loc?.reistijd_min != null ? `${Math.round(loc.reistijd_min)} min` : "—"}
                     </td>
                   )}
