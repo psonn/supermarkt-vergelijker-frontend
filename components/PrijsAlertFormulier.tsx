@@ -58,7 +58,13 @@ export default function PrijsAlertFormulier({
 
     try {
       const supabase = createClient()
+
+      // user_id is verplicht voor de RLS-policy
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error("Niet ingelogd")
+
       const data = {
+        user_id: user.id,
         lijst_id: lijstId,
         email,
         drempel_procent: drempel,
@@ -75,7 +81,7 @@ export default function PrijsAlertFormulier({
           .eq("id", bestaandeAlert.id)
           .select()
           .single()
-        if (error) throw error
+        if (error) throw new Error(error.message)
         onOpgeslagen?.(updated as PrijsAlert)
       } else {
         const { data: created, error } = await supabase
@@ -83,7 +89,7 @@ export default function PrijsAlertFormulier({
           .insert(data)
           .select()
           .single()
-        if (error) throw error
+        if (error) throw new Error(error.message)
         onOpgeslagen?.(created as PrijsAlert)
       }
     } catch (err: unknown) {
