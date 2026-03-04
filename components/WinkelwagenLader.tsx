@@ -1,20 +1,20 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 const SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 
 /** Flat-UI winkelwagentje dat over een track rijdt als laadanimatie. */
-export default function WinkelwagenLader({
-  tekst = "Supermarktprijzen ophalen…",
-}: {
-  tekst?: string
-}) {
+export default function WinkelwagenLader() {
+  const t = useTranslations("lader")
+
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center gap-10 px-4">
       {/* Tekst */}
       <div className="text-center space-y-1.5">
-        <p className="font-display text-xl font-bold text-foreground">{tekst}</p>
+        <p className="font-display text-xl font-bold text-foreground">{t("ophalen")}</p>
         <p className="text-sm text-muted-foreground">
-          Even geduld — we vergelijken {SUPERMARKTEN.length} supermarkten
+          {t("subtitel", { count: SUPERMARKTEN.length })}
         </p>
       </div>
 

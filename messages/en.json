@@ -186,5 +186,9 @@
     "art7Tekst": "These terms are governed by Dutch law. Disputes will be submitted to the competent court in the Netherlands.",
     "contactTekst": "Questions about these terms?",
     "contactLink": "Get in touch"
+  },
+  "lader": {
+    "ophalen": "Fetching supermarket prices…",
+    "subtitel": "Hang tight — comparing {count} supermarkets"
   }
 }

@@ -186,5 +186,9 @@
     "art7Tekst": "Op deze voorwaarden is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Nederland.",
     "contactTekst": "Vragen over deze voorwaarden?",
     "contactLink": "Neem contact op"
+  },
+  "lader": {
+    "ophalen": "Supermarktprijzen ophalen…",
+    "subtitel": "Even geduld — we vergelijken {count} supermarkten"
   }
 }
