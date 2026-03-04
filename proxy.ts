@@ -1,7 +1,12 @@
+import createMiddleware from "next-intl/middleware"
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { routing } from "./i18n/routing"
+
+const intlMiddleware = createMiddleware(routing)
 
 export async function proxy(request: NextRequest) {
+  // 1. Supabase: refresh session cookies
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -13,7 +18,7 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
           supabaseResponse = NextResponse.next({ request })
@@ -27,17 +32,26 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Beschermde routes
-  if (!user && request.nextUrl.pathname.startsWith("/mijn-lijsten")) {
+  // 2. Beschermde routes — NL én EN
+  const pathname = request.nextUrl.pathname
+  if (!user && /^\/(en\/)?mijn-lijsten(\/|$)/.test(pathname)) {
     const url = request.nextUrl.clone()
-    url.pathname = "/login"
-    url.searchParams.set("redirect", request.nextUrl.pathname)
+    url.pathname = pathname.startsWith("/en/") ? "/en/login" : "/login"
+    url.searchParams.set("redirect", pathname)
     return NextResponse.redirect(url)
   }
 
-  return supabaseResponse
+  // 3. Next-intl: locale routing
+  const intlResponse = intlMiddleware(request)
+
+  // 4. Kopieer Supabase auth-cookies naar intl response
+  supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+    intlResponse.cookies.set(name, value, options)
+  })
+
+  return intlResponse
 }
 
 export const config = {
-  matcher: ["/mijn-lijsten/:path*"],
+  matcher: ["/((?!api|_next|_vercel|auth/callback|.*\\..*).*)"],
 }
