@@ -38,7 +38,7 @@ export default function Nav() {
           <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-sm shadow-sm group-hover:scale-105 transition-transform duration-200">
             🛒
           </div>
-          <span className="font-display font-bold text-[15px] tracking-tight">
+          <span className="hidden sm:inline font-display font-bold text-[15px] tracking-tight">
             Supermarkt<span className="text-primary">Vergelijker</span>
           </span>
           <span className="hidden sm:inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 tracking-wide">
@@ -51,7 +51,8 @@ export default function Nav() {
             <>
               <Link href="/mijn-lijsten">
                 <Button variant="ghost" size="sm" className="text-sm font-medium">
-                  Mijn lijsten
+                  <span className="hidden sm:inline">Mijn lijsten</span>
+                  <span className="sm:hidden">Lijsten</span>
                 </Button>
               </Link>
               <Button
@@ -60,7 +61,8 @@ export default function Nav() {
                 onClick={uitloggen}
                 className="text-sm font-medium border-border/60"
               >
-                Uitloggen
+                <span className="hidden sm:inline">Uitloggen</span>
+                <span className="sm:hidden">Uit</span>
               </Button>
             </>
           ) : (

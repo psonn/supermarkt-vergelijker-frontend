@@ -147,6 +147,7 @@ interface Props {
 
 export default function ResultatenTabel({ resultaat }: Props) {
   const isLocatie = isLocatieResultaat(resultaat)
+  const [weergave, setWeergave] = useState<"product" | "winkel">("product")
   const verg = isLocatie ? resultaat.vergelijking : resultaat
 
   const locatieMap: Record<string, SupermarktLocatie> = {}
@@ -174,9 +175,20 @@ export default function ResultatenTabel({ resultaat }: Props) {
   const aantalProducten = verg.producten.length
   const heeftLocatieData = isLocatie && (resultaat.supermarkten_nabij?.length ?? 0) > 0
   const vervoer = isLocatie ? resultaat.vervoer : "driving"
-
-  // Besparing tonen als er meerdere supermarkten zijn
   const besparing = (verg as { besparing?: number }).besparing
+
+  // Dedupliceer producten per supermarkt voor "per winkel"-weergave
+  function gegroepeerdeItemsVoorWinkel(sm: string) {
+    return verg.producten.reduce<{ zoekopdracht: string; product: Product | null; aantal: number }[]>(
+      (acc, p) => {
+        const bestaand = acc.find((g) => g.zoekopdracht === p.zoekopdracht)
+        if (bestaand) { bestaand.aantal++ } else {
+          acc.push({ zoekopdracht: p.zoekopdracht, product: p.matches[sm] ?? null, aantal: 1 })
+        }
+        return acc
+      }, []
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -400,66 +412,173 @@ export default function ResultatenTabel({ resultaat }: Props) {
         </table>
       </div>
 
+      {/* Weergave-toggle */}
+      <div className="flex rounded-lg border overflow-hidden text-sm font-medium">
+        <button
+          type="button"
+          onClick={() => setWeergave("product")}
+          className={`flex-1 px-4 py-2.5 transition-colors ${
+            weergave === "product"
+              ? "bg-primary text-primary-foreground"
+              : "hover:bg-muted/50 text-muted-foreground"
+          }`}
+        >
+          📦 Per product
+        </button>
+        <button
+          type="button"
+          onClick={() => setWeergave("winkel")}
+          className={`flex-1 px-4 py-2.5 border-l transition-colors ${
+            weergave === "winkel"
+              ? "bg-primary text-primary-foreground"
+              : "hover:bg-muted/50 text-muted-foreground"
+          }`}
+        >
+          🛒 Per winkel
+        </button>
+      </div>
+
       {/* Per product */}
-      <div className="space-y-3">
-        <h3 className="font-display font-semibold text-sm text-muted-foreground uppercase tracking-widest">Per product</h3>
-        {verg.producten
-          .reduce<{ item: typeof verg.producten[0]; aantal: number }[]>((acc, p) => {
-            const bestaand = acc.find((g) => g.item.zoekopdracht === p.zoekopdracht)
-            if (bestaand) { bestaand.aantal++ } else { acc.push({ item: p, aantal: 1 }) }
-            return acc
-          }, [])
-          .map(({ item: gematched, aantal }) => (
-          <div key={gematched.zoekopdracht} className="rounded-xl border p-4 bg-card hover:shadow-sm transition-shadow">
-            <p className="font-semibold mb-3">
-              {gematched.zoekopdracht}
-              {aantal > 1 && (
-                <span className="ml-2 text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">×{aantal}</span>
-              )}
-            </p>
-            <div className="space-y-2">
-              {Object.entries(gematched.matches).map(([sm, product]) => (
-                <div key={sm} className="flex items-start justify-between text-sm gap-2">
-                  <div className="flex items-center gap-1.5 text-muted-foreground min-w-0 pt-0.5">
-                    <SupermarktLogo naam={sm} size="sm" />
-                    <span className="truncate">{sm}</span>
+      {weergave === "product" && (
+        <div className="space-y-3">
+          {verg.producten
+            .reduce<{ item: typeof verg.producten[0]; aantal: number }[]>((acc, p) => {
+              const bestaand = acc.find((g) => g.item.zoekopdracht === p.zoekopdracht)
+              if (bestaand) { bestaand.aantal++ } else { acc.push({ item: p, aantal: 1 }) }
+              return acc
+            }, [])
+            .map(({ item: gematched, aantal }) => (
+            <div key={gematched.zoekopdracht} className="rounded-xl border p-4 bg-card hover:shadow-sm transition-shadow">
+              <p className="font-semibold mb-3">
+                {gematched.zoekopdracht}
+                {aantal > 1 && (
+                  <span className="ml-2 text-xs font-normal text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">×{aantal}</span>
+                )}
+              </p>
+              <div className="space-y-2.5">
+                {Object.entries(gematched.matches).map(([sm, product]) => (
+                  /* 2-kolom grid: [logo+naam | productnaam+prijs] — lang productnaam wrapat op mobiel */
+                  <div key={sm} className="grid grid-cols-[auto_1fr] items-start gap-x-2 text-sm">
+                    {/* Kolom 1: logo + naam supermarkt */}
+                    <div className="flex items-center gap-1.5 text-muted-foreground pt-0.5 w-28 shrink-0">
+                      <SupermarktLogo naam={sm} size="sm" />
+                      <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">{sm}</span>
+                    </div>
+                    {/* Kolom 2: productnaam + prijs */}
+                    <div className="min-w-0">
+                      {product === null ? (
+                        <span className="text-muted-foreground italic text-xs">niet gevonden</span>
+                      ) : (
+                        <div className="flex items-start gap-2">
+                          {/* Productnaam — kan wrappen */}
+                          <div className="flex-1 min-w-0">
+                            {product.url ? (
+                              <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary transition-colors break-words hyphens-auto text-xs sm:text-sm leading-snug">
+                                {product.naam}
+                              </a>
+                            ) : (
+                              <span className="break-words hyphens-auto text-xs sm:text-sm leading-snug">{product.naam}</span>
+                            )}
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <PrijsTrend product={product} />
+                              <PrijsHistorieTip product={product} />
+                            </div>
+                          </div>
+                          {/* Prijs — rechts, krimpt niet */}
+                          <div className="shrink-0 text-right">
+                            <span className="font-semibold nums text-xs sm:text-sm">
+                              €{(product.prijs * aantal).toFixed(2)}
+                            </span>
+                            {aantal > 1 && (
+                              <span className="block text-muted-foreground text-xs nums">
+                                (€{product.prijs.toFixed(2)} × {aantal})
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Per winkel */}
+      {weergave === "winkel" && (
+        <div className="space-y-3">
+          {supermarkten.map((sm) => {
+            const totaal = verg.totaal_per_supermarkt[sm]
+            const loc = locatieMap[sm]
+            const isGoedkoopste = sm === goedkoopste
+            const isAanbevolen = sm === aanbevolen
+
+            const items = gegroepeerdeItemsVoorWinkel(sm)
+            const gevonden = items.filter((i) => i.product !== null)
+            const nietGevonden = items.filter((i) => i.product === null)
+
+            return (
+              <div key={sm} className={`rounded-xl border overflow-hidden ${isGoedkoopste ? "border-emerald-200" : ""}`}>
+                {/* Winkel-header */}
+                <div className={`flex items-center gap-3 p-4 ${isGoedkoopste ? "bg-gradient-to-r from-emerald-50 to-transparent" : "bg-muted/30"}`}>
+                  <SupermarktLogo naam={sm} size="md" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                      <span className="font-bold text-sm">{sm}</span>
+                      {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">aanbevolen</Badge>}
+                      {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">goedkoopst</Badge>}
+                    </div>
+                    {loc && <AdresTekst loc={loc} />}
+                    <span className="text-xs text-muted-foreground">{gevonden.length}/{aantalProducten} producten gevonden</span>
                   </div>
                   <div className="text-right shrink-0">
-                    {product === null ? (
-                      <span className="text-muted-foreground italic text-xs">niet gevonden</span>
-                    ) : (
-                      <>
-                        <div>
-                          {product.url ? (
-                            <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary transition-colors">
-                              {product.naam}
-                            </a>
-                          ) : (
-                            <span>{product.naam}</span>
-                          )}
-                          {" "}
-                          <span className="font-semibold nums">
-                            €{(product.prijs * aantal).toFixed(2)}
-                          </span>
-                          {aantal > 1 && (
-                            <span className="text-muted-foreground text-xs ml-1 nums">
-                              (€{product.prijs.toFixed(2)} × {aantal})
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-end gap-2 mt-0.5">
-                          <PrijsTrend product={product} />
-                          <PrijsHistorieTip product={product} />
-                        </div>
-                      </>
+                    <span className={`font-display font-bold nums block ${isGoedkoopste ? "text-xl text-emerald-700" : "text-base"}`}>
+                      €{totaal.toFixed(2)}
+                    </span>
+                    {loc?.afstand_km != null && (
+                      <span className="text-xs text-muted-foreground block">
+                        {loc.afstand_km.toFixed(1)} km · {Math.round(loc.reistijd_min ?? 0)} min
+                      </span>
                     )}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+
+                {/* Productlijst */}
+                <div className="divide-y px-4 py-1">
+                  {gevonden.map(({ zoekopdracht, product, aantal }) => (
+                    <div key={zoekopdracht} className="flex items-start gap-3 py-2.5 text-sm">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs text-muted-foreground">{zoekopdracht}{aantal > 1 && ` ×${aantal}`}</span>
+                        {product && (
+                          <span className="block break-words hyphens-auto leading-snug mt-0.5">
+                            {product.url ? (
+                              <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary transition-colors">
+                                {product.naam}
+                              </a>
+                            ) : product.naam}
+                          </span>
+                        )}
+                      </div>
+                      <span className="font-semibold nums shrink-0 pt-3.5">
+                        €{product ? (product.prijs * aantal).toFixed(2) : "—"}
+                      </span>
+                    </div>
+                  ))}
+                  {nietGevonden.length > 0 && (
+                    <div className="py-2.5">
+                      <p className="text-xs text-muted-foreground italic">
+                        Niet gevonden: {nietGevonden.map((i) => i.zoekopdracht).join(", ")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
