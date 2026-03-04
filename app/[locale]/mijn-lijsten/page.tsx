@@ -20,7 +20,10 @@ export default async function MijnLijstenPagina() {
   const { data: { user } } = await supabase.auth.getUser()
   const locale = await getLocale()
 
-  if (!user) redirect({ href: `/login?redirect=/mijn-lijsten`, locale })
+  if (!user) {
+    redirect({ href: `/login?redirect=/mijn-lijsten`, locale })
+    return null
+  }
 
   const t = await getTranslations("lijsten")
 
