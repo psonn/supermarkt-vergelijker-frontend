@@ -346,10 +346,10 @@ export default function ResultatenTabel({ resultaat }: Props) {
             <tr className="bg-muted/60 border-b">
               <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">#</th>
               <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">Supermarkt</th>
-              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Afstand</th>}
-              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Reistijd</th>}
-              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Producten</th>
-              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground">Totaal</th>
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Afstand</th>}
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Reistijd</th>}
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Producten</th>
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Totaal</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -400,7 +400,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   <td className="px-4 py-3 text-right text-muted-foreground align-top">
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : "—"}
                   </td>
-                  <td className="px-4 py-3 text-right align-top">
+                  <td className="px-4 py-3 text-right align-top whitespace-nowrap">
                     <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-emerald-700 dark:text-emerald-400" : "text-base"}`}>
                       €{totaal.toFixed(2)}
                     </span>
