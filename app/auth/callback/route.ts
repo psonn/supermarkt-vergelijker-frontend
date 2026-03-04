@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      // Na e-mailbevestiging (next === /mijn-lijsten default): toon welkomstpagina
+      const isFirstConfirm = next === "/mijn-lijsten"
+      return NextResponse.redirect(
+        isFirstConfirm ? `${origin}/auth/bevestigd` : `${origin}${next}`
+      )
     }
   }
 

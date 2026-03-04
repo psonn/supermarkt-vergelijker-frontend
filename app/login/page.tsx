@@ -16,7 +16,12 @@ function LoginFormulier() {
   const [email, setEmail] = useState("")
   const [wachtwoord, setWachtwoord] = useState("")
   const [laden, setLaden] = useState(false)
-  const [fout, setFout] = useState<string | null>(null)
+  const foutParam = searchParams.get("fout")
+  const [fout, setFout] = useState<string | null>(
+    foutParam === "bevestiging-mislukt"
+      ? "De bevestigingslink is verlopen of ongeldig. Probeer opnieuw in te loggen of een nieuw account aan te maken."
+      : null
+  )
   const [bericht, setBericht] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -30,7 +35,11 @@ function LoginFormulier() {
     if (tab === "login") {
       const { error } = await supabase.auth.signInWithPassword({ email, password: wachtwoord })
       if (error) {
-        setFout("Onjuist e-mailadres of wachtwoord.")
+        if (error.message.toLowerCase().includes("email not confirmed")) {
+          setFout("Bevestig eerst je e-mailadres via de link die we je hebben gestuurd.")
+        } else {
+          setFout("Onjuist e-mailadres of wachtwoord.")
+        }
       } else {
         router.push(redirect)
         router.refresh()
@@ -182,9 +191,9 @@ function LoginFormulier() {
             {tab === "registreer" && (
               <p className="text-xs text-muted-foreground text-center mt-5 leading-relaxed">
                 Door te registreren ga je akkoord met onze{" "}
-                <span className="underline underline-offset-2 cursor-pointer hover:text-foreground transition-colors">
-                  voorwaarden
-                </span>
+                <Link href="/algemene-voorwaarden" className="underline underline-offset-2 hover:text-foreground transition-colors">
+                  algemene voorwaarden
+                </Link>
                 .
               </p>
             )}
