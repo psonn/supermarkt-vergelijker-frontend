@@ -1,13 +1,16 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { Link, useRouter, usePathname } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
+import { useTranslations, useLocale } from "next-intl"
 
 export default function Nav() {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = useLocale()
+  const t = useTranslations("nav")
   const [email, setEmail] = useState<string | null>(null)
 
   useEffect(() => {
@@ -31,6 +34,11 @@ export default function Nav() {
     router.refresh()
   }
 
+  function schakelTaal() {
+    const nieuweLang = locale === "nl" ? "en" : "nl"
+    router.replace(pathname, { locale: nieuweLang })
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/90 backdrop-blur-md">
       <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -42,17 +50,26 @@ export default function Nav() {
             Supermarkt<span className="text-primary">Vergelijker</span>
           </span>
           <span className="hidden sm:inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 tracking-wide">
-            beta
+            {t("beta")}
           </span>
         </Link>
 
         <nav className="flex items-center gap-1.5">
+          {/* Taalschakelaar */}
+          <button
+            onClick={schakelTaal}
+            className="text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted tracking-widest uppercase"
+            title={t("taalLabel")}
+          >
+            {locale === "nl" ? "EN" : "NL"}
+          </button>
+
           {email ? (
             <>
               <Link href="/mijn-lijsten">
                 <Button variant="ghost" size="sm" className="text-sm font-medium">
-                  <span className="hidden sm:inline">Mijn lijsten</span>
-                  <span className="sm:hidden">Lijsten</span>
+                  <span className="hidden sm:inline">{t("lijsten")}</span>
+                  <span className="sm:hidden">{t("lijstenKort")}</span>
                 </Button>
               </Link>
               <Button
@@ -61,14 +78,14 @@ export default function Nav() {
                 onClick={uitloggen}
                 className="text-sm font-medium border-border/60"
               >
-                <span className="hidden sm:inline">Uitloggen</span>
-                <span className="sm:hidden">Uit</span>
+                <span className="hidden sm:inline">{t("uitloggen")}</span>
+                <span className="sm:hidden">{t("uitloggenKort")}</span>
               </Button>
             </>
           ) : (
             <Link href="/login">
               <Button size="sm" variant="outline" className="text-sm font-medium border-border/60">
-                Inloggen
+                {t("inloggen")}
               </Button>
             </Link>
           )}

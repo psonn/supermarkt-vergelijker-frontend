@@ -1,16 +1,19 @@
 "use client"
 
 import { Suspense, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/lib/i18n-navigation"
+import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
+import { useTranslations } from "next-intl"
 
 function LoginFormulier() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get("redirect") ?? "/mijn-lijsten"
+  const t = useTranslations("login")
 
   const [tab, setTab] = useState<"login" | "registreer">("login")
   const [email, setEmail] = useState("")
@@ -18,9 +21,7 @@ function LoginFormulier() {
   const [laden, setLaden] = useState(false)
   const foutParam = searchParams.get("fout")
   const [fout, setFout] = useState<string | null>(
-    foutParam === "bevestiging-mislukt"
-      ? "De bevestigingslink is verlopen of ongeldig. Probeer opnieuw in te loggen of een nieuw account aan te maken."
-      : null
+    foutParam === "bevestiging-mislukt" ? t("foutBevestigingMislukt") : null
   )
   const [bericht, setBericht] = useState<string | null>(null)
 
@@ -36,12 +37,12 @@ function LoginFormulier() {
       const { error } = await supabase.auth.signInWithPassword({ email, password: wachtwoord })
       if (error) {
         if (error.message.toLowerCase().includes("email not confirmed")) {
-          setFout("Bevestig eerst je e-mailadres via de link die we je hebben gestuurd.")
+          setFout(t("foutNietBevestigd"))
         } else {
-          setFout("Onjuist e-mailadres of wachtwoord.")
+          setFout(t("foutOnjuist"))
         }
       } else {
-        router.push(redirect)
+        router.push(redirect as "/")
         router.refresh()
       }
     } else {
@@ -53,7 +54,7 @@ function LoginFormulier() {
       if (error) {
         setFout(error.message)
       } else {
-        setBericht("Controleer je e-mail om je account te bevestigen.")
+        setBericht(t("bevestigEmail"))
       }
     }
 
@@ -62,7 +63,6 @@ function LoginFormulier() {
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Achtergrond */}
       <div aria-hidden className="pointer-events-none absolute inset-0 dot-grid" />
       <div
         aria-hidden
@@ -76,7 +76,6 @@ function LoginFormulier() {
       />
 
       <div className="w-full max-w-sm relative animate-fade-up">
-        {/* Brand mark */}
         <div className="text-center mb-7">
           <Link href="/" className="inline-flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-xl shadow-md group-hover:scale-105 transition-transform duration-200">
@@ -88,9 +87,7 @@ function LoginFormulier() {
           </Link>
         </div>
 
-        {/* Card */}
         <div className="bg-card rounded-2xl border border-border/60 shadow-2xl overflow-hidden">
-          {/* Kleuraccent bovenaan */}
           <div
             className="h-[3px]"
             style={{
@@ -100,19 +97,18 @@ function LoginFormulier() {
           />
 
           <div className="p-7">
-            {/* Underline tab-switcher */}
             <div className="flex border-b border-border mb-7">
-              {(["login", "registreer"] as const).map((t) => (
+              {(["login", "registreer"] as const).map((t_tab) => (
                 <button
-                  key={t}
+                  key={t_tab}
                   type="button"
-                  onClick={() => { setTab(t); setFout(null); setBericht(null) }}
+                  onClick={() => { setTab(t_tab); setFout(null); setBericht(null) }}
                   className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${
-                    tab === t ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    tab === t_tab ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {t === "login" ? "Inloggen" : "Registreren"}
-                  {tab === t && (
+                  {t_tab === "login" ? t("inloggen") : t("registreren")}
+                  {tab === t_tab && (
                     <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary rounded-full" />
                   )}
                 </button>
@@ -125,7 +121,7 @@ function LoginFormulier() {
                   htmlFor="email"
                   className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
                 >
-                  E-mailadres
+                  {t("emailLabel")}
                 </label>
                 <Input
                   id="email"
@@ -134,7 +130,7 @@ function LoginFormulier() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={laden}
-                  placeholder="jij@voorbeeld.nl"
+                  placeholder={t("emailPlaceholder")}
                   className="h-10 bg-background"
                   autoComplete="email"
                 />
@@ -145,7 +141,7 @@ function LoginFormulier() {
                   htmlFor="wachtwoord"
                   className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
                 >
-                  Wachtwoord
+                  {t("wachtwoordLabel")}
                 </label>
                 <Input
                   id="wachtwoord"
@@ -155,7 +151,7 @@ function LoginFormulier() {
                   required
                   disabled={laden}
                   minLength={6}
-                  placeholder="••••••••"
+                  placeholder={t("wachtwoordPlaceholder")}
                   className="h-10 bg-background"
                   autoComplete={tab === "login" ? "current-password" : "new-password"}
                 />
@@ -180,19 +176,15 @@ function LoginFormulier() {
                 className="w-full font-semibold h-10 font-display tracking-wide mt-1"
                 disabled={laden}
               >
-                {laden
-                  ? "Bezig…"
-                  : tab === "login"
-                  ? "Inloggen →"
-                  : "Account aanmaken →"}
+                {laden ? t("bezig") : tab === "login" ? t("inloggenKnop") : t("registrerenKnop")}
               </Button>
             </form>
 
             {tab === "registreer" && (
               <p className="text-xs text-muted-foreground text-center mt-5 leading-relaxed">
-                Door te registreren ga je akkoord met onze{" "}
+                {t("voorwaardenTekst")}{" "}
                 <Link href="/algemene-voorwaarden" className="underline underline-offset-2 hover:text-foreground transition-colors">
-                  algemene voorwaarden
+                  {t("voorwaardenLink")}
                 </Link>
                 .
               </p>
@@ -205,7 +197,7 @@ function LoginFormulier() {
             href="/"
             className="hover:text-primary transition-colors hover:underline underline-offset-2"
           >
-            ← Terug naar de vergelijker
+            {t("terug")}
           </Link>
         </p>
       </div>

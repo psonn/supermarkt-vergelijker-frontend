@@ -1,26 +1,29 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
 import LocatieInput, { type OpgeslagenAdres } from "@/components/LocatieInput"
 import { startVergelijking } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
+import { useTranslations } from "next-intl"
 
 const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 const STRAAL_OPTIES = [1, 2, 5, 10, 25]
 
-const VERVOER_LABELS: Record<string, { label: string; icon: string }> = {
-  driving: { label: "Auto", icon: "🚗" },
-  cycling: { label: "Fiets", icon: "🚲" },
-  walking: { label: "Lopen", icon: "🚶" },
-}
-
 export default function BoodschappenlijstForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslations("form")
+
+  const VERVOER_LABELS: Record<string, { label: string; icon: string }> = {
+    driving: { label: t("auto"), icon: "🚗" },
+    cycling: { label: t("fiets"), icon: "🚲" },
+    walking: { label: t("lopen"), icon: "🚶" },
+  }
 
   const [chips, setChips] = useState<ChipItem[]>([])
   const [locatie, setLocatie] = useState("")
@@ -32,14 +35,12 @@ export default function BoodschappenlijstForm() {
   const [fout, setFout] = useState<string | null>(null)
   const [gebruikerProducten, setGebruikerProducten] = useState<string[]>([])
 
-  // Opgeslagen adressen
   const [opgeslagenAdressen, setOpgeslagenAdressen] = useState<OpgeslagenAdres[]>([])
   const [gebruikerId, setGebruikerId] = useState<string | null>(null)
   const [adresOpslaanNaam, setAdresOpslaanNaam] = useState("")
   const [adresOpslaanOpen, setAdresOpslaanOpen] = useState(false)
   const [adresOpgeslagen, setAdresOpgeslagen] = useState(false)
 
-  // Pre-fill vanuit URL params
   useEffect(() => {
     const param = searchParams.get("producten")
     if (param) {
@@ -52,7 +53,6 @@ export default function BoodschappenlijstForm() {
     if (locatieParam) setLocatie(locatieParam)
   }, [])
 
-  // Laad gebruikersdata (productgeschiedenis + opgeslagen adressen)
   useEffect(() => {
     try {
       const supabase = createClient()
@@ -125,7 +125,6 @@ export default function BoodschappenlijstForm() {
   function handleLocatieChange(nieuw: string) {
     setLocatie(nieuw)
     setAdresOpgeslagen(false)
-    // Reset "adres opslaan" als locatie leeg wordt
     if (!nieuw.trim()) setAdresOpslaanOpen(false)
   }
 
@@ -137,12 +136,12 @@ export default function BoodschappenlijstForm() {
     )
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setFout(null)
 
     if (chips.length === 0) {
-      setFout("Voer minimaal één product in.")
+      setFout(t("foutMinProduct"))
       return
     }
 
@@ -161,7 +160,7 @@ export default function BoodschappenlijstForm() {
       const resultatenUrl = locatie.trim()
         ? `/resultaten/${job.job_id}?locatie=${encodeURIComponent(locatie.trim())}`
         : `/resultaten/${job.job_id}`
-      router.push(resultatenUrl)
+      router.push(resultatenUrl as "/")
     } catch (err: unknown) {
       setFout(err instanceof Error ? err.message : "Er ging iets mis.")
       setLaden(false)
@@ -175,7 +174,7 @@ export default function BoodschappenlijstForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label>Boodschappenlijst</Label>
+        <Label>{t("boodschappenlijst")}</Label>
         <ProductChipInput
           waarde={chips}
           onChange={setChips}
@@ -186,7 +185,7 @@ export default function BoodschappenlijstForm() {
 
       <div className="space-y-2">
         <Label htmlFor="locatie">
-          Locatie <span className="text-muted-foreground font-normal">(optioneel)</span>
+          {t("locatie")} <span className="text-muted-foreground font-normal">{t("optioneel")}</span>
         </Label>
         <LocatieInput
           waarde={locatie}
@@ -196,7 +195,6 @@ export default function BoodschappenlijstForm() {
           onVerwijderAdres={verwijderAdres}
         />
 
-        {/* Adres opslaan */}
         {gebruikerId && locatie.trim() && !isAlOpgeslagen && !adresOpgeslagen && (
           <div>
             {adresOpslaanOpen ? (
@@ -205,16 +203,16 @@ export default function BoodschappenlijstForm() {
                   type="text"
                   value={adresOpslaanNaam}
                   onChange={(e) => setAdresOpslaanNaam(e.target.value)}
-                  placeholder="Naam (bijv. Thuis)"
+                  placeholder={t("adresNaamPlaceholder")}
                   className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); slaAdresOp() } }}
                   autoFocus
                 />
                 <Button type="button" size="sm" onClick={slaAdresOp} disabled={!adresOpslaanNaam.trim()}>
-                  Opslaan
+                  {t("opslaan")}
                 </Button>
                 <Button type="button" size="sm" variant="ghost" onClick={() => setAdresOpslaanOpen(false)}>
-                  Annuleer
+                  {t("annuleer")}
                 </Button>
               </div>
             ) : (
@@ -223,18 +221,16 @@ export default function BoodschappenlijstForm() {
                 onClick={() => setAdresOpslaanOpen(true)}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                📍 Adres opslaan
+                {t("adresOpslaan")}
               </button>
             )}
           </div>
         )}
         {adresOpgeslagen && (
-          <p className="text-xs text-green-600">Adres opgeslagen!</p>
+          <p className="text-xs text-green-600">{t("adresOpgeslagen")}</p>
         )}
 
-        <p className="text-xs text-muted-foreground">
-          Voor supermarkten in de buurt met afstand en reistijd
-        </p>
+        <p className="text-xs text-muted-foreground">{t("locatieHint")}</p>
       </div>
 
       {/* Filters */}
@@ -244,11 +240,11 @@ export default function BoodschappenlijstForm() {
           onClick={() => setFiltersOpen((v) => !v)}
           className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium hover:bg-muted/50 transition-colors rounded-md"
         >
-          <span>Filters</span>
+          <span>{t("filters")}</span>
           <span className="text-muted-foreground text-xs flex items-center gap-2">
             {supermarkten.length < ALLE_SUPERMARKTEN.length && (
               <span className="text-primary">
-                {supermarkten.length}/{ALLE_SUPERMARKTEN.length} supermarkten
+                {t("aantalSupermarkten", { count: supermarkten.length, total: ALLE_SUPERMARKTEN.length })}
               </span>
             )}
             {filtersOpen ? "▲" : "▼"}
@@ -258,7 +254,7 @@ export default function BoodschappenlijstForm() {
         {filtersOpen && (
           <div className="px-4 pb-4 space-y-4 border-t pt-3">
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground uppercase tracking-wide">Supermarkten</Label>
+              <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("supermarkten")}</Label>
               <div className="flex flex-wrap gap-2">
                 {ALLE_SUPERMARKTEN.map((sm) => {
                   const actief = supermarkten.includes(sm)
@@ -284,7 +280,7 @@ export default function BoodschappenlijstForm() {
             {locatie.trim() && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground uppercase tracking-wide">Straal</Label>
+                  <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("straal")}</Label>
                   <select
                     value={straal}
                     onChange={(e) => setStraal(Number(e.target.value))}
@@ -292,13 +288,13 @@ export default function BoodschappenlijstForm() {
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     {STRAAL_OPTIES.map((km) => (
-                      <option key={km} value={km}>{km} km</option>
+                      <option key={km} value={km}>{km} {t("km")}</option>
                     ))}
                   </select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground uppercase tracking-wide">Vervoer</Label>
+                  <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("vervoer")}</Label>
                   <div className="flex gap-1">
                     {(["driving", "cycling", "walking"] as const).map((v) => (
                       <button
@@ -327,7 +323,7 @@ export default function BoodschappenlijstForm() {
       {fout && <p className="text-sm text-destructive">{fout}</p>}
 
       <Button type="submit" disabled={laden} className="w-full font-semibold text-base py-5 shadow-sm">
-        {laden ? "Vergelijking starten…" : "🛒 Vergelijk prijzen"}
+        {laden ? t("bezig") : t("vergelijk")}
       </Button>
     </form>
   )

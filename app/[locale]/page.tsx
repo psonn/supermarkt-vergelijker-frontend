@@ -1,14 +1,14 @@
 import { Suspense } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import BoodschappenlijstForm from "@/components/BoodschappenlijstForm"
+import { getTranslations } from "next-intl/server"
 
-export default function Home() {
+export default async function Home() {
+  const t = await getTranslations("home")
+
   return (
     <main className="min-h-screen bg-background relative overflow-hidden">
-      {/* Dot grid */}
       <div aria-hidden className="pointer-events-none absolute inset-0 dot-grid" />
-
-      {/* Glow-blobs */}
       <div
         aria-hidden
         className="pointer-events-none absolute -top-48 -left-48 w-[640px] h-[640px] rounded-full"
@@ -21,23 +21,19 @@ export default function Home() {
       />
 
       <div className="container max-w-xl mx-auto px-4 py-14 relative">
-        {/* Hero */}
         <div className="text-center mb-10 space-y-5">
-          {/* Pill badge */}
           <div
             className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide animate-fade-up"
             style={{ animationDelay: "0ms" }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Real-time prijzen · 7 supermarkten
+            {t("tagline")}
           </div>
 
-          {/* Headline */}
           <h1
             className="font-display text-5xl font-extrabold tracking-tight leading-[1.08] animate-fade-up"
             style={{ animationDelay: "70ms" }}
           >
-            Bespaar op je{" "}
             <span
               className="bg-clip-text text-transparent"
               style={{
@@ -45,24 +41,20 @@ export default function Home() {
                   "linear-gradient(130deg, oklch(0.50 0.19 152) 0%, oklch(0.62 0.17 185) 100%)",
               }}
             >
-              boodschappen.
+              {t("titel")}
             </span>
           </h1>
 
-          {/* Subtext */}
           <p
             className="text-muted-foreground text-[15px] max-w-[340px] mx-auto leading-relaxed animate-fade-up"
             style={{ animationDelay: "130ms" }}
           >
-            Vergelijk prijzen bij AH, Jumbo, Dirk en meer — vind de goedkoopste
-            supermarkt bij jou in de buurt.
+            {t("subtitel")}
           </p>
         </div>
 
-        {/* Form card */}
         <div className="animate-fade-up" style={{ animationDelay: "190ms" }}>
           <Card className="shadow-xl border-border/50 overflow-hidden">
-            {/* Top accent streep */}
             <div
               className="h-[3px]"
               style={{
@@ -71,10 +63,8 @@ export default function Home() {
               }}
             />
             <CardHeader className="pb-4 pt-5">
-              <CardTitle className="font-display text-lg">Jouw boodschappenlijst</CardTitle>
-              <CardDescription>
-                Voer je producten in en zie direct waar je het goedkoopst uit bent.
-              </CardDescription>
+              <CardTitle className="font-display text-lg">{t("lijstTitel")}</CardTitle>
+              <CardDescription>{t("lijstSubtitel")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Suspense>
@@ -84,7 +74,6 @@ export default function Home() {
           </Card>
         </div>
 
-        {/* Supermarkt-logo strip */}
         <div
           className="mt-8 flex items-center justify-center gap-3.5 flex-wrap animate-fade-up"
           style={{ animationDelay: "280ms" }}

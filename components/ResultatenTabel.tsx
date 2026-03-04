@@ -4,15 +4,10 @@ import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie, Product } from "@/lib/api"
+import { useTranslations } from "next-intl"
 
 function isLocatieResultaat(r: unknown): r is LocatieResultaat {
   return typeof r === "object" && r !== null && "vergelijking" in r
-}
-
-const VERVOER_LABELS: Record<string, string> = {
-  driving: "rijden",
-  cycling: "fietsen",
-  walking: "lopen",
 }
 
 const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; logo: string }> = {
@@ -64,38 +59,33 @@ function AdresTekst({ loc }: { loc: SupermarktLocatie }) {
   return <span className="block text-xs text-muted-foreground truncate">{delen.join(", ")}</span>
 }
 
-/** Toon prijstrend t.o.v. vorige_prijs als pijl + percentage. */
-function PrijsTrend({ product }: { product: Product }) {
+function PrijsTrend({ product, t }: { product: Product; t: ReturnType<typeof useTranslations<"resultaten">> }) {
   const badges: React.ReactNode[] = []
 
-  // Aanbieding-badge
   if (product.in_aanbieding || (product.actie_prijs && product.actie_prijs < product.prijs)) {
     badges.push(
       <span key="sale" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 border border-orange-200">
-        aanbieding
+        {t("aanbieding")}
       </span>
     )
   }
 
-  // Historisch laag
   if (product.prijs_historisch_laag) {
     badges.push(
       <span key="low" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200">
-        historisch laag 🔥
+        {t("historischLaag")}
       </span>
     )
   }
 
-  // Historisch hoog
   if (product.prijs_historisch_hoog) {
     badges.push(
       <span key="high" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">
-        historisch hoog ⚠️
+        {t("historischHoog")}
       </span>
     )
   }
 
-  // Trend t.o.v. vorige prijs
   if (product.vorige_prijs && product.vorige_prijs > 0) {
     const verschil = product.prijs - product.vorige_prijs
     const pct = (verschil / product.vorige_prijs) * 100
@@ -116,25 +106,24 @@ function PrijsTrend({ product }: { product: Product }) {
   return <span className="flex flex-wrap items-center gap-1 mt-0.5">{badges}</span>
 }
 
-/** Tooltip-achtige prijshistorie op hover. */
-function PrijsHistorieTip({ product }: { product: Product }) {
+function PrijsHistorieTip({ product, t }: { product: Product; t: ReturnType<typeof useTranslations<"resultaten">> }) {
   const heeftData = product.prijs_n_datapunten && product.prijs_n_datapunten > 1
   if (!heeftData) return null
 
   return (
     <span className="group relative inline-block">
       <span className="text-[10px] text-muted-foreground cursor-help border-b border-dashed border-muted-foreground/40">
-        {product.prijs_n_datapunten}× gemeten
+        {t("aantalGemeten", { count: product.prijs_n_datapunten })}
       </span>
       <span className="absolute bottom-full left-0 mb-1 z-50 hidden group-hover:flex flex-col gap-0.5 min-w-max bg-popover border rounded-md shadow-lg p-2 text-xs">
         {product.prijs_min_jaar != null && (
-          <span className="text-emerald-600">Laagste: €{product.prijs_min_jaar.toFixed(2)}</span>
+          <span className="text-emerald-600">{t("laagste", { prijs: product.prijs_min_jaar.toFixed(2) })}</span>
         )}
         {product.prijs_gem_jaar != null && (
-          <span className="text-muted-foreground">Gem: €{product.prijs_gem_jaar.toFixed(2)}</span>
+          <span className="text-muted-foreground">{t("gemiddelde", { prijs: product.prijs_gem_jaar.toFixed(2) })}</span>
         )}
         {product.prijs_max_jaar != null && (
-          <span className="text-red-600">Hoogste: €{product.prijs_max_jaar.toFixed(2)}</span>
+          <span className="text-red-600">{t("hoogste", { prijs: product.prijs_max_jaar.toFixed(2) })}</span>
         )}
       </span>
     </span>
@@ -146,6 +135,7 @@ interface Props {
 }
 
 export default function ResultatenTabel({ resultaat }: Props) {
+  const t = useTranslations("resultaten")
   const isLocatie = isLocatieResultaat(resultaat)
   const [weergave, setWeergave] = useState<"product" | "winkel">("product")
   const verg = isLocatie ? resultaat.vergelijking : resultaat
@@ -160,12 +150,18 @@ export default function ResultatenTabel({ resultaat }: Props) {
     }
   }
 
+  const VERVOER_LABELS: Record<string, string> = {
+    driving: t("rijden"),
+    cycling: t("fietsen"),
+    walking: t("lopen"),
+  }
+
   const supermarkten = Object.keys(verg.totaal_per_supermarkt).sort(
     (a, b) => verg.totaal_per_supermarkt[a] - verg.totaal_per_supermarkt[b]
   )
 
   if (supermarkten.length === 0) {
-    return <p className="text-muted-foreground">Geen resultaten gevonden.</p>
+    return <p className="text-muted-foreground">{t("geenResultaten")}</p>
   }
 
   const goedkoopste = verg.goedkoopste_supermarkt
@@ -177,7 +173,6 @@ export default function ResultatenTabel({ resultaat }: Props) {
   const vervoer = isLocatie ? resultaat.vervoer : "driving"
   const besparing = (verg as { besparing?: number }).besparing
 
-  // Dedupliceer producten per supermarkt voor "per winkel"-weergave
   function gegroepeerdeItemsVoorWinkel(sm: string) {
     return verg.producten.reduce<{ zoekopdracht: string; product: Product | null; aantal: number }[]>(
       (acc, p) => {
@@ -197,7 +192,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
         <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10">
           <CardHeader className="pb-1">
             <CardTitle className="text-sm font-semibold text-purple-700 dark:text-purple-400">
-              🏆 Aanbeveling
+              {t("aanbeveling")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -221,7 +216,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
           <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-100/40 dark:from-emerald-950/20 dark:to-green-900/10">
             <CardHeader className="pb-1">
               <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                💰 Goedkoopste
+                {t("goedkoopste")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -236,7 +231,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 <span className="font-display font-bold text-lg nums text-emerald-700 dark:text-emerald-400">
                   €{verg.totaal_per_supermarkt[goedkoopste].toFixed(2)}
                 </span>
-                {" "}· {verg.dekking_per_supermarkt[goedkoopste] ?? "?"}/{aantalProducten} producten
+                {" "}· {t("dekking", { gevonden: verg.dekking_per_supermarkt[goedkoopste] ?? "?", totaal: aantalProducten })}
               </p>
               {locatieMap[goedkoopste] && (
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -251,7 +246,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
           <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-sky-100/40 dark:from-blue-950/20 dark:to-sky-900/10">
             <CardHeader className="pb-1">
               <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400">
-                📦 Meeste producten
+                {t("meesteProducten")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -266,7 +261,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 <span className="font-display font-bold text-lg nums">
                   €{verg.totaal_per_supermarkt[besteMatch].toFixed(2)}
                 </span>
-                {" "}· {verg.dekking_per_supermarkt[besteMatch] ?? "?"}/{aantalProducten} producten
+                {" "}· {t("dekking", { gevonden: verg.dekking_per_supermarkt[besteMatch] ?? "?", totaal: aantalProducten })}
               </p>
               {locatieMap[besteMatch] && (
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -284,7 +279,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
         <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-3">
           <span className="text-xl">💡</span>
           <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
-            Je kunt <strong>€{besparing.toFixed(2)}</strong> besparen door de goedkoopste supermarkt te kiezen.
+            {t("besparing", { bedrag: besparing.toFixed(2) })}
           </p>
         </div>
       )}
@@ -317,13 +312,13 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-1 mb-0.5">
                   <span className="font-semibold text-sm">{sm}</span>
-                  {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">aanbevolen</Badge>}
-                  {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">goedkoopst</Badge>}
-                  {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-blue-100 text-blue-800 border border-blue-200">meeste producten</Badge>}
+                  {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">{t("badgeAanbevolen")}</Badge>}
+                  {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">{t("badgeGoedkoopst")}</Badge>}
+                  {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-blue-100 text-blue-800 border border-blue-200">{t("badgeMeesteProducten")}</Badge>}
                 </div>
                 {loc && <AdresTekst loc={loc} />}
                 <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                  <span>{dekking ?? "?"}/{aantalProducten} producten</span>
+                  <span>{t("dekking", { gevonden: dekking ?? "?", totaal: aantalProducten })}</span>
                   {loc?.afstand_km != null && (
                     <><span>·</span><span>{loc.afstand_km.toFixed(1)} km</span><span>·</span><span>{Math.round(loc.reistijd_min ?? 0)} min</span></>
                   )}
@@ -345,11 +340,11 @@ export default function ResultatenTabel({ resultaat }: Props) {
           <thead>
             <tr className="bg-muted/60 border-b">
               <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">#</th>
-              <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">Supermarkt</th>
-              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Afstand</th>}
-              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Reistijd</th>}
-              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Producten</th>
-              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap w-28">Totaal</th>
+              <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">{t("kolomSupermarkt")}</th>
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomAfstand")}</th>}
+              {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomReistijd")}</th>}
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomProducten")}</th>
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap w-28">{t("kolomTotaal")}</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -379,9 +374,9 @@ export default function ResultatenTabel({ resultaat }: Props) {
                       <div>
                         <div className="flex flex-wrap items-center gap-1.5 font-medium">
                           {sm}
-                          {isAanbevolen && <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800 border border-purple-200">aanbevolen</Badge>}
-                          {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-200">goedkoopst</Badge>}
-                          {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 border border-blue-200">meeste producten</Badge>}
+                          {isAanbevolen && <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800 border border-purple-200">{t("badgeAanbevolen")}</Badge>}
+                          {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-200">{t("badgeGoedkoopst")}</Badge>}
+                          {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 border border-blue-200">{t("badgeMeesteProducten")}</Badge>}
                         </div>
                         {loc && <AdresTekst loc={loc} />}
                       </div>
@@ -389,16 +384,16 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   </td>
                   {heeftLocatieData && (
                     <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
-                      {loc?.afstand_km != null ? `${loc.afstand_km.toFixed(1)} km` : "—"}
+                      {loc?.afstand_km != null ? `${loc.afstand_km.toFixed(1)} km` : t("geenData")}
                     </td>
                   )}
                   {heeftLocatieData && (
                     <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
-                      {loc?.reistijd_min != null ? `${Math.round(loc.reistijd_min)} min` : "—"}
+                      {loc?.reistijd_min != null ? `${Math.round(loc.reistijd_min)} min` : t("geenData")}
                     </td>
                   )}
                   <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
-                    {dekking !== undefined ? `${dekking}/${aantalProducten}` : "—"}
+                    {dekking !== undefined ? `${dekking}/${aantalProducten}` : t("geenData")}
                   </td>
                   <td className="px-4 py-3 text-right align-top whitespace-nowrap w-28">
                     <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-emerald-700 dark:text-emerald-400" : "text-base"}`}>
@@ -423,7 +418,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               : "hover:bg-muted/50 text-muted-foreground"
           }`}
         >
-          📦 Per product
+          {t("perProduct")}
         </button>
         <button
           type="button"
@@ -434,7 +429,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               : "hover:bg-muted/50 text-muted-foreground"
           }`}
         >
-          🛒 Per winkel
+          {t("perWinkel")}
         </button>
       </div>
 
@@ -457,20 +452,16 @@ export default function ResultatenTabel({ resultaat }: Props) {
               </p>
               <div className="space-y-2.5">
                 {Object.entries(gematched.matches).map(([sm, product]) => (
-                  /* 2-kolom grid: [logo+naam | productnaam+prijs] — lang productnaam wrapat op mobiel */
                   <div key={sm} className="grid grid-cols-[auto_1fr] items-start gap-x-2 text-sm">
-                    {/* Kolom 1: logo + naam supermarkt */}
                     <div className="flex items-center gap-1.5 text-muted-foreground pt-0.5 w-28 shrink-0">
                       <SupermarktLogo naam={sm} size="sm" />
                       <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">{sm}</span>
                     </div>
-                    {/* Kolom 2: productnaam + prijs */}
                     <div className="min-w-0">
                       {product === null ? (
-                        <span className="text-muted-foreground italic text-xs">niet gevonden</span>
+                        <span className="text-muted-foreground italic text-xs">{t("nietGevonden")}</span>
                       ) : (
                         <div className="flex items-start gap-2">
-                          {/* Productnaam — kan wrappen */}
                           <div className="flex-1 min-w-0">
                             {product.url ? (
                               <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary transition-colors break-words hyphens-auto text-xs sm:text-sm leading-snug">
@@ -480,18 +471,17 @@ export default function ResultatenTabel({ resultaat }: Props) {
                               <span className="break-words hyphens-auto text-xs sm:text-sm leading-snug">{product.naam}</span>
                             )}
                             <div className="flex items-center gap-2 mt-0.5">
-                              <PrijsTrend product={product} />
-                              <PrijsHistorieTip product={product} />
+                              <PrijsTrend product={product} t={t} />
+                              <PrijsHistorieTip product={product} t={t} />
                             </div>
                           </div>
-                          {/* Prijs — rechts, krimpt niet */}
                           <div className="shrink-0 text-right">
                             <span className="font-semibold nums text-xs sm:text-sm">
                               €{(product.prijs * aantal).toFixed(2)}
                             </span>
                             {aantal > 1 && (
                               <span className="block text-muted-foreground text-xs nums">
-                                (€{product.prijs.toFixed(2)} × {aantal})
+                                {t("prijsMetAantal", { prijs: product.prijs.toFixed(2), count: aantal })}
                               </span>
                             )}
                           </div>
@@ -521,17 +511,16 @@ export default function ResultatenTabel({ resultaat }: Props) {
 
             return (
               <div key={sm} className={`rounded-xl border overflow-hidden ${isGoedkoopste ? "border-emerald-200" : ""}`}>
-                {/* Winkel-header */}
                 <div className={`flex items-center gap-3 p-4 ${isGoedkoopste ? "bg-gradient-to-r from-emerald-50 to-transparent" : "bg-muted/30"}`}>
                   <SupermarktLogo naam={sm} size="md" />
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
                       <span className="font-bold text-sm">{sm}</span>
-                      {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">aanbevolen</Badge>}
-                      {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">goedkoopst</Badge>}
+                      {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">{t("badgeAanbevolen")}</Badge>}
+                      {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">{t("badgeGoedkoopst")}</Badge>}
                     </div>
                     {loc && <AdresTekst loc={loc} />}
-                    <span className="text-xs text-muted-foreground">{gevonden.length}/{aantalProducten} producten gevonden</span>
+                    <span className="text-xs text-muted-foreground">{t("dekkingDetail", { gevonden: gevonden.length, totaal: aantalProducten })}</span>
                   </div>
                   <div className="text-right shrink-0">
                     <span className={`font-display font-bold nums block ${isGoedkoopste ? "text-xl text-emerald-700" : "text-base"}`}>
@@ -545,7 +534,6 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   </div>
                 </div>
 
-                {/* Productlijst */}
                 <div className="divide-y px-4 py-1">
                   {gevonden.map(({ zoekopdracht, product, aantal }) => (
                     <div key={zoekopdracht} className="flex items-start gap-3 py-2.5 text-sm">
@@ -562,14 +550,14 @@ export default function ResultatenTabel({ resultaat }: Props) {
                         )}
                       </div>
                       <span className="font-semibold nums shrink-0 pt-3.5">
-                        €{product ? (product.prijs * aantal).toFixed(2) : "—"}
+                        €{product ? (product.prijs * aantal).toFixed(2) : t("geenData")}
                       </span>
                     </div>
                   ))}
                   {nietGevonden.length > 0 && (
                     <div className="py-2.5">
                       <p className="text-xs text-muted-foreground italic">
-                        Niet gevonden: {nietGevonden.map((i) => i.zoekopdracht).join(", ")}
+                        {t("ontbrekendeProducten", { producten: nietGevonden.map((i) => i.zoekopdracht).join(", ") })}
                       </p>
                     </div>
                   )}

@@ -1,9 +1,10 @@
-import { redirect } from "next/navigation"
-import Link from "next/link"
+import { redirect } from "@/lib/i18n-navigation"
+import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/server"
 import LijstKaart from "@/components/LijstKaart"
 import type { PrijsAlert } from "@/lib/api"
+import { getTranslations, getLocale } from "next-intl/server"
 
 interface Lijst {
   id: string
@@ -17,8 +18,11 @@ interface Lijst {
 export default async function MijnLijstenPagina() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const locale = await getLocale()
 
-  if (!user) redirect("/login?redirect=/mijn-lijsten")
+  if (!user) redirect({ href: `/login?redirect=/mijn-lijsten`, locale })
+
+  const t = await getTranslations("lijsten")
 
   const [{ data: lijsten }, { data: alerts }] = await Promise.all([
     supabase
@@ -40,17 +44,17 @@ export default async function MijnLijstenPagina() {
   return (
     <main className="container max-w-2xl mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Mijn lijsten</h1>
+        <h1 className="text-2xl font-bold">{t("titel")}</h1>
         <Link href="/">
-          <Button size="sm">Nieuwe vergelijking</Button>
+          <Button size="sm">{t("nieuweVergelijking")}</Button>
         </Link>
       </div>
 
       {!lijsten || lijsten.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
-          <p className="mb-4">Je hebt nog geen lijsten opgeslagen.</p>
+          <p className="mb-4">{t("geenLijsten")}</p>
           <Link href="/">
-            <Button variant="outline">Start een vergelijking</Button>
+            <Button variant="outline">{t("startVergelijking")}</Button>
           </Link>
         </div>
       ) : (

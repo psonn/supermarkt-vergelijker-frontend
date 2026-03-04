@@ -1,14 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
+import { useParams, useSearchParams } from "next/navigation"
+import { useRouter } from "@/lib/i18n-navigation"
+import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import ResultatenTabel from "@/components/ResultatenTabel"
 import WinkelwagenLader from "@/components/WinkelwagenLader"
 import { haalJobOp, type JobResponse } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
 import { Suspense } from "react"
+import { useTranslations } from "next-intl"
 
 const POLL_INTERVAL_MS = 2000
 
@@ -17,6 +19,7 @@ function ResultatenInhoud() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const locatie = searchParams.get("locatie") ?? ""
+  const t = useTranslations("resultatenpagina")
 
   const [job, setJob] = useState<JobResponse | null>(null)
   const [fout, setFout] = useState<string | null>(null)
@@ -45,13 +48,13 @@ function ResultatenInhoud() {
         if (data.status === "bezig") setTimeout(poll, POLL_INTERVAL_MS)
       } catch (err: unknown) {
         if (!actief) return
-        setFout(err instanceof Error ? err.message : "Ophalen mislukt")
+        setFout(err instanceof Error ? err.message : t("ophalenMislukt"))
       }
     }
 
     poll()
     return () => { actief = false }
-  }, [job_id])
+  }, [job_id, t])
 
   async function slaOp() {
     if (!job?.resultaat || !gebruiker) return
@@ -78,7 +81,7 @@ function ResultatenInhoud() {
     return (
       <div className="container max-w-xl mx-auto px-4 py-16 text-center">
         <p className="text-destructive mb-4">{fout}</p>
-        <Button variant="outline" onClick={() => router.push("/")}>Terug</Button>
+        <Button variant="outline" onClick={() => router.push("/")}>{t("terug")}</Button>
       </div>
     )
   }
@@ -90,8 +93,8 @@ function ResultatenInhoud() {
   if (job.status === "fout") {
     return (
       <div className="container max-w-xl mx-auto px-4 py-16 text-center">
-        <p className="text-destructive mb-4">{job.fout ?? "Er is een fout opgetreden."}</p>
-        <Button variant="outline" onClick={() => router.push("/")}>Terug</Button>
+        <p className="text-destructive mb-4">{job.fout ?? t("fout")}</p>
+        <Button variant="outline" onClick={() => router.push("/")}>{t("terug")}</Button>
       </div>
     )
   }
@@ -99,40 +102,39 @@ function ResultatenInhoud() {
   return (
     <main className="w-full max-w-3xl mx-auto px-3 sm:px-6 py-6 sm:py-12">
       <div className="flex items-center justify-between mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold">Vergelijkingsresultaten</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">{t("titel")}</h1>
         <Link href="/">
-          <Button variant="outline" size="sm">Nieuwe vergelijking</Button>
+          <Button variant="outline" size="sm">{t("nieuweVergelijking")}</Button>
         </Link>
       </div>
 
       {job.resultaat && <ResultatenTabel resultaat={job.resultaat} />}
 
-      {/* Lijst opslaan */}
       {gebruiker && job.resultaat && !opgeslagen && (
         <div className="mt-8 rounded-lg border p-4 space-y-3">
-          <p className="font-medium text-sm">Lijst opslaan</p>
+          <p className="font-medium text-sm">{t("lijstOpslaan")}</p>
           {locatie && (
-            <p className="text-xs text-muted-foreground">Locatie wordt meegeslagen: {locatie}</p>
+            <p className="text-xs text-muted-foreground">{t("locatieMeegeslagen", { locatie })}</p>
           )}
           <div className="flex gap-2">
             <input
               value={lijstNaam}
               onChange={(e) => setLijstNaam(e.target.value)}
               className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
-              placeholder="Naam van de lijst"
+              placeholder={t("lijstNaamPlaceholder")}
             />
-            <Button onClick={slaOp} size="sm">Opslaan</Button>
+            <Button onClick={slaOp} size="sm">{t("opslaan")}</Button>
           </div>
         </div>
       )}
       {opgeslagen && (
         <p className="mt-4 text-sm text-green-600">
-          Lijst opgeslagen. <Link href="/mijn-lijsten" className="underline">Bekijk je lijsten →</Link>
+          <Link href="/mijn-lijsten" className="underline">{t("lijstOpgeslagen")}</Link>
         </p>
       )}
       {!gebruiker && job.resultaat && (
         <p className="mt-6 text-sm text-muted-foreground text-center">
-          <Link href="/login" className="underline">Log in</Link> om deze lijst op te slaan.
+          <Link href="/login" className="underline">Log in</Link>{" "}{t("inloggenVoorOpslaan")}
         </p>
       )}
     </main>

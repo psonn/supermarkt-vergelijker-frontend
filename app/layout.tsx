@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import { Syne, DM_Sans } from "next/font/google"
 import "./globals.css"
-import Nav from "@/components/Nav"
-import Footer from "@/components/Footer"
+import { getLocale } from "next-intl/server"
 
 const syne = Syne({
   subsets: ["latin"],
@@ -22,15 +21,13 @@ export const metadata: Metadata = {
   description: "Vergelijk real-time supermarktprijzen in Nederland.",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
+
   return (
-    <html lang="nl">
-      <body className={`${syne.variable} ${dmSans.variable} font-sans antialiased flex flex-col min-h-screen`}>
-        <Nav />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
+    <html lang={locale}>
+      <body className={`${syne.variable} ${dmSans.variable} font-sans antialiased`}>
+        {children}
       </body>
     </html>
   )

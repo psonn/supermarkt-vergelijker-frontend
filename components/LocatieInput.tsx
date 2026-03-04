@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useTranslations } from "next-intl"
 
 interface Suggestie {
   label: string
@@ -28,13 +29,13 @@ export default function LocatieInput({
   opgeslagenAdressen = [],
   onVerwijderAdres,
 }: Props) {
+  const t = useTranslations("locatieInput")
   const [suggesties, setSuggesties] = useState<Suggestie[]>([])
   const [open, setOpen] = useState(false)
   const [actief, setActief] = useState(-1)
   const containerRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Filter opgeslagen adressen op zoekterm
   const gefilterdAdressen = waarde.trim().length < 2
     ? opgeslagenAdressen
     : opgeslagenAdressen.filter(
@@ -83,7 +84,6 @@ export default function LocatieInput({
     setOpen(false)
   }
 
-  // Gecombineerde lijst voor pijltjesnavigatie
   const alleItems = [
     ...gefilterdAdressen.map((a) => ({ type: "opgeslagen" as const, data: a })),
     ...suggesties.map((s) => ({ type: "suggestie" as const, data: s })),
@@ -115,7 +115,7 @@ export default function LocatieInput({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         onFocus={() => setOpen(true)}
-        placeholder="Kalverstraat 1, Amsterdam of 1234AB 12"
+        placeholder={t("placeholder")}
         disabled={disabled}
         autoComplete="off"
         className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -123,11 +123,10 @@ export default function LocatieInput({
 
       {open && heeftDropdown && (
         <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md overflow-hidden">
-          {/* Opgeslagen adressen */}
           {gefilterdAdressen.length > 0 && (
             <>
               <p className="px-3 pt-2 pb-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                Opgeslagen adressen
+                {t("opgeslaanAdressen")}
               </p>
               {gefilterdAdressen.map((a, i) => {
                 const idx = i
@@ -149,7 +148,7 @@ export default function LocatieInput({
                         type="button"
                         onMouseDown={(e) => { e.preventDefault(); onVerwijderAdres(a.id) }}
                         className="text-muted-foreground hover:text-destructive text-xs px-1"
-                        title="Verwijder adres"
+                        title={t("verwijderAdres")}
                       >
                         ×
                       </button>
@@ -161,7 +160,6 @@ export default function LocatieInput({
             </>
           )}
 
-          {/* Nominatim / PDOK suggesties */}
           {suggesties.map((s, i) => {
             const idx = gefilterdAdressen.length + i
             return (

@@ -1,6 +1,10 @@
-import Link from "next/link"
+"use client"
+
+import { Link } from "@/lib/i18n-navigation"
+import { useTranslations } from "next-intl"
 
 export default function Footer() {
+  const t = useTranslations("footer")
   const jaar = new Date().getFullYear()
 
   return (
@@ -17,50 +21,48 @@ export default function Footer() {
                 Supermarkt<span className="text-primary">Vergelijker</span>
               </span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Real-time prijsvergelijking voor Nederlandse supermarkten.
-            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">{t("tagline")}</p>
           </div>
 
-          {/* Links */}
+          {/* Product links */}
           <div>
-            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">Product</p>
+            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">{t("product")}</p>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Vergelijken
+                  {t("vergelijken")}
                 </Link>
               </li>
               <li>
                 <Link href="/mijn-lijsten" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Mijn lijsten
+                  {t("lijsten")}
                 </Link>
               </li>
               <li>
                 <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Inloggen
+                  {t("inloggen")}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Company */}
+          {/* Company links */}
           <div>
-            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">Bedrijf</p>
+            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">{t("bedrijf")}</p>
             <ul className="space-y-2">
               <li>
                 <Link href="/over-ons" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Over ons
+                  {t("overOns")}
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Contact
+                  {t("contact")}
                 </Link>
               </li>
               <li>
                 <Link href="/algemene-voorwaarden" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Algemene voorwaarden
+                  {t("voorwaarden")}
                 </Link>
               </li>
             </ul>
@@ -68,12 +70,8 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-border/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-muted-foreground">
-            © {jaar} SupermarktVergelijker. Alle rechten voorbehouden.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Prijzen zijn indicatief en kunnen afwijken.
-          </p>
+          <p className="text-xs text-muted-foreground">{t("copyright", { year: jaar })}</p>
+          <p className="text-xs text-muted-foreground">{t("disclaimer")}</p>
         </div>
       </div>
     </footer>

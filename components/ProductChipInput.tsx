@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { zoekProducten, suggestiesToevoegen, type ProductSuggestie } from "@/lib/producten"
+import { useTranslations } from "next-intl"
 
 export interface ChipItem {
   naam: string
@@ -11,11 +12,12 @@ export interface ChipItem {
 interface Props {
   waarde: ChipItem[]
   onChange: (items: ChipItem[]) => void
-  gebruikerProducten?: string[]   // eerder gebruikte producten van ingelogde gebruiker
+  gebruikerProducten?: string[]
   disabled?: boolean
 }
 
 export default function ProductChipInput({ waarde, onChange, gebruikerProducten = [], disabled }: Props) {
+  const t = useTranslations("productInput")
   const [invoer, setInvoer] = useState("")
   const [suggesties, setSuggesties] = useState<ProductSuggestie[]>([])
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -25,15 +27,14 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
 
   const toegevoegdeNamen = waarde.map((c) => c.naam)
 
-  // Bereken suggesties wanneer invoer of lijst verandert
   useEffect(() => {
     if (!invoer.trim()) {
-      // Geen invoer: toon "vaak gecombineerd" + gebruikersgeschiedenis
       const combineer = suggestiesToevoegen(toegevoegdeNamen, 6)
+      const eerderGebruikt = t("eerderGebruikt")
       const geschiedenis = gebruikerProducten
         .filter((p) => !toegevoegdeNamen.includes(p))
         .slice(0, 4)
-        .map((naam) => ({ naam, categorie: "eerder gebruikt" }))
+        .map((naam) => ({ naam, categorie: eerderGebruikt }))
 
       const alle = [
         ...geschiedenis,
@@ -42,11 +43,10 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
       setSuggesties(alle.slice(0, 8))
       setDropdownOpen(alle.length > 0)
     } else {
-      // Zoekterm ingevuld: zoek in statische lijst
+      const eerderGebruikt = t("eerderGebruikt")
       const statisch = zoekProducten(invoer, 6).filter(
         (s) => !toegevoegdeNamen.includes(s.naam)
       )
-      // Eigen geschiedenis die matcht
       const persoonlijk = gebruikerProducten
         .filter(
           (p) =>
@@ -55,12 +55,11 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
             !statisch.find((s) => s.naam === p)
         )
         .slice(0, 3)
-        .map((naam) => ({ naam, categorie: "eerder gebruikt" }))
+        .map((naam) => ({ naam, categorie: eerderGebruikt }))
 
       const alle = [
         ...persoonlijk,
         ...statisch,
-        // Vrije invoer als het niet in de lijst staat
         ...(statisch.length === 0 && persoonlijk.length === 0
           ? [{ naam: invoer.trim(), categorie: "" }]
           : []),
@@ -116,7 +115,6 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
     }
   }
 
-  // Sluit dropdown bij klik buiten
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (
@@ -132,7 +130,6 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
 
   return (
     <div className="space-y-2">
-      {/* Chips */}
       {waarde.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {waarde.map((chip) => (
@@ -165,7 +162,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
                 onClick={() => verwijder(chip.naam)}
                 disabled={disabled}
                 className="ml-1 text-muted-foreground hover:text-foreground leading-none"
-                aria-label={`${chip.naam} verwijderen`}
+                aria-label={t("verwijderLabel", { product: chip.naam })}
               >
                 ×
               </button>
@@ -174,7 +171,6 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
         </div>
       )}
 
-      {/* Invoerveld + dropdown */}
       <div className="relative">
         <input
           ref={inputRef}
@@ -183,7 +179,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
           onChange={(e) => setInvoer(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => setDropdownOpen(suggesties.length > 0)}
-          placeholder={waarde.length === 0 ? "bijv. melk, brood, eieren…" : "Product toevoegen…"}
+          placeholder={waarde.length === 0 ? t("placeholderLeeg") : t("placeholderToevoegen")}
           disabled={disabled}
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           autoComplete="off"
@@ -212,9 +208,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
           </div>
         )}
       </div>
-      <p className="text-xs text-muted-foreground">
-        Typ en druk Enter, of kies een suggestie · gebruik +/− voor meerdere stuks
-      </p>
+      <p className="text-xs text-muted-foreground">{t("helpTekst")}</p>
     </div>
   )
 }
