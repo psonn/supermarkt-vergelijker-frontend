@@ -113,7 +113,7 @@ function PrijsHistorieTip({ product, t }: { product: Product; t: ReturnType<type
   return (
     <span className="group relative inline-block">
       <span className="text-[10px] text-muted-foreground cursor-help border-b border-dashed border-muted-foreground/40">
-        {t("aantalGemeten", { count: product.prijs_n_datapunten })}
+        {t("aantalGemeten", { count: product.prijs_n_datapunten ?? 0 })}
       </span>
       <span className="absolute bottom-full left-0 mb-1 z-50 hidden group-hover:flex flex-col gap-0.5 min-w-max bg-popover border rounded-md shadow-lg p-2 text-xs">
         {product.prijs_min_jaar != null && (
