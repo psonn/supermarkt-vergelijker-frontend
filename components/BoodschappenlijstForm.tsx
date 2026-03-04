@@ -9,7 +9,7 @@ import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
 import LocatieInput, { type OpgeslagenAdres } from "@/components/LocatieInput"
 import { startVergelijking } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 
 const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 const STRAAL_OPTIES = [1, 2, 5, 10, 25]
@@ -18,6 +18,7 @@ export default function BoodschappenlijstForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations("form")
+  const locale = useLocale()
 
   const VERVOER_LABELS: Record<string, { label: string; icon: string }> = {
     driving: { label: t("auto"), icon: "🚗" },
@@ -156,6 +157,7 @@ export default function BoodschappenlijstForm() {
         straal: locatie.trim() ? straal : undefined,
         vervoer: locatie.trim() ? vervoer : undefined,
         supermarkten: alleGeselecteerd ? undefined : supermarkten,
+        lang: locale,
       })
       const resultatenUrl = locatie.trim()
         ? `/resultaten/${job.job_id}?locatie=${encodeURIComponent(locatie.trim())}`

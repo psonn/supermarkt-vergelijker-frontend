@@ -5,6 +5,7 @@ export interface VergelijkRequest {
   vervoer?: "driving" | "walking" | "cycling"
   supermarkten?: string[]
   gebruik_cache?: boolean
+  lang?: string
 }
 
 export interface JobResponse {
