@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Syne, DM_Sans } from "next/font/google"
 import "./globals.css"
 import Nav from "@/components/Nav"
+import Footer from "@/components/Footer"
 
 const syne = Syne({
   subsets: ["latin"],
@@ -24,9 +25,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="nl">
-      <body className={`${syne.variable} ${dmSans.variable} font-sans antialiased`}>
+      <body className={`${syne.variable} ${dmSans.variable} font-sans antialiased flex flex-col min-h-screen`}>
         <Nav />
-        {children}
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   )
