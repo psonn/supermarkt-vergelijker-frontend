@@ -341,7 +341,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
 
       {/* Desktop: tabel */}
       <div className="hidden sm:block overflow-x-auto rounded-xl border shadow-sm">
-        <table className="w-full text-sm">
+        <table className="min-w-full text-sm">
           <thead>
             <tr className="bg-muted/60 border-b">
               <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">#</th>
@@ -349,7 +349,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Afstand</th>}
               {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Reistijd</th>}
               <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Producten</th>
-              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">Totaal</th>
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap w-28">Totaal</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -388,19 +388,19 @@ export default function ResultatenTabel({ resultaat }: Props) {
                     </div>
                   </td>
                   {heeftLocatieData && (
-                    <td className="px-4 py-3 text-right text-muted-foreground align-top">
+                    <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
                       {loc?.afstand_km != null ? `${loc.afstand_km.toFixed(1)} km` : "—"}
                     </td>
                   )}
                   {heeftLocatieData && (
-                    <td className="px-4 py-3 text-right text-muted-foreground align-top">
+                    <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
                       {loc?.reistijd_min != null ? `${Math.round(loc.reistijd_min)} min` : "—"}
                     </td>
                   )}
-                  <td className="px-4 py-3 text-right text-muted-foreground align-top">
+                  <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : "—"}
                   </td>
-                  <td className="px-4 py-3 text-right align-top whitespace-nowrap">
+                  <td className="px-4 py-3 text-right align-top whitespace-nowrap w-28">
                     <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-emerald-700 dark:text-emerald-400" : "text-base"}`}>
                       €{totaal.toFixed(2)}
                     </span>
