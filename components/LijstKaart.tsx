@@ -49,7 +49,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
   }
 
   return (
-    <Card>
+    <Card id={`lijst-${lijst.id}`}>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <div>
