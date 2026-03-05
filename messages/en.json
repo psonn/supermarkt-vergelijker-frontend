@@ -27,8 +27,7 @@
     "titel": "Save on your groceries.",
     "subtitel": "Compare prices at AH, Jumbo, Dirk and more — find the cheapest supermarket near you.",
     "lijstTitel": "Your shopping list",
-    "lijstSubtitel": "Enter your products and instantly see where you'll pay the least.",
-    "lijstPlaceholder": "e.g. milk, bread, eggs…"
+    "lijstSubtitel": "Enter your products and instantly see where you'll pay the least."
   },
   "form": {
     "boodschappenlijst": "Shopping list",

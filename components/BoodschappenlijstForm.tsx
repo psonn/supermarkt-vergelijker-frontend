@@ -14,7 +14,7 @@ import { useTranslations, useLocale } from "next-intl"
 const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 const STRAAL_OPTIES = [1, 2, 5, 10, 25]
 
-export default function BoodschappenlijstForm({ autoFocus }: { autoFocus?: boolean } = {}) {
+export default function BoodschappenlijstForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations("form")
@@ -196,7 +196,6 @@ export default function BoodschappenlijstForm({ autoFocus }: { autoFocus?: boole
           onChange={setChips}
           gebruikerProducten={gebruikerProducten}
           disabled={laden}
-          autoFocus={autoFocus}
         />
       </div>
 
