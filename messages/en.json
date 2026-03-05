@@ -62,7 +62,10 @@
   "locatieInput": {
     "placeholder": "Main Street 1, Amsterdam or 1234AB 12",
     "opgeslaanAdressen": "Saved addresses",
-    "verwijderAdres": "Remove address"
+    "verwijderAdres": "Remove address",
+    "gpsKnop": "Use current location",
+    "gpsLaden": "Getting location…",
+    "gpsFout": "Location unavailable"
   },
   "resultaten": {
     "geenResultaten": "No results found.",

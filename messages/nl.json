@@ -62,7 +62,10 @@
   "locatieInput": {
     "placeholder": "Kalverstraat 1, Amsterdam of 1234AB 12",
     "opgeslaanAdressen": "Opgeslagen adressen",
-    "verwijderAdres": "Verwijder adres"
+    "verwijderAdres": "Verwijder adres",
+    "gpsKnop": "Gebruik huidige locatie",
+    "gpsLaden": "Locatie ophalen…",
+    "gpsFout": "Locatie niet beschikbaar"
   },
   "resultaten": {
     "geenResultaten": "Geen resultaten gevonden.",

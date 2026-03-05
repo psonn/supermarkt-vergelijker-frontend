@@ -51,7 +51,15 @@ export default function BoodschappenlijstForm() {
       setChips(Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal })))
     }
     const locatieParam = searchParams.get("locatie")
-    if (locatieParam) setLocatie(locatieParam)
+    if (locatieParam) {
+      setLocatie(locatieParam)
+    } else {
+      // Auto-fill met opgeslagen GPS-locatie
+      try {
+        const opgeslagen = localStorage.getItem("sv_gps_locatie")
+        if (opgeslagen) setLocatie(opgeslagen)
+      } catch { /* localStorage niet beschikbaar */ }
+    }
   }, [])
 
   useEffect(() => {
@@ -129,6 +137,12 @@ export default function BoodschappenlijstForm() {
     if (!nieuw.trim()) setAdresOpslaanOpen(false)
   }
 
+  function handleGpsSuccess(adres: string) {
+    try {
+      localStorage.setItem("sv_gps_locatie", adres)
+    } catch { /* negeer */ }
+  }
+
   function toggleSupermarkt(naam: string) {
     setSupermarkten((prev) =>
       prev.includes(naam)
@@ -195,6 +209,7 @@ export default function BoodschappenlijstForm() {
           disabled={laden}
           opgeslagenAdressen={opgeslagenAdressen}
           onVerwijderAdres={verwijderAdres}
+          onGpsSuccess={handleGpsSuccess}
         />
 
         {gebruikerId && locatie.trim() && !isAlOpgeslagen && !adresOpgeslagen && (
