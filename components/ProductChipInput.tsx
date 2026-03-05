@@ -41,7 +41,6 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
         ...combineer.filter((s) => !geschiedenis.find((g) => g.naam === s.naam)),
       ]
       setSuggesties(alle.slice(0, 8))
-      setDropdownOpen(alle.length > 0)
     } else {
       const eerderGebruikt = t("eerderGebruikt")
       const statisch = zoekProducten(invoer, 6).filter(
