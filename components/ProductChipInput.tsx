@@ -110,8 +110,6 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
       }
     } else if (e.key === "Escape") {
       setDropdownOpen(false)
-    } else if (e.key === "Backspace" && !invoer && waarde.length > 0) {
-      verwijder(waarde[waarde.length - 1].naam)
     }
   }
 
