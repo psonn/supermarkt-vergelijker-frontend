@@ -41,6 +41,15 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // 2b. Recovery-flow: dwing wachtwoord reset af
+  const recoveryPending = request.cookies.get("sv_recovery_pending")?.value
+  if (recoveryPending && !/^\/(en\/)?auth\/reset-wachtwoord(\/|$)/.test(pathname)) {
+    const url = request.nextUrl.clone()
+    url.pathname = pathname.startsWith("/en/") ? "/en/auth/reset-wachtwoord" : "/auth/reset-wachtwoord"
+    url.search = ""
+    return NextResponse.redirect(url)
+  }
+
   // 3. Next-intl: locale routing
   const intlResponse = intlMiddleware(request)
 

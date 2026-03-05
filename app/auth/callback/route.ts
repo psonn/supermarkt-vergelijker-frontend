@@ -25,11 +25,18 @@ export async function GET(request: NextRequest) {
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      // Na e-mailbevestiging (next === /mijn-lijsten default): toon welkomstpagina
+      const isRecovery = next === "/auth/reset-wachtwoord"
       const isFirstConfirm = next === "/mijn-lijsten"
-      return NextResponse.redirect(
-        isFirstConfirm ? `${origin}/auth/bevestigd` : `${origin}${next}`
-      )
+      const redirectUrl = isFirstConfirm ? `${origin}/auth/bevestigd` : `${origin}${next}`
+      const response = NextResponse.redirect(redirectUrl)
+      if (isRecovery) {
+        response.cookies.set("sv_recovery_pending", "1", {
+          path: "/",
+          maxAge: 3600,
+          sameSite: "lax",
+        })
+      }
+      return response
     }
   }
 

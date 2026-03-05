@@ -2,7 +2,6 @@
 
 import { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { useRouter } from "@/lib/i18n-navigation"
 import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +9,6 @@ import { createClient } from "@/lib/supabase/client"
 import { useTranslations } from "next-intl"
 
 function LoginFormulier() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get("redirect") ?? "/mijn-lijsten"
   const t = useTranslations("login")
@@ -59,8 +57,9 @@ function LoginFormulier() {
           setFout(t("foutOnjuist"))
         }
       } else {
-        router.push(redirect as "/")
-        router.refresh()
+        localStorage.setItem("sv_toast_pending", t("toastIngelogd"))
+        window.location.href = redirect
+        return
       }
     } else {
       const { error } = await supabase.auth.signUp({

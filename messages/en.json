@@ -7,7 +7,9 @@
     "inloggen": "Log in",
     "uitloggen": "Log out",
     "uitloggenKort": "Out",
-    "taalLabel": "Language"
+    "taalLabel": "Language",
+    "toastIngelogd": "Successfully logged in",
+    "toastUitgelogd": "Successfully logged out"
   },
   "footer": {
     "tagline": "Real-time price comparison for Dutch supermarkets.",

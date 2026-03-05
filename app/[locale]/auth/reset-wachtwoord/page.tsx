@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "@/lib/i18n-navigation"
 import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,7 +8,6 @@ import { createClient } from "@/lib/supabase/client"
 import { useTranslations } from "next-intl"
 
 export default function ResetWachtwoordPagina() {
-  const router = useRouter()
   const t = useTranslations("resetWachtwoord")
   const [wachtwoord, setWachtwoord] = useState("")
   const [bevestig, setBevestig] = useState("")
@@ -37,8 +35,9 @@ export default function ResetWachtwoordPagina() {
       setFout(error.message)
       setLaden(false)
     } else {
+      document.cookie = "sv_recovery_pending=; max-age=0; path=/"
       setOpgeslagen(true)
-      setTimeout(() => router.push("/"), 2500)
+      setTimeout(() => { window.location.href = "/" }, 2500)
     }
   }
 

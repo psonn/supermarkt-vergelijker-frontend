@@ -30,8 +30,8 @@ export default function Nav() {
 
   async function uitloggen() {
     await createClient().auth.signOut()
-    router.push("/")
-    router.refresh()
+    localStorage.setItem("sv_toast_pending", t("toastUitgelogd"))
+    window.location.href = locale === "en" ? "/en" : "/"
   }
 
   function schakelTaal() {
