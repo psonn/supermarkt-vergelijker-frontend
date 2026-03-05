@@ -135,7 +135,26 @@
     "registrerenKnop": "Create account →",
     "voorwaardenTekst": "By registering you agree to our",
     "voorwaardenLink": "terms & conditions",
-    "terug": "← Back to the app"
+    "terug": "← Back to the app",
+    "wachtwoordVergeten": "Forgot password?",
+    "resetSubtitel": "Enter your email address and we'll send you a reset link.",
+    "resetKnop": "Send reset link →",
+    "resetVerzonden": "Check your email for the reset link.",
+    "terugNaarInloggen": "← Back to login"
+  },
+  "resetWachtwoord": {
+    "titel": "New password",
+    "subtitel": "Choose a new password for your account.",
+    "label": "New password",
+    "bevestigLabel": "Confirm password",
+    "placeholder": "at least 6 characters",
+    "knop": "Save password →",
+    "foutOngelijk": "Passwords do not match.",
+    "foutKort": "Password must be at least 6 characters.",
+    "opgeslagen": "Password successfully changed!",
+    "naarApp": "Go to the app →",
+    "bezig": "Saving…",
+    "ongeldigeLink": "This link has expired or is invalid. Request a new one via the login page."
   },
   "bevestigd": {
     "titel": "Email confirmed!",

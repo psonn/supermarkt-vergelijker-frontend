@@ -135,7 +135,26 @@
     "registrerenKnop": "Account aanmaken →",
     "voorwaardenTekst": "Door te registreren ga je akkoord met onze",
     "voorwaardenLink": "algemene voorwaarden",
-    "terug": "← Terug naar de vergelijker"
+    "terug": "← Terug naar de vergelijker",
+    "wachtwoordVergeten": "Wachtwoord vergeten?",
+    "resetSubtitel": "Voer je e-mailadres in, we sturen je een herstelkoppeling.",
+    "resetKnop": "Stuur herstelkoppeling →",
+    "resetVerzonden": "Check je e-mail voor de herstelkoppeling.",
+    "terugNaarInloggen": "← Terug naar inloggen"
+  },
+  "resetWachtwoord": {
+    "titel": "Nieuw wachtwoord",
+    "subtitel": "Kies een nieuw wachtwoord voor je account.",
+    "label": "Nieuw wachtwoord",
+    "bevestigLabel": "Bevestig wachtwoord",
+    "placeholder": "minimaal 6 tekens",
+    "knop": "Wachtwoord opslaan →",
+    "foutOngelijk": "Wachtwoorden komen niet overeen.",
+    "foutKort": "Wachtwoord moet minimaal 6 tekens zijn.",
+    "opgeslagen": "Wachtwoord succesvol gewijzigd!",
+    "naarApp": "Naar de app →",
+    "bezig": "Opslaan…",
+    "ongeldigeLink": "Deze link is verlopen of ongeldig. Vraag een nieuwe aan via de loginpagina."
   },
   "bevestigd": {
     "titel": "E-mail bevestigd!",

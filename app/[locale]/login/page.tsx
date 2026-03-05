@@ -16,6 +16,7 @@ function LoginFormulier() {
   const t = useTranslations("login")
 
   const [tab, setTab] = useState<"login" | "registreer">("login")
+  const [resetModus, setResetModus] = useState(false)
   const [email, setEmail] = useState("")
   const [wachtwoord, setWachtwoord] = useState("")
   const [laden, setLaden] = useState(false)
@@ -24,6 +25,22 @@ function LoginFormulier() {
     foutParam === "bevestiging-mislukt" ? t("foutBevestigingMislukt") : null
   )
   const [bericht, setBericht] = useState<string | null>(null)
+
+  async function handleReset(e: React.FormEvent) {
+    e.preventDefault()
+    setFout(null)
+    setBericht(null)
+    setLaden(true)
+    const supabase = createClient()
+    const redirectTo = `${window.location.origin}/auth/callback?next=/auth/reset-wachtwoord`
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
+    if (error) {
+      setFout(error.message)
+    } else {
+      setBericht(t("resetVerzonden"))
+    }
+    setLaden(false)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -97,24 +114,66 @@ function LoginFormulier() {
           />
 
           <div className="p-7">
-            <div className="flex border-b border-border mb-7">
-              {(["login", "registreer"] as const).map((t_tab) => (
-                <button
-                  key={t_tab}
-                  type="button"
-                  onClick={() => { setTab(t_tab); setFout(null); setBericht(null) }}
-                  className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${
-                    tab === t_tab ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {t_tab === "login" ? t("inloggen") : t("registreren")}
-                  {tab === t_tab && (
-                    <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary rounded-full" />
-                  )}
-                </button>
-              ))}
-            </div>
+            {!resetModus && (
+              <div className="flex border-b border-border mb-7">
+                {(["login", "registreer"] as const).map((t_tab) => (
+                  <button
+                    key={t_tab}
+                    type="button"
+                    onClick={() => { setTab(t_tab); setFout(null); setBericht(null) }}
+                    className={`flex-1 pb-3 text-sm font-semibold transition-colors relative ${
+                      tab === t_tab ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {t_tab === "login" ? t("inloggen") : t("registreren")}
+                    {tab === t_tab && (
+                      <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary rounded-full" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
 
+            {resetModus ? (
+              <form onSubmit={handleReset} className="space-y-4">
+                <p className="text-sm text-muted-foreground">{t("resetSubtitel")}</p>
+                <div className="space-y-1.5">
+                  <label htmlFor="email-reset" className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    {t("emailLabel")}
+                  </label>
+                  <Input
+                    id="email-reset"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={laden}
+                    placeholder={t("emailPlaceholder")}
+                    className="h-10 bg-background"
+                    autoComplete="email"
+                    autoFocus
+                  />
+                </div>
+                {fout && (
+                  <div className="flex items-start gap-2.5 rounded-lg bg-destructive/8 border border-destructive/20 px-3.5 py-2.5 text-sm text-destructive">
+                    <span className="mt-px shrink-0">⚠</span>
+                    <span>{fout}</span>
+                  </div>
+                )}
+                {bericht && (
+                  <div className="flex items-start gap-2.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 text-sm text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-800 dark:text-emerald-300">
+                    <span className="mt-px shrink-0">✓</span>
+                    <span>{bericht}</span>
+                  </div>
+                )}
+                <Button type="submit" className="w-full font-semibold h-10 font-display tracking-wide" disabled={laden || !!bericht}>
+                  {laden ? t("bezig") : t("resetKnop")}
+                </Button>
+                <button type="button" onClick={() => { setResetModus(false); setFout(null); setBericht(null) }} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors text-center mt-1">
+                  {t("terugNaarInloggen")}
+                </button>
+              </form>
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <label
@@ -157,6 +216,14 @@ function LoginFormulier() {
                 />
               </div>
 
+              {tab === "login" && (
+                <div className="flex justify-end">
+                  <button type="button" onClick={() => { setResetModus(true); setFout(null); setBericht(null) }} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    {t("wachtwoordVergeten")}
+                  </button>
+                </div>
+              )}
+
               {fout && (
                 <div className="flex items-start gap-2.5 rounded-lg bg-destructive/8 border border-destructive/20 px-3.5 py-2.5 text-sm text-destructive">
                   <span className="mt-px shrink-0">⚠</span>
@@ -179,8 +246,9 @@ function LoginFormulier() {
                 {laden ? t("bezig") : tab === "login" ? t("inloggenKnop") : t("registrerenKnop")}
               </Button>
             </form>
+            )}
 
-            {tab === "registreer" && (
+            {!resetModus && tab === "registreer" && (
               <p className="text-xs text-muted-foreground text-center mt-5 leading-relaxed">
                 {t("voorwaardenTekst")}{" "}
                 <Link href="/algemene-voorwaarden" className="underline underline-offset-2 hover:text-foreground transition-colors">
