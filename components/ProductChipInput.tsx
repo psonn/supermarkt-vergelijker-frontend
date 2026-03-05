@@ -14,9 +14,10 @@ interface Props {
   onChange: (items: ChipItem[]) => void
   gebruikerProducten?: string[]
   disabled?: boolean
+  autoFocus?: boolean
 }
 
-export default function ProductChipInput({ waarde, onChange, gebruikerProducten = [], disabled }: Props) {
+export default function ProductChipInput({ waarde, onChange, gebruikerProducten = [], disabled, autoFocus }: Props) {
   const t = useTranslations("productInput")
   const [invoer, setInvoer] = useState("")
   const [suggesties, setSuggesties] = useState<ProductSuggestie[]>([])
@@ -181,6 +182,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
           disabled={disabled}
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           autoComplete="off"
+          autoFocus={autoFocus}
         />
 
         {dropdownOpen && suggesties.length > 0 && (

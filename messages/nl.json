@@ -27,7 +27,8 @@
     "titel": "Bespaar op je boodschappen.",
     "subtitel": "Vergelijk prijzen bij AH, Jumbo, Dirk en meer — vind de goedkoopste supermarkt bij jou in de buurt.",
     "lijstTitel": "Jouw boodschappenlijst",
-    "lijstSubtitel": "Voer je producten in en zie direct waar je het goedkoopst uit bent."
+    "lijstSubtitel": "Voer je producten in en zie direct waar je het goedkoopst uit bent.",
+    "lijstPlaceholder": "Typ bijv. melk, brood, eieren…"
   },
   "form": {
     "boodschappenlijst": "Boodschappenlijst",

@@ -1,6 +1,4 @@
-import { Suspense } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import BoodschappenlijstForm from "@/components/BoodschappenlijstForm"
+import ZoekkaartWrapper from "@/components/ZoekkaartWrapper"
 import { getTranslations } from "next-intl/server"
 
 export default async function Home() {
@@ -54,24 +52,11 @@ export default async function Home() {
         </div>
 
         <div className="animate-fade-up" style={{ animationDelay: "190ms" }}>
-          <Card className="shadow-xl border-border/50 overflow-hidden">
-            <div
-              className="h-[3px]"
-              style={{
-                background:
-                  "linear-gradient(90deg, oklch(0.50 0.19 152), oklch(0.62 0.17 185), oklch(0.72 0.20 50))",
-              }}
-            />
-            <CardHeader className="pb-4 pt-5">
-              <CardTitle className="font-display text-lg">{t("lijstTitel")}</CardTitle>
-              <CardDescription>{t("lijstSubtitel")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Suspense>
-                <BoodschappenlijstForm />
-              </Suspense>
-            </CardContent>
-          </Card>
+          <ZoekkaartWrapper
+            titel={t("lijstTitel")}
+            subtitel={t("lijstSubtitel")}
+            placeholder={t("lijstPlaceholder")}
+          />
         </div>
 
         <div
