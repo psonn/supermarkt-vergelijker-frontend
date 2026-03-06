@@ -208,6 +208,8 @@
     "art6Tekst": "We reserve the right to modify these terms at any time. Updated terms will be published on this page with a revised date. Continued use of the service after changes constitutes acceptance of the new terms.",
     "art7Titel": "7. Applicable law",
     "art7Tekst": "These terms are governed by Dutch law. Disputes will be submitted to the competent court in the Netherlands.",
+    "art8Titel": "8. Cookies and analytics",
+    "art8Tekst": "We only use strictly necessary functional cookies required for the service to operate, such as authentication cookies that maintain your logged-in session. For measuring service usage, we use Vercel Analytics, a privacy-friendly analytics tool that places no cookies and stores no personal data. We do not use tracking or marketing cookies, and your consent for such cookies is therefore not required.",
     "contactTekst": "Questions about these terms?",
     "contactLink": "Get in touch"
   },
