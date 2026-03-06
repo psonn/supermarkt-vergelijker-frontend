@@ -1,7 +1,35 @@
 import { Suspense } from "react"
+import type { Metadata } from "next"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import BoodschappenlijstForm from "@/components/BoodschappenlijstForm"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  const isNL = locale === "nl"
+  return {
+    title: isNL
+      ? "SupermarktVergelijker — Vergelijk supermarktprijzen"
+      : "SupermarktVergelijker — Compare supermarket prices",
+    description: isNL
+      ? "Vergelijk real-time prijzen bij Albert Heijn, Jumbo, Dirk, Aldi en meer. Vind de goedkoopste supermarkt bij jou in de buurt."
+      : "Compare real-time prices at Albert Heijn, Jumbo, Dirk, Aldi and more. Find the cheapest supermarket near you.",
+    openGraph: {
+      title: isNL ? "SupermarktVergelijker" : "SupermarktVergelijker",
+      description: isNL
+        ? "Real-time prijsvergelijking voor Nederlandse supermarkten."
+        : "Real-time price comparison for Dutch supermarkets.",
+      url: isNL ? "https://www.aisupersaver.nl" : "https://www.aisupersaver.nl/en",
+    },
+    alternates: {
+      canonical: isNL ? "https://www.aisupersaver.nl" : "https://www.aisupersaver.nl/en",
+      languages: {
+        nl: "https://www.aisupersaver.nl",
+        en: "https://www.aisupersaver.nl/en",
+      },
+    },
+  }
+}
 
 export default async function Home() {
   const t = await getTranslations("home")

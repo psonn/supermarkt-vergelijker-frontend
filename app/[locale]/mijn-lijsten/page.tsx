@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import { redirect } from "@/lib/i18n-navigation"
+
+export const metadata: Metadata = { robots: { index: false } }
 import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/server"

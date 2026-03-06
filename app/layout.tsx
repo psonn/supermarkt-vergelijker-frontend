@@ -17,8 +17,20 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "Supermarkt Vergelijker",
-  description: "Vergelijk real-time supermarktprijzen in Nederland.",
+  metadataBase: new URL("https://www.aisupersaver.nl"),
+  title: {
+    default: "SupermarktVergelijker",
+    template: "%s – SupermarktVergelijker",
+  },
+  description: "Vergelijk real-time prijzen bij AH, Jumbo, Dirk en meer. Vind de goedkoopste supermarkt bij jou in de buurt.",
+  openGraph: {
+    siteName: "SupermarktVergelijker",
+    type: "website",
+    locale: "nl_NL",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
