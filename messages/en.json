@@ -4,6 +4,8 @@
     "beta": "beta",
     "lijsten": "My lists",
     "lijstenKort": "Lists",
+    "profiel": "Profile",
+    "profielKort": "Profile",
     "inloggen": "Log in",
     "uitloggen": "Log out",
     "uitloggenKort": "Out",
@@ -216,5 +218,30 @@
   "lader": {
     "ophalen": "Fetching supermarket prices…",
     "subtitel": "Hang tight — comparing {count} supermarkets"
+  },
+  "profiel": {
+    "titel": "My profile",
+    "terug": "Back to my lists",
+    "emailSectie": "Email address",
+    "emailNieuwLabel": "New email address",
+    "emailPlaceholder": "you@example.com",
+    "emailKnop": "Update email",
+    "emailVerzonden": "Confirmation email sent to your new address. Click the link to confirm the change.",
+    "wachtwoordSectie": "Password",
+    "wachtwoordNieuwLabel": "New password",
+    "wachtwoordBevestigLabel": "Confirm password",
+    "wachtwoordKnop": "Update password",
+    "wachtwoordGewijzigd": "Password updated successfully.",
+    "wachtwoordFoutKort": "Password must be at least 6 characters.",
+    "wachtwoordFoutOngelijk": "Passwords do not match.",
+    "gevarenzone": "Danger zone",
+    "verwijderTekst": "Deleting your account permanently removes all your data and saved lists. This cannot be undone.",
+    "verwijderKnop": "Delete account",
+    "verwijderBevestigVraag": "Are you sure? This cannot be undone.",
+    "verwijderBevestigKnop": "Yes, delete my account",
+    "verwijderSucces": "Your account has been deleted.",
+    "verwijderFout": "Account deletion failed. Please try again.",
+    "annuleer": "Cancel",
+    "bezig": "Please wait…"
   }
 }

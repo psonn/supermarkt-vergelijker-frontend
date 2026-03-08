@@ -72,6 +72,12 @@ export default function Nav() {
                   <span className="sm:hidden">{t("lijstenKort")}</span>
                 </Button>
               </Link>
+              <Link href="/profiel">
+                <Button variant="ghost" size="sm" className="text-sm font-medium">
+                  <span className="hidden sm:inline">{t("profiel")}</span>
+                  <span className="sm:hidden">{t("profielKort")}</span>
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"

@@ -4,6 +4,8 @@
     "beta": "beta",
     "lijsten": "Mijn lijsten",
     "lijstenKort": "Lijsten",
+    "profiel": "Profiel",
+    "profielKort": "Profiel",
     "inloggen": "Inloggen",
     "uitloggen": "Uitloggen",
     "uitloggenKort": "Uit",
@@ -216,5 +218,30 @@
   "lader": {
     "ophalen": "Supermarktprijzen ophalen…",
     "subtitel": "Even geduld — we vergelijken {count} supermarkten"
+  },
+  "profiel": {
+    "titel": "Mijn profiel",
+    "terug": "Terug naar mijn lijsten",
+    "emailSectie": "E-mailadres",
+    "emailNieuwLabel": "Nieuw e-mailadres",
+    "emailPlaceholder": "jij@voorbeeld.nl",
+    "emailKnop": "E-mail wijzigen",
+    "emailVerzonden": "Bevestigingsmail verzonden naar je nieuwe adres. Klik de link om de wijziging te bevestigen.",
+    "wachtwoordSectie": "Wachtwoord",
+    "wachtwoordNieuwLabel": "Nieuw wachtwoord",
+    "wachtwoordBevestigLabel": "Bevestig wachtwoord",
+    "wachtwoordKnop": "Wachtwoord wijzigen",
+    "wachtwoordGewijzigd": "Wachtwoord succesvol gewijzigd.",
+    "wachtwoordFoutKort": "Wachtwoord moet minimaal 6 tekens zijn.",
+    "wachtwoordFoutOngelijk": "Wachtwoorden komen niet overeen.",
+    "gevarenzone": "Gevaarlijke zone",
+    "verwijderTekst": "Als je je account verwijdert, worden al je gegevens en opgeslagen lijsten permanent gewist. Dit kan niet ongedaan worden gemaakt.",
+    "verwijderKnop": "Account verwijderen",
+    "verwijderBevestigVraag": "Weet je het zeker? Dit kan niet ongedaan worden gemaakt.",
+    "verwijderBevestigKnop": "Ja, verwijder mijn account",
+    "verwijderSucces": "Je account is verwijderd.",
+    "verwijderFout": "Accountverwijdering mislukt. Probeer het opnieuw.",
+    "annuleer": "Annuleer",
+    "bezig": "Bezig…"
   }
 }
