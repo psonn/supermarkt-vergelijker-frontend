@@ -4,4 +4,5 @@ export const routing = defineRouting({
   locales: ["nl", "en"],
   defaultLocale: "nl",
   localePrefix: "as-needed", // /= NL (geen prefix), /en/... = EN
+  localeDetection: false,    // Niet overschrijven op basis van Accept-Language header
 })

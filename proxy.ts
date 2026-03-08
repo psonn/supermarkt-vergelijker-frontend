@@ -41,6 +41,15 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // 2c. Ingelogde gebruikers mogen /login niet zien
+  if (user && /^\/(en\/)?login(\/|$)/.test(pathname)) {
+    const url = request.nextUrl.clone()
+    const redirectTo = request.nextUrl.searchParams.get("redirect")
+    url.pathname = redirectTo ?? (pathname.startsWith("/en/") ? "/en/mijn-lijsten" : "/mijn-lijsten")
+    url.search = ""
+    return NextResponse.redirect(url)
+  }
+
   // 2b. Recovery-flow: dwing wachtwoord reset af
   const recoveryPending = request.cookies.get("sv_recovery_pending")?.value
   if (recoveryPending && !/^\/(en\/)?auth\/reset-wachtwoord(\/|$)/.test(pathname)) {

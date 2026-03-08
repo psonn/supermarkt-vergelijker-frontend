@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect } from "react"
+import { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
@@ -12,12 +12,6 @@ function LoginFormulier() {
   const searchParams = useSearchParams()
   const redirect = searchParams.get("redirect") ?? "/mijn-lijsten"
   const t = useTranslations("login")
-
-  useEffect(() => {
-    createClient().auth.getUser().then(({ data }) => {
-      if (data.user) window.location.replace(redirect)
-    })
-  }, [redirect])
 
   const [tab, setTab] = useState<"login" | "registreer">("login")
   const [resetModus, setResetModus] = useState(false)
