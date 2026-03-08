@@ -144,7 +144,8 @@
     "resetSubtitel": "Voer je e-mailadres in, we sturen je een herstelkoppeling.",
     "resetKnop": "Stuur herstelkoppeling →",
     "resetVerzonden": "Check je e-mail voor de herstelkoppeling.",
-    "terugNaarInloggen": "← Terug naar inloggen"
+    "terugNaarInloggen": "← Terug naar inloggen",
+    "toastIngelogd": "Succesvol ingelogd"
   },
   "resetWachtwoord": {
     "titel": "Nieuw wachtwoord",

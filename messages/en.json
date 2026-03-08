@@ -144,7 +144,8 @@
     "resetSubtitel": "Enter your email address and we'll send you a reset link.",
     "resetKnop": "Send reset link →",
     "resetVerzonden": "Check your email for the reset link.",
-    "terugNaarInloggen": "← Back to login"
+    "terugNaarInloggen": "← Back to login",
+    "toastIngelogd": "Successfully logged in"
   },
   "resetWachtwoord": {
     "titel": "New password",
