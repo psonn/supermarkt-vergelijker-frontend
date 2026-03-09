@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Syne, DM_Sans } from "next/font/google"
+import Script from "next/script"
 import "./globals.css"
 import { getLocale } from "next-intl/server"
 
@@ -36,9 +37,19 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale()
 
+  const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT
+
   return (
     <html lang={locale}>
       <body className={`${syne.variable} ${dmSans.variable} font-sans antialiased`}>
+        {adsenseClient && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}
+            crossOrigin="anonymous"
+            strategy="lazyOnload"
+          />
+        )}
         {children}
       </body>
     </html>

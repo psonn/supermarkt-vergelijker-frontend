@@ -1,6 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import GoogleAd from "@/components/GoogleAd"
 
 const SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 
@@ -45,6 +46,17 @@ export default function WinkelwagenLader() {
           </span>
         ))}
       </div>
+
+      {/* Google AdSense — alleen zichtbaar als NEXT_PUBLIC_ADSENSE_CLIENT ingesteld is */}
+      {process.env.NEXT_PUBLIC_ADSENSE_SLOT_LADER && (
+        <div className="w-full max-w-lg mx-auto mt-2">
+          <GoogleAd
+            slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_LADER}
+            format="horizontal"
+            className="min-h-[90px]"
+          />
+        </div>
+      )}
     </div>
   )
 }
