@@ -68,7 +68,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
               alert ? "opacity-100 text-primary" : "opacity-40 hover:opacity-70"
             }`}
           >
-            <Bell size={18} strokeWidth={2} />
+            <Bell size={18} strokeWidth={2} fill={alert ? "currentColor" : "none"} />
           </button>
         </div>
       </CardHeader>
