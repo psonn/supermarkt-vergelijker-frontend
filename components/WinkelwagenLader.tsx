@@ -10,7 +10,7 @@ export default function WinkelwagenLader() {
   const t = useTranslations("lader")
 
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-10 px-4">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-24 px-4">
       {/* Tekst */}
       <div className="text-center space-y-1.5">
         <p className="font-display text-xl font-bold text-foreground">{t("ophalen")}</p>

@@ -203,10 +203,10 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 <p className="text-xl font-bold">{aanbevolen}</p>
                 {locatieMap[aanbevolen] && <AdresTekst loc={locatieMap[aanbevolen]} />}
               </div>
-              <div className="flex flex-col items-center gap-0.5 shrink-0">
+              <div className="flex flex-col items-center gap-1 shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "52px", width: "auto" }} />
-                <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide leading-none">beste keuze</span>
+                <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
+                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest leading-none">beste keuze</span>
               </div>
             </div>
             {aanbevelingReden && (
@@ -233,10 +233,10 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   {locatieMap[goedkoopste] && <AdresTekst loc={locatieMap[goedkoopste]} />}
                 </div>
                 {!aanbevolen && (
-                  <div className="flex flex-col items-center gap-0.5 shrink-0">
+                  <div className="flex flex-col items-center gap-1 shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "52px", width: "auto" }} />
-                    <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide leading-none">beste keuze</span>
+                    <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest leading-none">beste keuze</span>
                   </div>
                 )}
               </div>
