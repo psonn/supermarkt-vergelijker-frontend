@@ -26,10 +26,11 @@ export default function WinkelwagenLader() {
           <div className="h-full rounded-full bg-primary track-vult" />
         </div>
 
-        {/* Wagentje boven het spoor */}
+        {/* Logo boven het spoor */}
         <div className="absolute wagen-container" style={{ top: "-38px" }}>
-          <div className="wagen-stuitert text-primary">
-            <WinkelwagenSVG />
+          <div className="wagen-stuitert">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-transparant.svg" alt="" aria-hidden width={56} height={44} />
           </div>
         </div>
       </div>
@@ -58,37 +59,5 @@ export default function WinkelwagenLader() {
         </div>
       )}
     </div>
-  )
-}
-
-function WinkelwagenSVG() {
-  return (
-    <svg
-      width="56"
-      height="44"
-      viewBox="0 0 56 44"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      {/* Stang */}
-      <path
-        d="M4 7 L4 16 L16 16"
-        stroke="currentColor"
-        strokeWidth="3.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Karrenlichaam */}
-      <path d="M16 12 L46 12 L41 30 L21 30 Z" fill="currentColor" />
-      {/* Producten */}
-      <rect x="22" y="15" width="8" height="10" rx="2" fill="white" fillOpacity="0.45" />
-      <rect x="32" y="17" width="7" height="8" rx="2" fill="white" fillOpacity="0.45" />
-      {/* Wielen */}
-      <circle cx="25" cy="37" r="5" fill="currentColor" />
-      <circle cx="39" cy="37" r="5" fill="currentColor" />
-      <circle cx="25" cy="37" r="2.5" fill="white" fillOpacity="0.35" />
-      <circle cx="39" cy="37" r="2.5" fill="white" fillOpacity="0.35" />
-    </svg>
   )
 }

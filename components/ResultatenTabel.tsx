@@ -223,9 +223,14 @@ export default function ResultatenTabel({ resultaat }: Props) {
             <CardContent>
               <div className="flex items-center gap-3 mb-1">
                 <SupermarktLogo naam={goedkoopste} size="md" />
-                <div>
+                <div className="flex-1">
                   <p className="text-xl font-bold">{goedkoopste}</p>
                   {locatieMap[goedkoopste] && <AdresTekst loc={locatieMap[goedkoopste]} />}
+                </div>
+                <div className="flex flex-col items-center gap-0.5 shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo-transparant.svg" alt="" aria-hidden width={36} height={36} className="opacity-90" />
+                  <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide leading-none">beste keuze</span>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
