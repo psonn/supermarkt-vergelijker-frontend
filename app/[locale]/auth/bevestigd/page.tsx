@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Link } from "@/lib/i18n-navigation"
+import { CheckCircle2 } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -12,8 +13,8 @@ export default async function BevestigdPage() {
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="text-center max-w-sm animate-fade-up">
-        <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-3xl mx-auto mb-6">
-          ✓
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
+          <CheckCircle2 size={32} className="text-primary" strokeWidth={1.8} />
         </div>
         <h1 className="font-display text-2xl font-bold tracking-tight mb-3">{t("titel")}</h1>
         <p className="text-muted-foreground text-sm leading-relaxed mb-8">{t("subtitel")}</p>

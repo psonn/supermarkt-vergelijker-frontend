@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { ShoppingCart, Check, AlertCircle } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations } from "next-intl"
 
@@ -53,8 +54,8 @@ export default function ResetWachtwoordPagina() {
       <div className="w-full max-w-sm relative animate-fade-up">
         <div className="text-center mb-7">
           <Link href="/" className="inline-flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-xl shadow-md group-hover:scale-105 transition-transform duration-200">
-              🛒
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md group-hover:scale-105 transition-transform duration-200">
+              <ShoppingCart size={20} strokeWidth={2.2} />
             </div>
             <span className="font-display font-bold text-lg tracking-tight">
               Cheaper<span className="text-primary">Supermarkets</span>
@@ -79,7 +80,7 @@ export default function ResetWachtwoordPagina() {
             {opgeslagen ? (
               <div className="space-y-4">
                 <div className="flex items-start gap-2.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 text-sm text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-800 dark:text-emerald-300">
-                  <span className="mt-px shrink-0">✓</span>
+                  <Check size={14} className="mt-px shrink-0" strokeWidth={2.5} />
                   <span>{t("opgeslagen")}</span>
                 </div>
                 <Link href="/">
@@ -126,7 +127,7 @@ export default function ResetWachtwoordPagina() {
 
                 {fout && (
                   <div className="flex items-start gap-2.5 rounded-lg bg-destructive/8 border border-destructive/20 px-3.5 py-2.5 text-sm text-destructive">
-                    <span className="mt-px shrink-0">⚠</span>
+                    <AlertCircle size={14} className="mt-px shrink-0" />
                     <span>{fout}</span>
                   </div>
                 )}

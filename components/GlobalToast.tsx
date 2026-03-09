@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Check } from "lucide-react"
 
 export default function GlobalToast() {
   const [message, setMessage] = useState<string | null>(null)
@@ -32,7 +33,7 @@ export default function GlobalToast() {
       }}
     >
       <div className="bg-foreground text-background px-5 py-2.5 rounded-full text-sm font-medium shadow-xl flex items-center gap-2 whitespace-nowrap">
-        <span className="text-emerald-400">✓</span>
+        <Check size={14} className="text-emerald-400" strokeWidth={2.5} />
         <span>{message}</span>
       </div>
     </div>

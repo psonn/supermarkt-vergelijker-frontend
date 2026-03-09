@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Link, useRouter, usePathname } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
+import { ShoppingCart } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations, useLocale } from "next-intl"
 
@@ -43,8 +44,8 @@ export default function Nav() {
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/90 backdrop-blur-md">
       <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-sm shadow-sm group-hover:scale-105 transition-transform duration-200">
-            🛒
+          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm group-hover:scale-105 transition-transform duration-200">
+            <ShoppingCart size={16} strokeWidth={2.2} />
           </div>
           <span className="hidden sm:inline font-display font-bold text-[15px] tracking-tight">
             Cheaper<span className="text-primary">Supermarkets</span>

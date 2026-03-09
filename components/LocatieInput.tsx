@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { MapPin } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 interface Suggestie {
@@ -208,7 +209,7 @@ export default function LocatieInput({
                       className="flex-1 text-left"
                       onMouseDown={(e) => { e.preventDefault(); kiesOpgeslagen(a) }}
                     >
-                      <span className="font-medium">📍 {a.naam}</span>
+                      <span className="font-medium flex items-center gap-1"><MapPin size={12} className="text-primary shrink-0" />{a.naam}</span>
                       <span className="block text-xs text-muted-foreground truncate">{a.adres}</span>
                     </button>
                     {onVerwijderAdres && (

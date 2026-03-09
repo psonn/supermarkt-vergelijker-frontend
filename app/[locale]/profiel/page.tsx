@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AlertCircle, Check } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations, useLocale } from "next-intl"
 
@@ -34,7 +35,7 @@ function Sectie({
 function Foutbox({ tekst }: { tekst: string }) {
   return (
     <div className="flex items-start gap-2.5 rounded-lg bg-destructive/8 border border-destructive/20 px-3.5 py-2.5 text-sm text-destructive">
-      <span className="mt-px shrink-0">⚠</span>
+      <AlertCircle size={14} className="mt-px shrink-0" />
       <span>{tekst}</span>
     </div>
   )
@@ -43,7 +44,7 @@ function Foutbox({ tekst }: { tekst: string }) {
 function Succesbox({ tekst }: { tekst: string }) {
   return (
     <div className="flex items-start gap-2.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 text-sm text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-800 dark:text-emerald-300">
-      <span className="mt-px shrink-0">✓</span>
+      <Check size={14} className="mt-px shrink-0" strokeWidth={2.5} />
       <span>{tekst}</span>
     </div>
   )

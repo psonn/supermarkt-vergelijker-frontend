@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { ShoppingCart, MapPin } from "lucide-react"
 import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
 import LocatieInput, { type OpgeslagenAdres } from "@/components/LocatieInput"
 import { startVergelijking } from "@/lib/api"
@@ -238,7 +239,7 @@ export default function BoodschappenlijstForm() {
                 onClick={() => setAdresOpslaanOpen(true)}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                {t("adresOpslaan")}
+                <span className="inline-flex items-center gap-1"><MapPin size={11} strokeWidth={2.2} />{t("adresOpslaan")}</span>
               </button>
             )}
           </div>
@@ -340,7 +341,7 @@ export default function BoodschappenlijstForm() {
       {fout && <p className="text-sm text-destructive">{fout}</p>}
 
       <Button type="submit" disabled={laden} className="w-full font-semibold text-base py-5 shadow-sm">
-        {laden ? t("bezig") : t("vergelijk")}
+        {laden ? t("bezig") : <span className="inline-flex items-center gap-2"><ShoppingCart size={18} strokeWidth={2.2} />{t("vergelijk")}</span>}
       </Button>
     </form>
   )

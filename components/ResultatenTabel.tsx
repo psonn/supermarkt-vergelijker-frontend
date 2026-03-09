@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Trophy, TrendingDown, Package, ShoppingCart, Flame, AlertTriangle } from "lucide-react"
 import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie, Product } from "@/lib/api"
 import { useTranslations } from "next-intl"
 
@@ -72,16 +73,16 @@ function PrijsTrend({ product, t }: { product: Product; t: ReturnType<typeof use
 
   if (product.prijs_historisch_laag) {
     badges.push(
-      <span key="low" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200">
-        {t("historischLaag")}
+      <span key="low" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200 inline-flex items-center gap-0.5">
+        <Flame size={9} strokeWidth={2.5} />{t("historischLaag")}
       </span>
     )
   }
 
   if (product.prijs_historisch_hoog) {
     badges.push(
-      <span key="high" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">
-        {t("historischHoog")}
+      <span key="high" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200 inline-flex items-center gap-0.5">
+        <AlertTriangle size={9} strokeWidth={2.5} />{t("historischHoog")}
       </span>
     )
   }
@@ -191,8 +192,8 @@ export default function ResultatenTabel({ resultaat }: Props) {
       {aanbevolen && (
         <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10">
           <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-semibold text-purple-700 dark:text-purple-400">
-              {t("aanbeveling")}
+            <CardTitle className="text-sm font-semibold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
+              <Trophy size={14} strokeWidth={2} />{t("aanbeveling")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -215,8 +216,8 @@ export default function ResultatenTabel({ resultaat }: Props) {
         {goedkoopste && (
           <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-100/40 dark:from-emerald-950/20 dark:to-green-900/10">
             <CardHeader className="pb-1">
-              <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                {t("goedkoopste")}
+              <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                <TrendingDown size={14} strokeWidth={2} />{t("goedkoopste")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -245,8 +246,8 @@ export default function ResultatenTabel({ resultaat }: Props) {
         {besteMatch && besteMatch !== goedkoopste && (
           <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-sky-100/40 dark:from-blue-950/20 dark:to-sky-900/10">
             <CardHeader className="pb-1">
-              <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400">
-                {t("meesteProducten")}
+              <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400 flex items-center gap-1.5">
+                <Package size={14} strokeWidth={2} />{t("meesteProducten")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -418,7 +419,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               : "hover:bg-muted/50 text-muted-foreground"
           }`}
         >
-          {t("perProduct")}
+          <span className="inline-flex items-center gap-1.5"><Package size={14} strokeWidth={2} />{t("perProduct")}</span>
         </button>
         <button
           type="button"
@@ -429,7 +430,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               : "hover:bg-muted/50 text-muted-foreground"
           }`}
         >
-          {t("perWinkel")}
+          <span className="inline-flex items-center gap-1.5"><ShoppingCart size={14} strokeWidth={2} />{t("perWinkel")}</span>
         </button>
       </div>
 
