@@ -18,14 +18,14 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.aisupersaver.nl"),
+  metadataBase: new URL("https://www.cheapersupermarkets.com"),
   title: {
-    default: "SupermarktVergelijker",
-    template: "%s – SupermarktVergelijker",
+    default: "CheaperSupermarkets",
+    template: "%s – CheaperSupermarkets",
   },
   description: "Vergelijk real-time prijzen bij AH, Jumbo, Dirk en meer. Vind de goedkoopste supermarkt bij jou in de buurt.",
   openGraph: {
-    siteName: "SupermarktVergelijker",
+    siteName: "CheaperSupermarkets",
     type: "website",
     locale: "nl_NL",
   },

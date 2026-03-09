@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og"
 
 export const runtime = "edge"
-export const alt = "SupermarktVergelijker — Vergelijk supermarktprijzen"
+export const alt = "CheaperSupermarkets — Vergelijk supermarktprijzen"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -49,7 +49,7 @@ export default function Image() {
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span style={{ fontSize: 52, fontWeight: 800, color: "#111827", lineHeight: 1 }}>
-              Supermarkt<span style={{ color: "#16a34a" }}>Vergelijker</span>
+              Cheaper<span style={{ color: "#16a34a" }}>Supermarkets</span>
             </span>
           </div>
         </div>

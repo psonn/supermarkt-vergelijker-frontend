@@ -18,7 +18,7 @@ export default function Footer() {
                 🛒
               </div>
               <span className="font-display font-bold text-sm tracking-tight">
-                Supermarkt<span className="text-primary">Vergelijker</span>
+                Cheaper<span className="text-primary">Supermarkets</span>
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">{t("tagline")}</p>

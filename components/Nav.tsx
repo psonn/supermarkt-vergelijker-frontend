@@ -47,7 +47,7 @@ export default function Nav() {
             🛒
           </div>
           <span className="hidden sm:inline font-display font-bold text-[15px] tracking-tight">
-            Supermarkt<span className="text-primary">Vergelijker</span>
+            Cheaper<span className="text-primary">Supermarkets</span>
           </span>
           <span className="hidden sm:inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 tracking-wide">
             {t("beta")}

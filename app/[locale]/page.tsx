@@ -9,23 +9,23 @@ export async function generateMetadata(): Promise<Metadata> {
   const isNL = locale === "nl"
   return {
     title: isNL
-      ? "SupermarktVergelijker — Vergelijk supermarktprijzen"
-      : "SupermarktVergelijker — Compare supermarket prices",
+      ? "CheaperSupermarkets — Vergelijk supermarktprijzen"
+      : "CheaperSupermarkets — Compare supermarket prices",
     description: isNL
       ? "Vergelijk real-time prijzen bij Albert Heijn, Jumbo, Dirk, Aldi en meer. Vind de goedkoopste supermarkt bij jou in de buurt."
       : "Compare real-time prices at Albert Heijn, Jumbo, Dirk, Aldi and more. Find the cheapest supermarket near you.",
     openGraph: {
-      title: isNL ? "SupermarktVergelijker" : "SupermarktVergelijker",
+      title: isNL ? "CheaperSupermarkets" : "CheaperSupermarkets",
       description: isNL
         ? "Real-time prijsvergelijking voor Nederlandse supermarkten."
         : "Real-time price comparison for Dutch supermarkets.",
-      url: isNL ? "https://www.aisupersaver.nl" : "https://www.aisupersaver.nl/en",
+      url: isNL ? "https://www.cheapersupermarkets.com" : "https://www.cheapersupermarkets.com/en",
     },
     alternates: {
-      canonical: isNL ? "https://www.aisupersaver.nl" : "https://www.aisupersaver.nl/en",
+      canonical: isNL ? "https://www.cheapersupermarkets.com" : "https://www.cheapersupermarkets.com/en",
       languages: {
-        nl: "https://www.aisupersaver.nl",
-        en: "https://www.aisupersaver.nl/en",
+        nl: "https://www.cheapersupermarkets.com",
+        en: "https://www.cheapersupermarkets.com/en",
       },
     },
   }

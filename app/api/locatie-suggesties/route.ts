@@ -30,7 +30,7 @@ async function zoekViaNominatim(q: string) {
   url.searchParams.set("addressdetails", "1")
 
   const resp = await fetch(url.toString(), {
-    headers: { "User-Agent": "SupermarktVergelijker/1.0" },
+    headers: { "User-Agent": "CheaperSupermarkets/1.0" },
     next: { revalidate: 60 },
   })
   if (!resp.ok) return []

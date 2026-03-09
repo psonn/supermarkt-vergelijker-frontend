@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "SupermarktVergelijker",
+    "brand": "CheaperSupermarkets",
     "beta": "beta",
     "lijsten": "Mijn lijsten",
     "lijstenKort": "Lijsten",
@@ -23,7 +23,7 @@
     "overOns": "Over ons",
     "contact": "Contact",
     "voorwaarden": "Algemene voorwaarden",
-    "copyright": "© {year} SupermarktVergelijker. Alle rechten voorbehouden.",
+    "copyright": "© {year} CheaperSupermarkets. Alle rechten voorbehouden.",
     "disclaimer": "Prijzen zijn indicatief en kunnen afwijken."
   },
   "home": {
@@ -170,10 +170,10 @@
   "overOns": {
     "label": "Over ons",
     "titel": "Slimmer boodschappen doen",
-    "subtitel": "SupermarktVergelijker helpt je in één oogopslag zien waar je het goedkoopst uit bent.",
-    "alinea1": "Boodschappen doen is duur. De ene winkel is goedkoper voor zuivel, de andere voor vlees of huishoudproducten. SupermarktVergelijker haalt real-time prijzen op bij Albert Heijn, Jumbo, Dirk, Aldi, Ekoplaza, Dekamarkt en Spar — zodat jij meteen ziet waar je het meeste bespaart.",
+    "subtitel": "CheaperSupermarkets helpt je in één oogopslag zien waar je het goedkoopst uit bent.",
+    "alinea1": "Boodschappen doen is duur. De ene winkel is goedkoper voor zuivel, de andere voor vlees of huishoudproducten. CheaperSupermarkets haalt real-time prijzen op bij Albert Heijn, Jumbo, Dirk, Aldi, Ekoplaza, Dekamarkt en Spar — zodat jij meteen ziet waar je het meeste bespaart.",
     "alinea2": "We houden ook rekening met je locatie. Niet elke supermarkt is even dichtbij, dus de app weegt prijs én reisafstand af en geeft een concreet advies: welke winkel is de beste balans voor jouw situatie?",
-    "alinea3": "SupermarktVergelijker is een onafhankelijk project — geen betaalde plaatsingen, geen commissies. Gewoon eerlijke prijsvergelijking.",
+    "alinea3": "CheaperSupermarkets is een onafhankelijk project — geen betaalde plaatsingen, geen commissies. Gewoon eerlijke prijsvergelijking.",
     "disclaimer": "Prijzen worden live opgehaald en zijn zo actueel mogelijk, maar kunnen licht afwijken van de prijs in de winkel of webshop.",
     "contactLink": "Neem contact op",
     "contactTekst": "Vragen of opmerkingen?"
@@ -184,7 +184,7 @@
     "subtitel": "Heb je een vraag, foutmelding of suggestie? We horen het graag.",
     "emailTitel": "E-mail",
     "emailTekst": "Stuur een bericht naar",
-    "emailAdres": "info@supermarktvergelijker.nl",
+    "emailAdres": "info@cheapersupermarkets.com",
     "emailReactie": "We reageren doorgaans binnen twee werkdagen.",
     "foutMeldenTitel": "Fout of mismatched product melden",
     "foutMeldenTekst": "Zie je een product dat verkeerd gematcht is of een prijs die niet klopt? Vermeld in je e-mail welk product het betreft, bij welke supermarkt, en wat je verwachtte te zien. Zo kunnen we de matching snel verbeteren.",
@@ -196,13 +196,13 @@
     "titel": "Algemene voorwaarden",
     "versie": "Versie 1.0 — van kracht per 1 januari {jaar}",
     "art1Titel": "1. Definities",
-    "art1Tekst": "SupermarktVergelijker verwijst naar de dienst beschikbaar via deze website. Gebruiker is iedere persoon die de dienst bezoekt of gebruikt. Prijsgegevens zijn de productprijzen die real-time worden opgehaald bij externe supermarktwebsites.",
+    "art1Tekst": "CheaperSupermarkets verwijst naar de dienst beschikbaar via deze website. Gebruiker is iedere persoon die de dienst bezoekt of gebruikt. Prijsgegevens zijn de productprijzen die real-time worden opgehaald bij externe supermarktwebsites.",
     "art2Titel": "2. Gebruik van de dienst",
-    "art2Tekst": "SupermarktVergelijker is een informatieve dienst bedoeld voor persoonlijk gebruik. Het is niet toegestaan de dienst te gebruiken voor commerciële doeleinden, geautomatiseerde dataverzameling of handelingen die de werking van de dienst schaden.",
+    "art2Tekst": "CheaperSupermarkets is een informatieve dienst bedoeld voor persoonlijk gebruik. Het is niet toegestaan de dienst te gebruiken voor commerciële doeleinden, geautomatiseerde dataverzameling of handelingen die de werking van de dienst schaden.",
     "art3Titel": "3. Nauwkeurigheid van prijzen",
     "art3Tekst": "Wij streven naar actuele en correcte prijsinformatie, maar kunnen de nauwkeurigheid niet garanderen. Prijzen worden live opgehaald bij externe partijen en kunnen afwijken van de werkelijke prijs in de winkel of webshop. Aan de getoonde informatie kunnen geen rechten worden ontleend.",
     "art4Titel": "4. Aansprakelijkheid",
-    "art4Tekst": "SupermarktVergelijker is niet aansprakelijk voor schade die voortvloeit uit het gebruik van de dienst, onjuiste prijsinformatie, of tijdelijke onbeschikbaarheid van de dienst. De dienst wordt aangeboden \"zoals hij is\", zonder enige garantie op beschikbaarheid of volledigheid.",
+    "art4Tekst": "CheaperSupermarkets is niet aansprakelijk voor schade die voortvloeit uit het gebruik van de dienst, onjuiste prijsinformatie, of tijdelijke onbeschikbaarheid van de dienst. De dienst wordt aangeboden \"zoals hij is\", zonder enige garantie op beschikbaarheid of volledigheid.",
     "art5Titel": "5. Privacy",
     "art5Tekst": "We verwerken alleen gegevens die nodig zijn voor de werking van de dienst, zoals het e-mailadres bij aanmelden. We verkopen geen persoonlijke gegevens aan derden.",
     "art5Contact": "contactformulier",

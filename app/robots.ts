@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/mijn-lijsten", "/api/", "/auth/"],
     },
-    sitemap: "https://www.aisupersaver.nl/sitemap.xml",
+    sitemap: "https://www.cheapersupermarkets.com/sitemap.xml",
   }
 }

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-const BASE = "https://www.aisupersaver.nl"
+const BASE = "https://www.cheapersupermarkets.com"
 
 const publicPaths = [
   "",

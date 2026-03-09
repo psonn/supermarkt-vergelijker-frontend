@@ -57,7 +57,7 @@ export default function ResetWachtwoordPagina() {
               🛒
             </div>
             <span className="font-display font-bold text-lg tracking-tight">
-              Supermarkt<span className="text-primary">Vergelijker</span>
+              Cheaper<span className="text-primary">Supermarkets</span>
             </span>
           </Link>
         </div>

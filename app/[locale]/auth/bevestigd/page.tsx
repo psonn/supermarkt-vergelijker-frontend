@@ -3,7 +3,7 @@ import { Link } from "@/lib/i18n-navigation"
 import { getTranslations } from "next-intl/server"
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: "Account bevestigd – SupermarktVergelijker" }
+  return { title: "Account bevestigd – CheaperSupermarkets" }
 }
 
 export default async function BevestigdPage() {

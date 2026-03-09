@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     url.searchParams.set("accept-language", "nl")
 
     const resp = await fetch(url.toString(), {
-      headers: { "User-Agent": "SupermarktVergelijker/1.0" },
+      headers: { "User-Agent": "CheaperSupermarkets/1.0" },
     })
     if (!resp.ok) throw new Error("Nominatim fout")
 
