@@ -1,7 +1,6 @@
 "use client"
 
 import { Link } from "@/lib/i18n-navigation"
-import { ShoppingCart } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 export default function Footer() {
@@ -15,9 +14,8 @@ export default function Footer() {
           {/* Branding */}
           <div className="col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
-                <ShoppingCart size={14} strokeWidth={2.2} />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.svg" alt="CheaperSupermarkets logo" className="h-7 w-auto" />
               <span className="font-display font-bold text-sm tracking-tight">
                 Cheaper<span className="text-primary">Supermarkets</span>
               </span>

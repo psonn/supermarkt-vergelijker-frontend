@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ShoppingCart, AlertCircle, Check } from "lucide-react"
+import { AlertCircle, Check } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations } from "next-intl"
 
@@ -95,9 +95,8 @@ function LoginFormulier() {
       <div className="w-full max-w-sm relative animate-fade-up">
         <div className="text-center mb-7">
           <Link href="/" className="inline-flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md group-hover:scale-105 transition-transform duration-200">
-              <ShoppingCart size={20} strokeWidth={2.2} />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="CheaperSupermarkets logo" className="h-10 w-auto group-hover:scale-105 transition-transform duration-200" />
             <span className="font-display font-bold text-lg tracking-tight">
               Cheaper<span className="text-primary">Supermarkets</span>
             </span>
