@@ -190,18 +190,23 @@ export default function ResultatenTabel({ resultaat }: Props) {
     <div className="space-y-6">
       {/* Aanbeveling */}
       {aanbevolen && (
-        <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/20 dark:to-purple-900/10">
+        <Card className="border-emerald-300 bg-gradient-to-br from-emerald-50 to-green-100/50 dark:from-emerald-950/20 dark:to-green-900/10">
           <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-semibold text-purple-700 dark:text-purple-400 flex items-center gap-1.5">
+            <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
               <Trophy size={14} strokeWidth={2} />{t("aanbeveling")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
               <SupermarktLogo naam={aanbevolen} size="md" />
-              <div>
+              <div className="flex-1">
                 <p className="text-xl font-bold">{aanbevolen}</p>
                 {locatieMap[aanbevolen] && <AdresTekst loc={locatieMap[aanbevolen]} />}
+              </div>
+              <div className="flex flex-col items-center gap-0.5 shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "52px", width: "auto" }} />
+                <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide leading-none">beste keuze</span>
               </div>
             </div>
             {aanbevelingReden && (
@@ -227,11 +232,13 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   <p className="text-xl font-bold">{goedkoopste}</p>
                   {locatieMap[goedkoopste] && <AdresTekst loc={locatieMap[goedkoopste]} />}
                 </div>
-                <div className="flex flex-col items-center gap-0.5 shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo-transparant.svg" alt="" aria-hidden width={36} height={36} className="opacity-90" />
-                  <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide leading-none">beste keuze</span>
-                </div>
+                {!aanbevolen && (
+                  <div className="flex flex-col items-center gap-0.5 shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "52px", width: "auto" }} />
+                    <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide leading-none">beste keuze</span>
+                  </div>
+                )}
               </div>
               <p className="text-sm text-muted-foreground">
                 <span className="font-display font-bold text-lg nums text-emerald-700 dark:text-emerald-400">

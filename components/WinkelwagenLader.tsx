@@ -27,10 +27,10 @@ export default function WinkelwagenLader() {
         </div>
 
         {/* Logo boven het spoor */}
-        <div className="absolute wagen-container" style={{ top: "-38px" }}>
+        <div className="absolute wagen-container" style={{ top: "-76px" }}>
           <div className="wagen-stuitert">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-transparant.svg" alt="" aria-hidden width={56} height={44} />
+            <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "68px", width: "auto" }} />
           </div>
         </div>
       </div>
