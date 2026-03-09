@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { ShoppingCart, MapPin } from "lucide-react"
+import { ShoppingCart, MapPin, Car, Bike, PersonStanding } from "lucide-react"
 import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
 import LocatieInput, { type OpgeslagenAdres } from "@/components/LocatieInput"
 import { startVergelijking } from "@/lib/api"
@@ -21,10 +21,10 @@ export default function BoodschappenlijstForm() {
   const t = useTranslations("form")
   const locale = useLocale()
 
-  const VERVOER_LABELS: Record<string, { label: string; icon: string }> = {
-    driving: { label: t("auto"), icon: "🚗" },
-    cycling: { label: t("fiets"), icon: "🚲" },
-    walking: { label: t("lopen"), icon: "🚶" },
+  const VERVOER_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
+    driving: { label: t("auto"), icon: <Car size={16} strokeWidth={2} /> },
+    cycling: { label: t("fiets"), icon: <Bike size={16} strokeWidth={2} /> },
+    walking: { label: t("lopen"), icon: <PersonStanding size={16} strokeWidth={2} /> },
   }
 
   const [chips, setChips] = useState<ChipItem[]>([])
@@ -321,7 +321,7 @@ export default function BoodschappenlijstForm() {
                         onClick={() => setVervoer(v)}
                         disabled={laden}
                         title={VERVOER_LABELS[v].label}
-                        className={`flex-1 py-2 rounded-md text-base border transition-colors ${
+                        className={`flex-1 py-2 rounded-md border transition-colors flex items-center justify-center ${
                           vervoer === v
                             ? "bg-primary text-primary-foreground border-primary"
                             : "bg-background border-input hover:bg-muted"

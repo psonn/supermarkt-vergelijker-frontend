@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Trophy, TrendingDown, Package, ShoppingCart, Flame, AlertTriangle } from "lucide-react"
+import { Trophy, TrendingDown, Package, ShoppingCart, Flame, AlertTriangle, Lightbulb } from "lucide-react"
 import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie, Product } from "@/lib/api"
 import { useTranslations } from "next-intl"
 
@@ -278,7 +278,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
       {/* Besparingsbanner */}
       {besparing != null && besparing > 0.10 && (
         <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-3">
-          <span className="text-xl">💡</span>
+          <Lightbulb size={18} className="text-emerald-600 dark:text-emerald-400 shrink-0" strokeWidth={2} />
           <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
             {t("besparing", { bedrag: besparing.toFixed(2) })}
           </p>

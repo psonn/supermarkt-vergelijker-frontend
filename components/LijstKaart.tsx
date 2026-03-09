@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import PrijsAlertFormulier from "@/components/PrijsAlertFormulier"
@@ -63,11 +64,11 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
             type="button"
             onClick={() => setAlertOpen((v) => !v)}
             title={alert ? "Prijsalert actief — klik om te bewerken" : "Prijsalert instellen"}
-            className={`mt-0.5 text-lg leading-none transition-opacity ${
-              alert ? "opacity-100" : "opacity-40 hover:opacity-70"
+            className={`mt-0.5 transition-opacity ${
+              alert ? "opacity-100 text-primary" : "opacity-40 hover:opacity-70"
             }`}
           >
-            🔔
+            <Bell size={18} strokeWidth={2} />
           </button>
         </div>
       </CardHeader>
