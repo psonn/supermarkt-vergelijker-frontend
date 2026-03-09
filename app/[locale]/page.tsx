@@ -59,7 +59,7 @@ export default async function Home() {
           </div>
 
           <h1
-            className="font-display text-5xl font-extrabold tracking-tight leading-[1.08] animate-fade-up"
+            className="font-display text-[2.1rem] sm:text-5xl font-extrabold tracking-tight leading-[1.08] animate-fade-up"
             style={{ animationDelay: "70ms" }}
           >
             <span
