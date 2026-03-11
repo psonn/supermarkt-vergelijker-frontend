@@ -45,21 +45,47 @@ export default function BoodschappenlijstForm() {
 
   useEffect(() => {
     const param = searchParams.get("producten")
+    let gevuldeChips: ChipItem[] = []
     if (param) {
       const namen = param.split("\n").map((r) => r.trim()).filter(Boolean)
       const freq: Record<string, number> = {}
       for (const naam of namen) freq[naam] = (freq[naam] ?? 0) + 1
-      setChips(Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal })))
+      gevuldeChips = Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal }))
+      setChips(gevuldeChips)
     }
     const locatieParam = searchParams.get("locatie")
+    let gevuldeLocatie = ""
     if (locatieParam) {
+      gevuldeLocatie = locatieParam
       setLocatie(locatieParam)
     } else {
       // Auto-fill met opgeslagen GPS-locatie
       try {
         const opgeslagen = localStorage.getItem("sv_gps_locatie")
-        if (opgeslagen) setLocatie(opgeslagen)
+        if (opgeslagen) { gevuldeLocatie = opgeslagen; setLocatie(opgeslagen) }
       } catch { /* localStorage niet beschikbaar */ }
+    }
+
+    // Autostart: direct vergelijking starten vanuit e-maillink
+    if (searchParams.get("autostart") === "1" && gevuldeChips.length > 0) {
+      const producten = gevuldeChips.flatMap((c) => Array(c.aantal).fill(c.naam))
+      setLaden(true)
+      import("@/lib/api").then(({ startVergelijking }) =>
+        startVergelijking({
+          producten,
+          locatie: gevuldeLocatie.trim() || undefined,
+          lang: locale,
+        }).then((job) => {
+          try { sessionStorage.setItem("sv_supermarkten", JSON.stringify(ALLE_SUPERMARKTEN)) } catch { /* negeer */ }
+          const url = gevuldeLocatie.trim()
+            ? `/resultaten/${job.job_id}?locatie=${encodeURIComponent(gevuldeLocatie.trim())}`
+            : `/resultaten/${job.job_id}`
+          router.push(url as "/")
+        }).catch((err: unknown) => {
+          setFout(err instanceof Error ? err.message : "Er ging iets mis.")
+          setLaden(false)
+        })
+      )
     }
   }, [])
 
