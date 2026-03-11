@@ -3,8 +3,9 @@ import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/server"
 import ResultatenTabel from "@/components/ResultatenTabel"
+import ZoekOpnieuwKnop from "@/components/ZoekOpnieuwKnop"
 import { getLocale } from "next-intl/server"
-import { ChevronLeft, Play, RefreshCw } from "lucide-react"
+import { ChevronLeft, Play } from "lucide-react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = { robots: { index: false } }
@@ -36,13 +37,16 @@ export default async function LijstResultatenPagina({ params }: Props) {
     return null
   }
 
-  // Bouw de "Zoek opnieuw" URL
-  const params2 = new URLSearchParams()
-  params2.set("producten", (lijst.producten as string[]).join("\n"))
-  params2.set("autostart", "1")
-  params2.set("update_lijst_id", lijst.id)
-  if (lijst.locatie) params2.set("locatie", lijst.locatie)
-  const zoekOpnieuwUrl = `/?${params2.toString()}`
+  // Haal gebruikte supermarkten op uit het opgeslagen resultaat
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const resultaat = lijst.laatste_resultaat as any
+  const supermarkten: string[] | undefined = resultaat
+    ? Object.keys(
+        "vergelijking" in resultaat
+          ? resultaat.vergelijking.totaal_per_supermarkt
+          : resultaat.totaal_per_supermarkt
+      )
+    : undefined
 
   const datumLabel = lijst.laatste_vergelijking
     ? new Date(lijst.laatste_vergelijking).toLocaleString("nl-NL", {
@@ -53,6 +57,14 @@ export default async function LijstResultatenPagina({ params }: Props) {
         minute: "2-digit",
       })
     : null
+
+  // Fallback "Vergelijk nu" URL voor lege staat (geen cache)
+  const params2 = new URLSearchParams()
+  params2.set("producten", (lijst.producten as string[]).join("\n"))
+  params2.set("autostart", "1")
+  params2.set("update_lijst_id", lijst.id)
+  if (lijst.locatie) params2.set("locatie", lijst.locatie)
+  const vergelijkUrl = `/?${params2.toString()}`
 
   return (
     <main className="w-full max-w-3xl mx-auto px-3 sm:px-6 py-6 sm:py-12">
@@ -67,12 +79,12 @@ export default async function LijstResultatenPagina({ params }: Props) {
           </Link>
           <h1 className="text-lg sm:text-xl font-bold truncate">{lijst.naam}</h1>
         </div>
-        <Link href={zoekOpnieuwUrl}>
-          <Button size="sm" className="shrink-0 gap-1.5">
-            <RefreshCw size={13} strokeWidth={2.5} />
-            Zoek opnieuw
-          </Button>
-        </Link>
+        <ZoekOpnieuwKnop
+          producten={lijst.producten as string[]}
+          locatie={lijst.locatie}
+          supermarkten={supermarkten}
+          updateLijstId={lijst.id}
+        />
       </div>
 
       {/* Timestamp */}
@@ -89,7 +101,7 @@ export default async function LijstResultatenPagina({ params }: Props) {
       ) : (
         <div className="text-center py-16 text-muted-foreground space-y-4">
           <p>Er zijn nog geen opgeslagen resultaten voor deze lijst.</p>
-          <Link href={zoekOpnieuwUrl}>
+          <Link href={vergelijkUrl}>
             <Button className="gap-2">
               <Play size={13} strokeWidth={2.5} fill="currentColor" />
               Vergelijk nu
