@@ -199,9 +199,15 @@ export default function ResultatenTabel({ resultaat }: Props) {
           <CardContent>
             <div className="flex items-center gap-3">
               <SupermarktLogo naam={aanbevolen} size="md" />
-              <div className="flex-1">
-                <p className="text-xl font-bold">{aanbevolen}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xl font-bold leading-tight">{aanbevolen}</p>
                 {locatieMap[aanbevolen] && <AdresTekst loc={locatieMap[aanbevolen]} />}
+                <p className="font-display font-bold text-3xl nums text-emerald-700 dark:text-emerald-400 mt-1 leading-none">
+                  €{verg.totaal_per_supermarkt[aanbevolen].toFixed(2)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {t("dekking", { gevonden: verg.dekking_per_supermarkt[aanbevolen] ?? "?", totaal: aantalProducten })}
+                </p>
               </div>
               <div className="flex flex-col items-center gap-1 shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -210,7 +216,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               </div>
             </div>
             {aanbevelingReden && (
-              <p className="text-sm text-muted-foreground mt-2">{aanbevelingReden}</p>
+              <p className="text-sm text-muted-foreground mt-3">{aanbevelingReden}</p>
             )}
           </CardContent>
         </Card>
