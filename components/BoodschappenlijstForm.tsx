@@ -174,6 +174,7 @@ export default function BoodschappenlijstForm() {
         supermarkten: alleGeselecteerd ? undefined : supermarkten,
         lang: locale,
       })
+      try { sessionStorage.setItem("sv_supermarkten", JSON.stringify(supermarkten)) } catch { /* negeer */ }
       const resultatenUrl = locatie.trim()
         ? `/resultaten/${job.job_id}?locatie=${encodeURIComponent(locatie.trim())}`
         : `/resultaten/${job.job_id}`

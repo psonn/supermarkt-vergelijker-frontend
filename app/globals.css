@@ -172,8 +172,8 @@
 /* ── Winkelwagen laadanimatie ─────────────────────────────────────────────── */
 @keyframes wagen-rijdt {
   0%   { left: 0; }
-  46%  { left: calc(100% - 56px); }
-  54%  { left: calc(100% - 56px); }
+  46%  { left: calc(100% - 80px); }
+  54%  { left: calc(100% - 80px); }
   100% { left: 0; }
 }
 
@@ -196,10 +196,13 @@
 
 .wagen-container {
   animation: wagen-rijdt 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: left;
 }
 
 .wagen-stuitert {
   animation: wagen-stuitert 0.55s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .track-vult {
