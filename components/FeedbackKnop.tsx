@@ -51,9 +51,9 @@ export default function FeedbackKnop({ productZoekterm, productNaam, supermarkt 
         type="button"
         onClick={() => setOpen((v) => !v)}
         title="Verkeerd product melden"
-        className="text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+        className="text-muted-foreground/60 hover:text-destructive transition-colors"
       >
-        <Flag size={11} strokeWidth={2} />
+        <Flag size={12} strokeWidth={2} />
       </button>
 
       {open && (
