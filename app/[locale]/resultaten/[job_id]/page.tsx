@@ -120,8 +120,8 @@ function ResultatenInhoud() {
         <h1 className="text-xl sm:text-2xl font-bold">{t("titel")}</h1>
         <div className="flex gap-2">
           {updateLijstId && (
-            <Link href={`/mijn-lijsten/${updateLijstId}`}>
-              <Button variant="ghost" size="sm">← Mijn lijst</Button>
+            <Link href="/mijn-lijsten">
+              <Button variant="ghost" size="sm">← Mijn lijsten</Button>
             </Link>
           )}
           <Link href="/">
@@ -152,7 +152,7 @@ function ResultatenInhoud() {
       {opgeslagen && (
         <p className="mt-4 text-sm text-green-600">
           <Link
-            href={opgeslagenLijstId ? `/mijn-lijsten/${opgeslagenLijstId}` : "/mijn-lijsten"}
+            href={opgeslagenLijstId && !updateLijstId ? `/mijn-lijsten/${opgeslagenLijstId}` : "/mijn-lijsten"}
             className="underline"
           >
             {t("lijstOpgeslagen")}
