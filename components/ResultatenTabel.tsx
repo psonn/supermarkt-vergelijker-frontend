@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trophy, TrendingDown, Package, ShoppingCart, Flame, AlertTriangle, Lightbulb } from "lucide-react"
 import type { VergelijkingsResultaat, LocatieResultaat, SupermarktLocatie, Product } from "@/lib/api"
 import { useTranslations } from "next-intl"
+import FeedbackKnop from "@/components/FeedbackKnop"
 
 function isLocatieResultaat(r: unknown): r is LocatieResultaat {
   return typeof r === "object" && r !== null && "vergelijking" in r
@@ -482,13 +483,22 @@ export default function ResultatenTabel({ resultaat }: Props) {
                       ) : (
                         <div className="flex items-start gap-2">
                           <div className="flex-1 min-w-0">
-                            {product.url ? (
-                              <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary transition-colors break-words hyphens-auto text-xs sm:text-sm leading-snug">
-                                {product.naam}
-                              </a>
-                            ) : (
-                              <span className="break-words hyphens-auto text-xs sm:text-sm leading-snug">{product.naam}</span>
-                            )}
+                            <span className="inline-flex items-start gap-1.5 flex-wrap">
+                              {product.url ? (
+                                <a href={product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary transition-colors break-words hyphens-auto text-xs sm:text-sm leading-snug">
+                                  {product.naam}
+                                </a>
+                              ) : (
+                                <span className="break-words hyphens-auto text-xs sm:text-sm leading-snug">{product.naam}</span>
+                              )}
+                              <span className="mt-0.5">
+                                <FeedbackKnop
+                                  productZoekterm={gematched.zoekopdracht}
+                                  productNaam={product.naam}
+                                  supermarkt={sm}
+                                />
+                              </span>
+                            </span>
                             <div className="flex items-center gap-2 mt-0.5">
                               <PrijsTrend product={product} t={t} />
                               <PrijsHistorieTip product={product} t={t} />
