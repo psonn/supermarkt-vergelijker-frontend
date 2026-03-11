@@ -17,7 +17,7 @@ interface Lijst {
   naam: string
   producten: string[]
   aangemaakt_op: string
-  laatste_vergelijking?: string
+  laatste_vergelijking?: string | null
   locatie?: string | null
 }
 

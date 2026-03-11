@@ -16,7 +16,7 @@ interface Lijst {
   locatie?: string | null
   aangemaakt_op: string
   laatste_vergelijking?: string | null
-  heeft_resultaat: boolean
+  heeft_resultaat?: boolean
 }
 
 export default async function MijnLijstenPagina() {
