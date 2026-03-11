@@ -16,7 +16,7 @@ interface Lijst {
   locatie?: string | null
   aangemaakt_op: string
   laatste_vergelijking?: string | null
-  heeft_resultaat?: boolean
+  laatste_resultaat?: Record<string, unknown> | null
 }
 
 export default async function MijnLijstenPagina() {
@@ -34,7 +34,7 @@ export default async function MijnLijstenPagina() {
   const [{ data: lijsten }, { data: alerts }] = await Promise.all([
     supabase
       .from("lijsten")
-      .select("id, naam, producten, locatie, aangemaakt_op, laatste_vergelijking")
+      .select("id, naam, producten, locatie, aangemaakt_op, laatste_vergelijking, laatste_resultaat")
       .eq("user_id", user.id)
       .order("aangemaakt_op", { ascending: false }),
     supabase
@@ -66,15 +66,27 @@ export default async function MijnLijstenPagina() {
         </div>
       ) : (
         <div className="space-y-4">
-          {(lijsten as Lijst[]).map((lijst) => (
+          {(lijsten as Lijst[]).map((lijst) => {
+            // Extraheer gebruikte supermarkten uit opgeslagen resultaat
+            const r = lijst.laatste_resultaat as Record<string, unknown> | null | undefined
+            const supermarkten: string[] | undefined = r
+              ? Object.keys(
+                  (("vergelijking" in r
+                    ? (r.vergelijking as Record<string, unknown>)
+                    : r).totaal_per_supermarkt as Record<string, unknown>) ?? {}
+                )
+              : undefined
+            return (
             <LijstKaart
               key={lijst.id}
               lijst={lijst}
               gebruikerEmail={user.email ?? ""}
               bestaandeAlert={alertsPerLijst[lijst.id] ?? null}
               heeft_resultaat={!!lijst.laatste_vergelijking}
+              supermarkten={supermarkten}
             />
-          ))}
+            )
+          })}
         </div>
       )}
     </main>

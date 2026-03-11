@@ -30,6 +30,10 @@ export default function ZoekOpnieuwKnop({ producten, locatie, supermarkten, upda
         supermarkten: supermarkten?.length ? supermarkten : undefined,
         lang: locale,
       })
+      try {
+        if (supermarkten?.length) sessionStorage.setItem("sv_supermarkten", JSON.stringify(supermarkten))
+        else sessionStorage.removeItem("sv_supermarkten")
+      } catch { /* negeer */ }
       const url = `/resultaten/${job.job_id}?update_lijst_id=${updateLijstId}${locatie?.trim() ? `&locatie=${encodeURIComponent(locatie.trim())}` : ""}`
       router.push(url as "/")
     } catch (err: unknown) {

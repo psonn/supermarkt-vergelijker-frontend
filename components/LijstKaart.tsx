@@ -3,6 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useLocale } from "next-intl"
+import { startVergelijking } from "@/lib/api"
 import { Bell, Pencil, Trash2, Check, X, Play, BarChart2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,6 +28,7 @@ interface Props {
   gebruikerEmail: string
   bestaandeAlert: PrijsAlert | null
   heeft_resultaat?: boolean
+  supermarkten?: string[]
 }
 
 function groepeerProducten(producten: string[]) {
@@ -38,8 +41,9 @@ function chipsNaarProducten(chips: ChipItem[]): string[] {
   return chips.flatMap((c) => Array(c.aantal).fill(c.naam))
 }
 
-export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: initieleAlert, heeft_resultaat = false }: Props) {
+export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: initieleAlert, heeft_resultaat = false, supermarkten }: Props) {
   const router = useRouter()
+  const locale = useLocale()
   const [alertOpen, setAlertOpen] = useState(false)
   const [alert, setAlert] = useState<PrijsAlert | null>(initieleAlert)
 
@@ -63,10 +67,30 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
   const [fout, setFout] = useState<string | null>(null)
 
   const gegroepeerd = groepeerProducten(producten)
-  const params = new URLSearchParams()
-  params.set("producten", producten.join("\n"))
-  params.set("autostart", "1")
-  if (lijst.locatie) params.set("locatie", lijst.locatie)
+  const [vergelijkBezig, setVergelijkBezig] = useState(false)
+
+  async function startVergelijkNu() {
+    setVergelijkBezig(true)
+    try {
+      const job = await startVergelijking({
+        producten,
+        locatie: lijst.locatie?.trim() || undefined,
+        supermarkten: supermarkten?.length ? supermarkten : undefined,
+        lang: locale,
+      })
+      try {
+        if (supermarkten?.length) sessionStorage.setItem("sv_supermarkten", JSON.stringify(supermarkten))
+        else sessionStorage.removeItem("sv_supermarkten")
+      } catch { /* negeer */ }
+      const url = heeft_resultaat
+        ? `/resultaten/${job.job_id}?update_lijst_id=${lijst.id}${lijst.locatie ? `&locatie=${encodeURIComponent(lijst.locatie)}` : ""}`
+        : `/resultaten/${job.job_id}${lijst.locatie ? `?locatie=${encodeURIComponent(lijst.locatie)}` : ""}`
+      router.push(url)
+    } catch {
+      setFout("Vergelijking starten mislukt")
+      setVergelijkBezig(false)
+    }
+  }
 
   async function slaHernoemingOp() {
     if (!nieuweNaam.trim() || nieuweNaam.trim() === naam) { setHernoemen(false); return }
@@ -204,12 +228,10 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                 </Button>
               </Link>
             )}
-            <Link href={`/?${params}`}>
-              <Button size="sm" className="gap-1.5">
-                <Play size={12} strokeWidth={2.5} fill="currentColor" />
-                Vergelijk nu
-              </Button>
-            </Link>
+            <Button size="sm" className="gap-1.5" onClick={startVergelijkNu} disabled={vergelijkBezig || bezig}>
+              <Play size={12} strokeWidth={2.5} fill="currentColor" />
+              {vergelijkBezig ? "Bezig…" : "Vergelijk nu"}
+            </Button>
             <Button
               size="sm"
               variant="outline"
