@@ -19,12 +19,14 @@ function ResultatenInhoud() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const locatie = searchParams.get("locatie") ?? ""
+  const updateLijstId = searchParams.get("update_lijst_id") ?? null
   const t = useTranslations("resultatenpagina")
 
   const [job, setJob] = useState<JobResponse | null>(null)
   const [fout, setFout] = useState<string | null>(null)
   const [lijstNaam, setLijstNaam] = useState("Mijn lijst")
   const [opgeslagen, setOpgeslagen] = useState(false)
+  const [opgeslagenLijstId, setOpgeslagenLijstId] = useState<string | null>(null)
   const [gebruiker, setGebruiker] = useState<{ id: string } | null>(null)
 
   useEffect(() => {
@@ -56,6 +58,19 @@ function ResultatenInhoud() {
     return () => { actief = false }
   }, [job_id, t])
 
+  // Auto-update bestaande lijst zodra resultaten binnen zijn
+  useEffect(() => {
+    if (!updateLijstId || !job?.resultaat || job.status !== "klaar") return
+    let supabase: ReturnType<typeof createClient>
+    try { supabase = createClient() } catch { return }
+    supabase.from("lijsten").update({
+      laatste_resultaat: job.resultaat,
+      laatste_vergelijking: new Date().toISOString(),
+    }).eq("id", updateLijstId).then(({ error }) => {
+      if (!error) { setOpgeslagen(true); setOpgeslagenLijstId(updateLijstId) }
+    })
+  }, [job?.status, updateLijstId]) // eslint-disable-line react-hooks/exhaustive-deps
+
   async function slaOp() {
     if (!job?.resultaat || !gebruiker) return
     let supabase: ReturnType<typeof createClient>
@@ -65,16 +80,16 @@ function ResultatenInhoud() {
       ? job.resultaat.vergelijking.producten.map((p) => p.zoekopdracht)
       : job.resultaat.producten.map((p) => p.zoekopdracht)
 
-    const { error } = await supabase.from("lijsten").insert({
+    const { error, data } = await supabase.from("lijsten").insert({
       user_id: gebruiker.id,
       naam: lijstNaam,
       producten,
       locatie: locatie || null,
       laatste_resultaat: job.resultaat,
       laatste_vergelijking: new Date().toISOString(),
-    })
+    }).select("id").single()
 
-    if (!error) setOpgeslagen(true)
+    if (!error && data) { setOpgeslagen(true); setOpgeslagenLijstId(data.id) }
   }
 
   if (fout) {
@@ -103,14 +118,21 @@ function ResultatenInhoud() {
     <main className="w-full max-w-3xl mx-auto px-3 sm:px-6 py-6 sm:py-12">
       <div className="flex items-center justify-between mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold">{t("titel")}</h1>
-        <Link href="/">
-          <Button variant="outline" size="sm">{t("nieuweVergelijking")}</Button>
-        </Link>
+        <div className="flex gap-2">
+          {updateLijstId && (
+            <Link href={`/mijn-lijsten/${updateLijstId}`}>
+              <Button variant="ghost" size="sm">← Mijn lijst</Button>
+            </Link>
+          )}
+          <Link href="/">
+            <Button variant="outline" size="sm">{t("nieuweVergelijking")}</Button>
+          </Link>
+        </div>
       </div>
 
       {job.resultaat && <ResultatenTabel resultaat={job.resultaat} />}
 
-      {gebruiker && job.resultaat && !opgeslagen && (
+      {gebruiker && job.resultaat && !opgeslagen && !updateLijstId && (
         <div className="mt-8 rounded-lg border p-4 space-y-3">
           <p className="font-medium text-sm">{t("lijstOpslaan")}</p>
           {locatie && (
@@ -129,7 +151,12 @@ function ResultatenInhoud() {
       )}
       {opgeslagen && (
         <p className="mt-4 text-sm text-green-600">
-          <Link href="/mijn-lijsten" className="underline">{t("lijstOpgeslagen")}</Link>
+          <Link
+            href={opgeslagenLijstId ? `/mijn-lijsten/${opgeslagenLijstId}` : "/mijn-lijsten"}
+            className="underline"
+          >
+            {t("lijstOpgeslagen")}
+          </Link>
         </p>
       )}
       {!gebruiker && job.resultaat && (

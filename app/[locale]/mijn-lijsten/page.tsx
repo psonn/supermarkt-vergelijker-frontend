@@ -15,7 +15,8 @@ interface Lijst {
   producten: string[]
   locatie?: string | null
   aangemaakt_op: string
-  laatste_vergelijking?: string
+  laatste_vergelijking?: string | null
+  heeft_resultaat: boolean
 }
 
 export default async function MijnLijstenPagina() {
@@ -71,6 +72,7 @@ export default async function MijnLijstenPagina() {
               lijst={lijst}
               gebruikerEmail={user.email ?? ""}
               bestaandeAlert={alertsPerLijst[lijst.id] ?? null}
+              heeft_resultaat={!!lijst.laatste_vergelijking}
             />
           ))}
         </div>

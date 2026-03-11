@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Bell, Pencil, Trash2, Check, X, Play } from "lucide-react"
+import { Bell, Pencil, Trash2, Check, X, Play, BarChart2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -25,6 +25,7 @@ interface Props {
   lijst: Lijst
   gebruikerEmail: string
   bestaandeAlert: PrijsAlert | null
+  heeft_resultaat?: boolean
 }
 
 function groepeerProducten(producten: string[]) {
@@ -37,7 +38,7 @@ function chipsNaarProducten(chips: ChipItem[]): string[] {
   return chips.flatMap((c) => Array(c.aantal).fill(c.naam))
 }
 
-export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: initieleAlert }: Props) {
+export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: initieleAlert, heeft_resultaat = false }: Props) {
   const router = useRouter()
   const [alertOpen, setAlertOpen] = useState(false)
   const [alert, setAlert] = useState<PrijsAlert | null>(initieleAlert)
@@ -195,6 +196,14 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
         {/* Actieknoppen */}
         {!bewerken && (
           <div className="flex flex-wrap items-center gap-2">
+            {heeft_resultaat && (
+              <Link href={`/mijn-lijsten/${lijst.id}`}>
+                <Button size="sm" variant="outline" className="gap-1.5">
+                  <BarChart2 size={13} strokeWidth={2} />
+                  Resultaten
+                </Button>
+              </Link>
+            )}
             <Link href={`/?${params}`}>
               <Button size="sm" className="gap-1.5">
                 <Play size={12} strokeWidth={2.5} fill="currentColor" />
