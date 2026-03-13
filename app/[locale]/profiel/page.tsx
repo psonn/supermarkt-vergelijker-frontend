@@ -8,6 +8,7 @@ import { AlertCircle, Check, Car, Bike, PersonStanding, MapPin, Trash2, Plus, Pe
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations, useLocale } from "next-intl"
 import { laadVoorkeuren, slaVoorkeurenOp, type Voorkeuren } from "@/lib/voorkeuren"
+import LocatieInput from "@/components/LocatieInput"
 
 const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 const STRAAL_OPTIES = [1, 2, 5, 10, 25]
@@ -350,13 +351,10 @@ export default function ProfielPagina() {
                       className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                       autoFocus
                     />
-                    <input
-                      type="text"
-                      value={bewerkAdres}
-                      onChange={(e) => setBewerkAdres(e.target.value)}
-                      placeholder="Adres"
-                      onKeyDown={(e) => { if (e.key === "Enter") slaAdresBewerkingOp() }}
-                      className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    <LocatieInput
+                      waarde={bewerkAdres}
+                      onChange={setBewerkAdres}
+                      disabled={adresLaden}
                     />
                     <div className="flex gap-2">
                       <Button size="sm" onClick={slaAdresBewerkingOp} disabled={adresLaden || !bewerkNaam.trim() || !bewerkAdres.trim()}>
@@ -405,13 +403,10 @@ export default function ProfielPagina() {
                   className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   autoFocus
                 />
-                <input
-                  type="text"
-                  value={nieuwAdresAdres}
-                  onChange={(e) => setNieuwAdresAdres(e.target.value)}
-                  placeholder="Adres (bijv. Kalverstraat 1, Amsterdam)"
-                  onKeyDown={(e) => { if (e.key === "Enter") voegAdresToe() }}
-                  className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                <LocatieInput
+                  waarde={nieuwAdresAdres}
+                  onChange={setNieuwAdresAdres}
+                  disabled={adresLaden}
                 />
                 <div className="flex gap-2">
                   <Button size="sm" onClick={voegAdresToe} disabled={adresLaden || !nieuwAdresNaam.trim() || !nieuwAdresAdres.trim()}>
