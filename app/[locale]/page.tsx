@@ -108,7 +108,7 @@ export default async function Home() {
           className="mt-8 flex items-center justify-center gap-3.5 flex-wrap animate-fade-up"
           style={{ animationDelay: "280ms" }}
         >
-          {["ah", "jumbo", "dirk", "aldi", "spar", "dekamarkt", "ekoplaza"].map((s) => (
+          {["ah", "jumbo", "dirk", "aldi", "spar", "dekamarkt", "ekoplaza", "vomar"].map((s) => (
             <img
               key={s}
               src={`/logos/${s}.svg`}

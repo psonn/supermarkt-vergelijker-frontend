@@ -20,6 +20,7 @@ const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; l
   "Ekoplaza":     { bg: "#3D8127", fg: "#fff", kort: "EK", logo: "/logos/ekoplaza.svg" },
   "Dekamarkt":    { bg: "#E8511E", fg: "#fff", kort: "DM", logo: "/logos/dekamarkt.svg" },
   "Spar":         { bg: "#007B3E", fg: "#fff", kort: "SP", logo: "/logos/spar.svg" },
+  "Vomar":        { bg: "#00387A", fg: "#fff", kort: "VM", logo: "/logos/vomar.svg" },
 }
 
 function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md" }) {

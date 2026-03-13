@@ -6,7 +6,7 @@ import { useRouter } from "@/lib/i18n-navigation"
 import { startVergelijking } from "@/lib/api"
 import { useLocale } from "next-intl"
 
-const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
+const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar", "Vomar"]
 
 export default function AutostartClient() {
   const searchParams = useSearchParams()
