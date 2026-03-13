@@ -7,6 +7,7 @@ import ZoekOpnieuwKnop from "@/components/ZoekOpnieuwKnop"
 import { getLocale } from "next-intl/server"
 import { ChevronLeft, Play } from "lucide-react"
 import type { Metadata } from "next"
+import TijdLabel from "@/components/TijdLabel"
 
 export const metadata: Metadata = { robots: { index: false } }
 
@@ -48,23 +49,13 @@ export default async function LijstResultatenPagina({ params }: Props) {
       )
     : undefined
 
-  const datumLabel = lijst.laatste_vergelijking
-    ? new Date(lijst.laatste_vergelijking).toLocaleString("nl-NL", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : null
-
   // Fallback "Vergelijk nu" URL voor lege staat (geen cache)
   const params2 = new URLSearchParams()
   params2.set("producten", (lijst.producten as string[]).join("\n"))
-  params2.set("autostart", "1")
   params2.set("update_lijst_id", lijst.id)
   if (lijst.locatie) params2.set("locatie", lijst.locatie)
-  const vergelijkUrl = `/?${params2.toString()}`
+  if (supermarkten) params2.set("supermarkten", supermarkten.join(","))
+  const vergelijkUrl = `/autostart?${params2.toString()}`
 
   return (
     <main className="w-full max-w-3xl mx-auto px-3 sm:px-6 py-6 sm:py-12">
@@ -88,9 +79,9 @@ export default async function LijstResultatenPagina({ params }: Props) {
       </div>
 
       {/* Timestamp */}
-      {datumLabel && (
+      {lijst.laatste_vergelijking && (
         <p className="text-sm text-muted-foreground mb-6">
-          Laatste vergelijking: {datumLabel}
+          Laatste vergelijking: <TijdLabel iso={lijst.laatste_vergelijking} />
         </p>
       )}
 
