@@ -82,7 +82,8 @@ export default async function Home() {
         </div>
 
         <div className="animate-fade-up" style={{ animationDelay: "190ms" }}>
-          <Card className="shadow-xl border-border/50 overflow-hidden">
+          <Card className="shadow-xl border-border/50">
+            <div className="overflow-hidden rounded-t-xl">
             <div
               className="h-[3px]"
               style={{
@@ -90,6 +91,7 @@ export default async function Home() {
                   "linear-gradient(90deg, oklch(0.50 0.19 152), oklch(0.62 0.17 185), oklch(0.72 0.20 50))",
               }}
             />
+            </div>
             <CardHeader className="pb-4 pt-5">
               <CardTitle className="font-display text-lg">{t("lijstTitel")}</CardTitle>
               <CardDescription>{t("lijstSubtitel")}</CardDescription>
