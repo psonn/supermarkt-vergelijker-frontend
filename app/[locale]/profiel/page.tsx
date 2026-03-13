@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { AlertCircle, Check, Car, Bike, PersonStanding, MapPin, Trash2, Plus } from "lucide-react"
+import { AlertCircle, Check, Car, Bike, PersonStanding, MapPin, Trash2, Plus, Pencil } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations, useLocale } from "next-intl"
 import { laadVoorkeuren, slaVoorkeurenOp, type Voorkeuren } from "@/lib/voorkeuren"
@@ -82,6 +82,9 @@ export default function ProfielPagina() {
   const [nieuwAdresAdres, setNieuwAdresAdres] = useState("")
   const [adresLaden, setAdresLaden] = useState(false)
   const [adresOpen, setAdresOpen] = useState(false)
+  const [bewerkAdresId, setBewerkAdresId] = useState<string | null>(null)
+  const [bewerkNaam, setBewerkNaam] = useState("")
+  const [bewerkAdres, setBewerkAdres] = useState("")
 
   // Voorkeuren
   const [voorkeurSupermarkten, setVoorkeurSupermarkten] = useState<string[]>(ALLE_SUPERMARKTEN)
@@ -178,6 +181,21 @@ export default function ProfielPagina() {
     const supabase = createClient()
     await supabase.from("adressen").delete().eq("id", id)
     setAdressen((prev) => prev.filter((a) => a.id !== id))
+  }
+
+  async function slaAdresBewerkingOp() {
+    if (!bewerkAdresId || !bewerkNaam.trim() || !bewerkAdres.trim()) return
+    setAdresLaden(true)
+    const supabase = createClient()
+    const { data } = await supabase
+      .from("adressen")
+      .update({ naam: bewerkNaam.trim(), adres: bewerkAdres.trim() })
+      .eq("id", bewerkAdresId)
+      .select("id, naam, adres")
+      .single()
+    if (data) setAdressen((prev) => prev.map((a) => a.id === data.id ? data : a))
+    setBewerkAdresId(null)
+    setAdresLaden(false)
   }
 
   async function handleVoorkeurenOpslaan() {
@@ -321,20 +339,59 @@ export default function ProfielPagina() {
               <p className="text-sm text-muted-foreground">Nog geen adressen opgeslagen.</p>
             )}
             {adressen.map((a) => (
-              <div key={a.id} className="flex items-center gap-3 rounded-lg border px-3 py-2.5 bg-muted/30">
-                <MapPin size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium leading-tight">{a.naam}</p>
-                  <p className="text-xs text-muted-foreground truncate">{a.adres}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => verwijderAdres(a.id)}
-                  className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                  title="Verwijderen"
-                >
-                  <Trash2 size={14} strokeWidth={2} />
-                </button>
+              <div key={a.id} className="rounded-lg border bg-muted/30 overflow-hidden">
+                {bewerkAdresId === a.id ? (
+                  <div className="p-3 space-y-2">
+                    <input
+                      type="text"
+                      value={bewerkNaam}
+                      onChange={(e) => setBewerkNaam(e.target.value)}
+                      placeholder="Naam"
+                      className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      autoFocus
+                    />
+                    <input
+                      type="text"
+                      value={bewerkAdres}
+                      onChange={(e) => setBewerkAdres(e.target.value)}
+                      placeholder="Adres"
+                      onKeyDown={(e) => { if (e.key === "Enter") slaAdresBewerkingOp() }}
+                      className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={slaAdresBewerkingOp} disabled={adresLaden || !bewerkNaam.trim() || !bewerkAdres.trim()}>
+                        {adresLaden ? "…" : "Opslaan"}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setBewerkAdresId(null)}>
+                        Annuleer
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 px-3 py-2.5">
+                    <MapPin size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-tight">{a.naam}</p>
+                      <p className="text-xs text-muted-foreground truncate">{a.adres}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setBewerkAdresId(a.id); setBewerkNaam(a.naam); setBewerkAdres(a.adres) }}
+                      className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                      title="Bewerken"
+                    >
+                      <Pencil size={13} strokeWidth={2} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => verwijderAdres(a.id)}
+                      className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                      title="Verwijderen"
+                    >
+                      <Trash2 size={13} strokeWidth={2} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
 
