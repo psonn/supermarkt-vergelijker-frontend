@@ -191,7 +191,7 @@ export default function LocatieInput({
       )}
 
       {open && heeftDropdown && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md overflow-hidden max-h-64 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md max-h-64 overflow-y-auto">
           {gefilterdAdressen.length > 0 && (
             <>
               <p className="px-3 pt-2 pb-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">

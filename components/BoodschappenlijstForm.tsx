@@ -251,7 +251,6 @@ export default function BoodschappenlijstForm() {
           onChange={handleLocatieChange}
           disabled={laden}
           opgeslagenAdressen={opgeslagenAdressen}
-          onVerwijderAdres={verwijderAdres}
           onGpsSuccess={handleGpsSuccess}
         />
 
