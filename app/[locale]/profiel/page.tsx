@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { AlertCircle, Check, Car, Bike, PersonStanding } from "lucide-react"
+import { AlertCircle, Check, Car, Bike, PersonStanding, MapPin, Trash2, Plus } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations, useLocale } from "next-intl"
 import { laadVoorkeuren, slaVoorkeurenOp, type Voorkeuren } from "@/lib/voorkeuren"
@@ -75,6 +75,14 @@ export default function ProfielPagina() {
   const [verwijderLaden, setVerwijderLaden] = useState(false)
   const [verwijderFout, setVerwijderFout] = useState<string | null>(null)
 
+  // Adressen
+  const [adressen, setAdressen] = useState<{ id: string; naam: string; adres: string }[]>([])
+  const [gebruikerId, setGebruikerId] = useState<string | null>(null)
+  const [nieuwAdresNaam, setNieuwAdresNaam] = useState("")
+  const [nieuwAdresAdres, setNieuwAdresAdres] = useState("")
+  const [adresLaden, setAdresLaden] = useState(false)
+  const [adresOpen, setAdresOpen] = useState(false)
+
   // Voorkeuren
   const [voorkeurSupermarkten, setVoorkeurSupermarkten] = useState<string[]>(ALLE_SUPERMARKTEN)
   const [voorkeurStraal, setVoorkeurStraal] = useState(5)
@@ -84,12 +92,19 @@ export default function ProfielPagina() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) {
         router.replace("/login?redirect=/profiel" as never)
         return
       }
       setHuidigeEmail(data.user.email ?? "")
+      setGebruikerId(data.user.id)
+      const { data: adresData } = await supabase
+        .from("adressen")
+        .select("id, naam, adres")
+        .eq("user_id", data.user.id)
+        .order("aangemaakt_op", { ascending: false })
+      if (adresData) setAdressen(adresData)
     })
     laadVoorkeuren().then((v) => {
       if (!v) return
@@ -139,6 +154,30 @@ export default function ProfielPagina() {
       setWachtwoordBevestig("")
     }
     setWachtwoordLaden(false)
+  }
+
+  async function voegAdresToe() {
+    if (!nieuwAdresNaam.trim() || !nieuwAdresAdres.trim() || !gebruikerId) return
+    setAdresLaden(true)
+    const supabase = createClient()
+    const { data } = await supabase
+      .from("adressen")
+      .insert({ user_id: gebruikerId, naam: nieuwAdresNaam.trim(), adres: nieuwAdresAdres.trim() })
+      .select("id, naam, adres")
+      .single()
+    if (data) {
+      setAdressen((prev) => [data, ...prev])
+      setNieuwAdresNaam("")
+      setNieuwAdresAdres("")
+      setAdresOpen(false)
+    }
+    setAdresLaden(false)
+  }
+
+  async function verwijderAdres(id: string) {
+    const supabase = createClient()
+    await supabase.from("adressen").delete().eq("id", id)
+    setAdressen((prev) => prev.filter((a) => a.id !== id))
   }
 
   async function handleVoorkeurenOpslaan() {
@@ -273,6 +312,69 @@ export default function ProfielPagina() {
               {wachtwoordLaden ? t("bezig") : t("wachtwoordKnop")}
             </Button>
           </form>
+        </Sectie>
+
+        {/* Opgeslagen adressen */}
+        <Sectie titel="Opgeslagen adressen">
+          <div className="space-y-3">
+            {adressen.length === 0 && !adresOpen && (
+              <p className="text-sm text-muted-foreground">Nog geen adressen opgeslagen.</p>
+            )}
+            {adressen.map((a) => (
+              <div key={a.id} className="flex items-center gap-3 rounded-lg border px-3 py-2.5 bg-muted/30">
+                <MapPin size={14} className="text-muted-foreground shrink-0" strokeWidth={2} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium leading-tight">{a.naam}</p>
+                  <p className="text-xs text-muted-foreground truncate">{a.adres}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => verwijderAdres(a.id)}
+                  className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                  title="Verwijderen"
+                >
+                  <Trash2 size={14} strokeWidth={2} />
+                </button>
+              </div>
+            ))}
+
+            {adresOpen ? (
+              <div className="space-y-2 rounded-lg border p-3 bg-muted/20">
+                <input
+                  type="text"
+                  value={nieuwAdresNaam}
+                  onChange={(e) => setNieuwAdresNaam(e.target.value)}
+                  placeholder="Naam (bijv. Thuis, Werk)"
+                  className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  autoFocus
+                />
+                <input
+                  type="text"
+                  value={nieuwAdresAdres}
+                  onChange={(e) => setNieuwAdresAdres(e.target.value)}
+                  placeholder="Adres (bijv. Kalverstraat 1, Amsterdam)"
+                  onKeyDown={(e) => { if (e.key === "Enter") voegAdresToe() }}
+                  className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={voegAdresToe} disabled={adresLaden || !nieuwAdresNaam.trim() || !nieuwAdresAdres.trim()}>
+                    {adresLaden ? "Opslaan…" : "Opslaan"}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => { setAdresOpen(false); setNieuwAdresNaam(""); setNieuwAdresAdres("") }}>
+                    Annuleer
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAdresOpen(true)}
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Plus size={14} strokeWidth={2} />Adres toevoegen
+              </button>
+            )}
+          </div>
         </Sectie>
 
         {/* Zoekvoorkeuren */}
