@@ -10,7 +10,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { laadVoorkeuren, slaVoorkeurenOp, type Voorkeuren } from "@/lib/voorkeuren"
 import LocatieInput from "@/components/LocatieInput"
 
-const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
+const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar", "Vomar"]
 const STRAAL_OPTIES = [1, 2, 5, 10, 25]
 
 function Sectie({

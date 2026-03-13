@@ -38,6 +38,7 @@ export default function BoodschappenlijstForm() {
   const [fout, setFout] = useState<string | null>(null)
   const [gebruikerProducten, setGebruikerProducten] = useState<string[]>([])
 
+  const [opgeslaanLijsten, setOpgeslaanLijsten] = useState<{ id: string; naam: string; producten: string[]; locatie?: string | null }[]>([])
   const [opgeslagenAdressen, setOpgeslagenAdressen] = useState<OpgeslagenAdres[]>([])
   const [gebruikerId, setGebruikerId] = useState<string | null>(null)
   const [adresOpslaanNaam, setAdresOpslaanNaam] = useState("")
@@ -100,7 +101,7 @@ export default function BoodschappenlijstForm() {
         const [{ data: lijsten }, { data: adressen }] = await Promise.all([
           supabase
             .from("lijsten")
-            .select("producten")
+            .select("id, naam, producten, locatie")
             .eq("user_id", user.id)
             .order("aangemaakt_op", { ascending: false })
             .limit(20),
@@ -112,6 +113,7 @@ export default function BoodschappenlijstForm() {
         ])
 
         if (lijsten) {
+          setOpgeslaanLijsten(lijsten)
           const frequentie: Record<string, number> = {}
           for (const lijst of lijsten) {
             for (const product of lijst.producten ?? []) {
@@ -169,6 +171,13 @@ export default function BoodschappenlijstForm() {
       await supabase.from("adressen").delete().eq("id", id)
       setOpgeslagenAdressen((prev) => prev.filter((a) => a.id !== id))
     } catch { /* negeer */ }
+  }
+
+  function laadLijst(lijst: { producten: string[]; locatie?: string | null }) {
+    const freq: Record<string, number> = {}
+    for (const naam of lijst.producten) freq[naam] = (freq[naam] ?? 0) + 1
+    setChips(Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal })))
+    if (lijst.locatie) setLocatie(lijst.locatie)
   }
 
   function handleLocatieChange(nieuw: string) {
@@ -232,6 +241,27 @@ export default function BoodschappenlijstForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Bestaande lijsten als startpunt */}
+      {opgeslaanLijsten.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-xs text-muted-foreground">{t("bestaandeLijst")}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {opgeslaanLijsten.slice(0, 6).map((lijst) => (
+              <button
+                key={lijst.id}
+                type="button"
+                disabled={laden}
+                onClick={() => laadLijst(lijst)}
+                className="px-2.5 py-1 rounded-md border border-input bg-background hover:bg-muted text-xs text-muted-foreground hover:text-foreground transition-colors truncate max-w-[160px]"
+                title={lijst.naam}
+              >
+                {lijst.naam}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label>{t("boodschappenlijst")}</Label>
         <ProductChipInput

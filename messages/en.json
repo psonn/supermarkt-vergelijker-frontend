@@ -35,6 +35,7 @@
     "lijstSubtitel": "Enter your products and instantly see where you'll pay the least."
   },
   "form": {
+    "bestaandeLijst": "Load an existing list:",
     "boodschappenlijst": "Shopping list",
     "locatie": "Location",
     "optioneel": "(optional)",

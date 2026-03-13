@@ -17,6 +17,9 @@ interface Lijst {
   aangemaakt_op: string
   laatste_vergelijking?: string | null
   laatste_resultaat?: Record<string, unknown> | null
+  supermarkten?: string[] | null
+  straal?: number | null
+  vervoer?: string | null
 }
 
 export default async function MijnLijstenPagina() {
@@ -34,7 +37,7 @@ export default async function MijnLijstenPagina() {
   const [{ data: lijsten }, { data: alerts }] = await Promise.all([
     supabase
       .from("lijsten")
-      .select("id, naam, producten, locatie, aangemaakt_op, laatste_vergelijking, laatste_resultaat")
+      .select("id, naam, producten, locatie, aangemaakt_op, laatste_vergelijking, laatste_resultaat, supermarkten, straal, vervoer")
       .eq("user_id", user.id)
       .order("aangemaakt_op", { ascending: false }),
     supabase
@@ -79,7 +82,12 @@ export default async function MijnLijstenPagina() {
             return (
             <LijstKaart
               key={lijst.id}
-              lijst={lijst}
+              lijst={{
+                ...lijst,
+                supermarkten_opgeslagen: lijst.supermarkten,
+                straal_opgeslagen: lijst.straal,
+                vervoer_opgeslagen: lijst.vervoer,
+              }}
               gebruikerEmail={user.email ?? ""}
               bestaandeAlert={alertsPerLijst[lijst.id] ?? null}
               heeft_resultaat={!!lijst.laatste_vergelijking}

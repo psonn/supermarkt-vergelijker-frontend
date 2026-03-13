@@ -35,6 +35,7 @@
     "lijstSubtitel": "Voer je producten in en zie direct waar je het goedkoopst uit bent."
   },
   "form": {
+    "bestaandeLijst": "Laad een bestaande lijst:",
     "boodschappenlijst": "Boodschappenlijst",
     "locatie": "Locatie",
     "optioneel": "(optioneel)",

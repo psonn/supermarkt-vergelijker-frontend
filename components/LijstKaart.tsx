@@ -5,14 +5,23 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLocale } from "next-intl"
 import { startVergelijking } from "@/lib/api"
-import { Bell, Pencil, Trash2, Check, X, Play, BarChart2 } from "lucide-react"
+import { Bell, Pencil, Trash2, Check, X, Play, BarChart2, Car, Bike, PersonStanding, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import ProductChipInput, { type ChipItem } from "@/components/ProductChipInput"
+import LocatieInput from "@/components/LocatieInput"
 import PrijsAlertFormulier from "@/components/PrijsAlertFormulier"
 import { createClient } from "@/lib/supabase/client"
 import type { PrijsAlert } from "@/lib/api"
+
+const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar", "Vomar"]
+const STRAAL_OPTIES = [1, 2, 5, 10, 25]
+const VERVOER_OPTIES = [
+  { value: "driving", icon: <Car size={14} strokeWidth={2} /> },
+  { value: "cycling", icon: <Bike size={14} strokeWidth={2} /> },
+  { value: "walking", icon: <PersonStanding size={14} strokeWidth={2} /> },
+] as const
 
 interface Lijst {
   id: string
@@ -21,6 +30,9 @@ interface Lijst {
   aangemaakt_op: string
   laatste_vergelijking?: string | null
   locatie?: string | null
+  supermarkten_opgeslagen?: string[] | null
+  straal_opgeslagen?: number | null
+  vervoer_opgeslagen?: string | null
 }
 
 interface Props {
@@ -47,7 +59,20 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
   const [alertOpen, setAlertOpen] = useState(false)
   const [alert, setAlert] = useState<PrijsAlert | null>(initieleAlert)
 
-  // Lokale staat voor naam/producten (zodat wijzigingen direct zichtbaar zijn)
+  // Actieve filters (gebruikt bij Vergelijk nu, persisteerbaar)
+  const initSupermarkten = lijst.supermarkten_opgeslagen?.length
+    ? lijst.supermarkten_opgeslagen
+    : (supermarkten ?? ALLE_SUPERMARKTEN)
+  const initLocatie = lijst.locatie ?? ""
+  const initStraal = lijst.straal_opgeslagen ?? 5
+  const initVervoer = (lijst.vervoer_opgeslagen as "driving" | "cycling" | "walking") ?? "driving"
+
+  const [actiefLocatie, setActiefLocatie] = useState(initLocatie)
+  const [actiefSupermarkten, setActiefSupermarkten] = useState<string[]>(initSupermarkten)
+  const [actiefStraal, setActiefStraal] = useState(initStraal)
+  const [actiefVervoer, setActiefVervoer] = useState<"driving" | "cycling" | "walking">(initVervoer)
+
+  // Lokale staat naam/producten
   const [naam, setNaam] = useState(lijst.naam)
   const [producten, setProducten] = useState(lijst.producten)
 
@@ -55,36 +80,38 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
   const [hernoemen, setHernoemen] = useState(false)
   const [nieuweNaam, setNieuweNaam] = useState(lijst.naam)
 
-  // Bewerken
+  // Bewerken (producten + filters)
   const [bewerken, setBewerken] = useState(false)
   const [bewerkChips, setBewerkChips] = useState<ChipItem[]>(groepeerProducten(producten))
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   // Verwijderen
   const [verwijderConfirm, setVerwijderConfirm] = useState(false)
 
-  // Opslaan-status
   const [bezig, setBezig] = useState(false)
   const [fout, setFout] = useState<string | null>(null)
+  const [vergelijkBezig, setVergelijkBezig] = useState(false)
 
   const gegroepeerd = groepeerProducten(producten)
-  const [vergelijkBezig, setVergelijkBezig] = useState(false)
 
   async function startVergelijkNu() {
     setVergelijkBezig(true)
+    const alleGeselecteerd = actiefSupermarkten.length === ALLE_SUPERMARKTEN.length
     try {
       const job = await startVergelijking({
         producten,
-        locatie: lijst.locatie?.trim() || undefined,
-        supermarkten: supermarkten?.length ? supermarkten : undefined,
+        locatie: actiefLocatie.trim() || undefined,
+        straal: actiefLocatie.trim() ? actiefStraal : undefined,
+        vervoer: actiefLocatie.trim() ? actiefVervoer : undefined,
+        supermarkten: alleGeselecteerd ? undefined : actiefSupermarkten,
         lang: locale,
       })
       try {
-        if (supermarkten?.length) sessionStorage.setItem("sv_supermarkten", JSON.stringify(supermarkten))
-        else sessionStorage.removeItem("sv_supermarkten")
+        sessionStorage.setItem("sv_supermarkten", JSON.stringify(actiefSupermarkten))
       } catch { /* negeer */ }
       const url = heeft_resultaat
-        ? `/resultaten/${job.job_id}?update_lijst_id=${lijst.id}${lijst.locatie ? `&locatie=${encodeURIComponent(lijst.locatie)}` : ""}`
-        : `/resultaten/${job.job_id}${lijst.locatie ? `?locatie=${encodeURIComponent(lijst.locatie)}` : ""}`
+        ? `/resultaten/${job.job_id}?update_lijst_id=${lijst.id}${actiefLocatie.trim() ? `&locatie=${encodeURIComponent(actiefLocatie.trim())}` : ""}`
+        : `/resultaten/${job.job_id}${actiefLocatie.trim() ? `?locatie=${encodeURIComponent(actiefLocatie.trim())}` : ""}`
       router.push(url)
     } catch {
       setFout("Vergelijking starten mislukt")
@@ -110,9 +137,16 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
     setBezig(true)
     try {
       const supabase = createClient()
-      await supabase.from("lijsten").update({ producten: nieuweProducten }).eq("id", lijst.id)
+      await supabase.from("lijsten").update({
+        producten: nieuweProducten,
+        locatie: actiefLocatie.trim() || null,
+        supermarkten: actiefSupermarkten,
+        straal: actiefStraal,
+        vervoer: actiefVervoer,
+      }).eq("id", lijst.id)
       setProducten(nieuweProducten)
       setBewerken(false)
+      setFiltersOpen(false)
     } catch { setFout("Opslaan mislukt") }
     setBezig(false)
   }
@@ -124,6 +158,16 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       await supabase.from("lijsten").delete().eq("id", lijst.id)
       router.refresh()
     } catch { setFout("Verwijderen mislukt"); setBezig(false) }
+  }
+
+  function annuleerBewerken() {
+    setBewerken(false)
+    setFiltersOpen(false)
+    setBewerkChips(groepeerProducten(producten))
+    setActiefLocatie(initLocatie)
+    setActiefSupermarkten(initSupermarkten)
+    setActiefStraal(initStraal)
+    setActiefVervoer(initVervoer)
   }
 
   function handleOpgeslagen(nieuw: PrijsAlert) { setAlert(nieuw); setAlertOpen(false) }
@@ -182,19 +226,104 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {/* Productenlijst of bewerkmode */}
+        {/* Producten of bewerkmode */}
         {bewerken ? (
-          <div className="space-y-2">
-            <ProductChipInput
-              waarde={bewerkChips}
-              onChange={setBewerkChips}
-              disabled={bezig}
-            />
+          <div className="space-y-3">
+            <ProductChipInput waarde={bewerkChips} onChange={setBewerkChips} disabled={bezig} />
+
+            {/* Filters uitklappen */}
+            <button
+              type="button"
+              onClick={() => setFiltersOpen((v) => !v)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {filtersOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+              Filters {filtersOpen ? "verbergen" : "bewerken"}
+            </button>
+
+            {filtersOpen && (
+              <div className="space-y-3 pl-1 border-l-2 border-muted ml-1">
+                {/* Locatie */}
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground font-medium">Locatie</p>
+                  <LocatieInput waarde={actiefLocatie} onChange={setActiefLocatie} disabled={bezig} />
+                </div>
+
+                {/* Supermarkten */}
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground font-medium">Supermarkten</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {ALLE_SUPERMARKTEN.map((sm) => {
+                      const actief = actiefSupermarkten.includes(sm)
+                      return (
+                        <button
+                          key={sm}
+                          type="button"
+                          disabled={bezig}
+                          onClick={() => setActiefSupermarkten((prev) =>
+                            prev.includes(sm)
+                              ? prev.length > 1 ? prev.filter((s) => s !== sm) : prev
+                              : [...prev, sm]
+                          )}
+                          className={`px-2.5 py-1 rounded text-xs border transition-colors ${
+                            actief
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-background border-input hover:bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {sm}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Straal + vervoer (alleen als locatie ingevuld) */}
+                {actiefLocatie.trim() && (
+                  <div className="flex gap-3 items-end">
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground font-medium">Straal</p>
+                      <select
+                        value={actiefStraal}
+                        onChange={(e) => setActiefStraal(Number(e.target.value))}
+                        disabled={bezig}
+                        className="rounded border border-input bg-background px-2 py-1.5 text-xs"
+                      >
+                        {STRAAL_OPTIES.map((km) => (
+                          <option key={km} value={km}>{km} km</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground font-medium">Vervoer</p>
+                      <div className="flex gap-1">
+                        {VERVOER_OPTIES.map(({ value, icon }) => (
+                          <button
+                            key={value}
+                            type="button"
+                            disabled={bezig}
+                            onClick={() => setActiefVervoer(value)}
+                            className={`p-1.5 rounded border transition-colors ${
+                              actiefVervoer === value
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-background border-input hover:bg-muted"
+                            }`}
+                          >
+                            {icon}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex gap-2">
               <Button size="sm" onClick={slaBewerkingenOp} disabled={bezig || bewerkChips.length === 0}>
                 <Check size={13} strokeWidth={2.5} className="mr-1" />Opslaan
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => { setBewerken(false); setBewerkChips(groepeerProducten(producten)) }}>
+              <Button size="sm" variant="ghost" onClick={annuleerBewerken}>
                 Annuleren
               </Button>
             </div>
@@ -205,7 +334,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
           </p>
         )}
 
-        {/* Prijsalert samenvatting */}
+        {/* Alert samenvatting */}
         {alert && !alertOpen && !bewerken && (
           <p className="text-xs text-muted-foreground">
             Alert: {alert.frequentie === "meteen" ? "zo snel mogelijk" : alert.frequentie} ·{" "}
@@ -214,7 +343,6 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
           </p>
         )}
 
-        {/* Foutmelding */}
         {fout && <p className="text-xs text-destructive">{fout}</p>}
 
         {/* Actieknoppen */}
