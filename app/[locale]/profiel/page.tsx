@@ -4,9 +4,13 @@ import { useEffect, useState } from "react"
 import { useRouter, Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { AlertCircle, Check } from "lucide-react"
+import { AlertCircle, Check, Car, Bike, PersonStanding } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations, useLocale } from "next-intl"
+import { laadVoorkeuren, slaVoorkeurenOp, type Voorkeuren } from "@/lib/voorkeuren"
+
+const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
+const STRAAL_OPTIES = [1, 2, 5, 10, 25]
 
 function Sectie({
   titel,
@@ -71,6 +75,13 @@ export default function ProfielPagina() {
   const [verwijderLaden, setVerwijderLaden] = useState(false)
   const [verwijderFout, setVerwijderFout] = useState<string | null>(null)
 
+  // Voorkeuren
+  const [voorkeurSupermarkten, setVoorkeurSupermarkten] = useState<string[]>(ALLE_SUPERMARKTEN)
+  const [voorkeurStraal, setVoorkeurStraal] = useState(5)
+  const [voorkeurVervoer, setVoorkeurVervoer] = useState<Voorkeuren["vervoer"]>("driving")
+  const [voorkeurLaden, setVoorkeurLaden] = useState(false)
+  const [voorkeurSucces, setVoorkeurSucces] = useState(false)
+
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
@@ -79,6 +90,12 @@ export default function ProfielPagina() {
         return
       }
       setHuidigeEmail(data.user.email ?? "")
+    })
+    laadVoorkeuren().then((v) => {
+      if (!v) return
+      if (v.supermarkten.length > 0) setVoorkeurSupermarkten(v.supermarkten)
+      setVoorkeurStraal(v.straal)
+      setVoorkeurVervoer(v.vervoer)
     })
   }, [router])
 
@@ -122,6 +139,14 @@ export default function ProfielPagina() {
       setWachtwoordBevestig("")
     }
     setWachtwoordLaden(false)
+  }
+
+  async function handleVoorkeurenOpslaan() {
+    setVoorkeurLaden(true)
+    await slaVoorkeurenOp({ supermarkten: voorkeurSupermarkten, straal: voorkeurStraal, vervoer: voorkeurVervoer })
+    setVoorkeurSucces(true)
+    setTimeout(() => setVoorkeurSucces(false), 2500)
+    setVoorkeurLaden(false)
   }
 
   async function handleVerwijderen() {
@@ -248,6 +273,87 @@ export default function ProfielPagina() {
               {wachtwoordLaden ? t("bezig") : t("wachtwoordKnop")}
             </Button>
           </form>
+        </Sectie>
+
+        {/* Zoekvoorkeuren */}
+        <Sectie titel="Zoekvoorkeuren">
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Supermarkten</p>
+              <div className="flex flex-wrap gap-2">
+                {ALLE_SUPERMARKTEN.map((sm) => {
+                  const actief = voorkeurSupermarkten.includes(sm)
+                  return (
+                    <button
+                      key={sm}
+                      type="button"
+                      onClick={() => setVoorkeurSupermarkten((prev) =>
+                        prev.includes(sm)
+                          ? prev.length > 1 ? prev.filter((s) => s !== sm) : prev
+                          : [...prev, sm]
+                      )}
+                      className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
+                        actief
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background border-input hover:bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {sm}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Standaard straal</p>
+                <select
+                  value={voorkeurStraal}
+                  onChange={(e) => setVoorkeurStraal(Number(e.target.value))}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {STRAAL_OPTIES.map((km) => (
+                    <option key={km} value={km}>{km} km</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Vervoer</p>
+                <div className="flex gap-1">
+                  {(["driving", "cycling", "walking"] as const).map((v) => {
+                    const icons = { driving: <Car size={15} strokeWidth={2} />, cycling: <Bike size={15} strokeWidth={2} />, walking: <PersonStanding size={15} strokeWidth={2} /> }
+                    return (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setVoorkeurVervoer(v)}
+                        className={`flex-1 py-2 rounded-md border transition-colors flex items-center justify-center ${
+                          voorkeurVervoer === v
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background border-input hover:bg-muted"
+                        }`}
+                      >
+                        {icons[v]}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {voorkeurSucces && <Succesbox tekst="Voorkeuren opgeslagen" />}
+            <Button
+              type="button"
+              variant="outline"
+              className="font-semibold h-9 text-sm"
+              onClick={handleVoorkeurenOpslaan}
+              disabled={voorkeurLaden}
+            >
+              {voorkeurLaden ? "Opslaan…" : "Voorkeuren opslaan"}
+            </Button>
+          </div>
         </Sectie>
 
         {/* Gevaarlijke zone */}
