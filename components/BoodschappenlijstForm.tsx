@@ -11,6 +11,7 @@ import LocatieInput, { type OpgeslagenAdres } from "@/components/LocatieInput"
 import { startVergelijking } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations, useLocale } from "next-intl"
+import { laadVoorkeuren, slaVoorkeurenOp } from "@/lib/voorkeuren"
 
 const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 const STRAAL_OPTIES = [1, 2, 5, 10, 25]
@@ -131,6 +132,18 @@ export default function BoodschappenlijstForm() {
     }
   }, [])
 
+  // Laad opgeslagen voorkeuren (alleen als geen URL-params de filters overschrijven)
+  useEffect(() => {
+    const heeftUrlFilters = searchParams.get("producten") !== null
+    if (heeftUrlFilters) return // URL-params hebben voorrang
+    laadVoorkeuren().then((v) => {
+      if (!v) return
+      if (v.supermarkten.length > 0) setSupermarkten(v.supermarkten)
+      setStraal(v.straal)
+      setVervoer(v.vervoer)
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   async function slaAdresOp() {
     if (!locatie.trim() || !adresOpslaanNaam.trim() || !gebruikerId) return
     try {
@@ -201,6 +214,8 @@ export default function BoodschappenlijstForm() {
         lang: locale,
       })
       try { sessionStorage.setItem("sv_supermarkten", JSON.stringify(supermarkten)) } catch { /* negeer */ }
+      // Sla filters op als voorkeur voor volgende keer
+      slaVoorkeurenOp({ supermarkten, straal, vervoer })
       const resultatenUrl = locatie.trim()
         ? `/resultaten/${job.job_id}?locatie=${encodeURIComponent(locatie.trim())}`
         : `/resultaten/${job.job_id}`
