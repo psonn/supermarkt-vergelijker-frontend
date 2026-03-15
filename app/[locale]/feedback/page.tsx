@@ -31,15 +31,15 @@ export default function FeedbackPagina() {
 
   return (
     <main className="container max-w-lg mx-auto px-4 py-16">
-      <h1 className="text-2xl font-bold mb-2">Feedback</h1>
+      <h1 className="font-display text-2xl font-bold mb-2">Feedback</h1>
       <p className="text-muted-foreground mb-8">
         Heb je een fout gevonden, een suggestie, of iets anders? Laat het ons weten.
       </p>
 
       {verstuurd ? (
-        <div className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4">
-          <Check size={18} className="text-emerald-600 shrink-0" strokeWidth={2.5} />
-          <p className="text-sm font-medium text-emerald-800">Bedankt voor je feedback! We nemen het mee.</p>
+        <div className="succesbox">
+          <Check size={18} className="shrink-0" strokeWidth={2.5} />
+          <p className="text-sm font-medium">Bedankt voor je feedback! We nemen het mee.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">

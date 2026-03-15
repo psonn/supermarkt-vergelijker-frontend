@@ -117,7 +117,7 @@ function ResultatenInhoud() {
   return (
     <main className="w-full max-w-3xl mx-auto px-3 sm:px-6 py-6 sm:py-12">
       <div className="flex items-center justify-between mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold">{t("titel")}</h1>
+        <h1 className="font-display text-xl sm:text-2xl font-bold">{t("titel")}</h1>
         <div className="flex gap-2">
           {updateLijstId && (
             <Link href="/mijn-lijsten">
@@ -150,7 +150,7 @@ function ResultatenInhoud() {
         </div>
       )}
       {opgeslagen && (
-        <p className="mt-4 text-sm text-green-600">
+        <p className="mt-4 text-sm text-success">
           <Link
             href={opgeslagenLijstId && !updateLijstId ? `/mijn-lijsten/${opgeslagenLijstId}` : "/mijn-lijsten"}
             className="underline"

@@ -33,7 +33,7 @@ export default function GlobalToast() {
       }}
     >
       <div className="bg-foreground text-background px-5 py-2.5 rounded-full text-sm font-medium shadow-xl flex items-center gap-2 whitespace-nowrap">
-        <Check size={14} className="text-emerald-400" strokeWidth={2.5} />
+        <Check size={14} className="text-success" strokeWidth={2.5} />
         <span>{message}</span>
       </div>
     </div>

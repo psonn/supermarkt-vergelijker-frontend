@@ -47,7 +47,7 @@ export default function FloatingFeedbackKnop() {
 
           <div className="px-4 py-4">
             {verstuurd ? (
-              <div className="flex items-center gap-2 text-emerald-700">
+              <div className="flex items-center gap-2 text-success">
                 <Check size={16} strokeWidth={2.5} />
                 <p className="text-sm font-medium">Bedankt voor je feedback!</p>
               </div>

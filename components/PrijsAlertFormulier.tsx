@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
 import type { PrijsAlert } from "@/lib/api"
 
@@ -122,7 +121,7 @@ export default function PrijsAlertFormulier({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* E-mailadres */}
         <div className="sm:col-span-2 space-y-1.5">
-          <Label htmlFor={`email-${lijstId}`}>E-mailadres</Label>
+          <label htmlFor={`email-${lijstId}`} className="label-section">E-mailadres</label>
           <Input
             id={`email-${lijstId}`}
             type="email"
@@ -135,7 +134,7 @@ export default function PrijsAlertFormulier({
 
         {/* Drempel */}
         <div className="space-y-1.5">
-          <Label>Stuur mail bij prijsdaling van</Label>
+          <label className="label-section">Stuur mail bij prijsdaling van</label>
           <div className="flex flex-wrap gap-2">
             {DREMPEL_OPTIES.map((opt) => (
               <button
@@ -157,7 +156,7 @@ export default function PrijsAlertFormulier({
 
         {/* Frequentie */}
         <div className="space-y-1.5">
-          <Label>Hoe vaak?</Label>
+          <label className="label-section">Hoe vaak?</label>
           <div className="flex flex-wrap gap-2">
             {FREQUENTIE_OPTIES.map((opt) => (
               <button
@@ -180,9 +179,9 @@ export default function PrijsAlertFormulier({
         {/* Dag (wekelijks / maandelijks) */}
         {toonDag && (
           <div className="space-y-1.5">
-            <Label htmlFor={`dag-${lijstId}`}>
+            <label htmlFor={`dag-${lijstId}`} className="label-section">
               {frequentie === "wekelijks" ? "Op welke dag?" : "Op welke dag van de maand?"}
-            </Label>
+            </label>
             {frequentie === "wekelijks" ? (
               <select
                 id={`dag-${lijstId}`}
@@ -212,7 +211,7 @@ export default function PrijsAlertFormulier({
         {/* Tijdstip */}
         {toonUur && (
           <div className="space-y-1.5">
-            <Label htmlFor={`uur-${lijstId}`}>Tijdstip</Label>
+            <label htmlFor={`uur-${lijstId}`} className="label-section">Tijdstip</label>
             <select
               id={`uur-${lijstId}`}
               value={checkUur}
