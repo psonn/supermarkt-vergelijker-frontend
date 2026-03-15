@@ -137,7 +137,7 @@ function LoginFormulier() {
               <form onSubmit={handleReset} className="space-y-4">
                 <p className="text-sm text-muted-foreground">{t("resetSubtitel")}</p>
                 <div className="space-y-1.5">
-                  <label htmlFor="email-reset" className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <label htmlFor="email-reset" className="label-section">
                     {t("emailLabel")}
                   </label>
                   <Input
@@ -177,7 +177,7 @@ function LoginFormulier() {
               <div className="space-y-1.5">
                 <label
                   htmlFor="email"
-                  className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+                  className="label-section"
                 >
                   {t("emailLabel")}
                 </label>
@@ -197,7 +197,7 @@ function LoginFormulier() {
               <div className="space-y-1.5">
                 <label
                   htmlFor="wachtwoord"
-                  className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+                  className="label-section"
                 >
                   {t("wachtwoordLabel")}
                 </label>

@@ -91,7 +91,7 @@ export default function ResetWachtwoordPagina() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="wachtwoord" className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <label htmlFor="wachtwoord" className="label-section">
                     {t("label")}
                   </label>
                   <Input
@@ -108,7 +108,7 @@ export default function ResetWachtwoordPagina() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="bevestig" className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <label htmlFor="bevestig" className="label-section">
                     {t("bevestigLabel")}
                   </label>
                   <Input

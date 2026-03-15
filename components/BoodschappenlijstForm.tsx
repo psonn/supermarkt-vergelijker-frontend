@@ -367,7 +367,7 @@ export default function BoodschappenlijstForm() {
             </div>
 
             {locatie.trim() && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("straal")}</Label>
                   <select

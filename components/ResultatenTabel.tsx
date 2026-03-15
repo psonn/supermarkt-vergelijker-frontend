@@ -42,14 +42,14 @@ function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md
     )
   }
 
-  const bg = stijl?.bg ?? "#888"
-  const fg = stijl?.fg ?? "#fff"
+  const bg = stijl?.bg ?? "var(--muted)"
+  const fg = stijl?.fg ?? "var(--muted-foreground)"
   const kort = stijl?.kort ?? naam.slice(0, 2).toUpperCase()
 
   return (
     <div
       style={{ backgroundColor: bg, color: fg, width: dim, height: dim }}
-      className="rounded flex-shrink-0 flex items-center justify-center font-bold text-[11px] select-none"
+      className="rounded flex-shrink-0 flex items-center justify-center font-bold text-xs select-none"
     >
       {kort}
     </div>

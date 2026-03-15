@@ -139,8 +139,19 @@
   }
   /* Subtiel puntrasternachtergrond */
   .dot-grid {
-    background-image: radial-gradient(circle, oklch(0.14 0.025 265 / 0.07) 1px, transparent 1px);
+    background-image: radial-gradient(circle, color-mix(in oklch, var(--foreground) 7%, transparent) 1px, transparent 1px);
     background-size: 22px 22px;
+  }
+  /* Sectie-label stijl: kleine uppercase koptekst voor form-secties */
+  .label-section {
+    @apply block text-xs font-semibold uppercase tracking-widest text-muted-foreground;
+  }
+  /* Gradient tekst met design tokens */
+  .gradient-text {
+    background-image: linear-gradient(130deg, var(--primary) 0%, oklch(from var(--primary) calc(l + 0.12) calc(c - 0.02) calc(h + 33)) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
   }
 }
 
@@ -211,4 +222,20 @@
 
 .pill-verschijnt {
   animation: pill-verschijnt 0.4s ease both;
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-in,
+  .pill-verschijnt {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .wagen-container,
+  .wagen-stuitert,
+  .track-vult {
+    animation: none;
+  }
 }

@@ -250,7 +250,7 @@ export default function ProfielPagina() {
             <div className="space-y-1.5">
               <label
                 htmlFor="nieuw-email"
-                className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+                className="label-section"
               >
                 {t("emailNieuwLabel")}
               </label>
@@ -285,7 +285,7 @@ export default function ProfielPagina() {
             <div className="space-y-1.5">
               <label
                 htmlFor="wachtwoord-nieuw"
-                className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+                className="label-section"
               >
                 {t("wachtwoordNieuwLabel")}
               </label>
@@ -304,7 +304,7 @@ export default function ProfielPagina() {
             <div className="space-y-1.5">
               <label
                 htmlFor="wachtwoord-bevestig"
-                className="block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+                className="label-section"
               >
                 {t("wachtwoordBevestigLabel")}
               </label>
@@ -433,7 +433,7 @@ export default function ProfielPagina() {
         <Sectie titel="Zoekvoorkeuren">
           <div className="space-y-5">
             <div className="space-y-2">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Supermarkten</p>
+              <p className="label-section">Supermarkten</p>
               <div className="flex flex-wrap gap-2">
                 {ALLE_SUPERMARKTEN.map((sm) => {
                   const actief = voorkeurSupermarkten.includes(sm)
@@ -459,9 +459,9 @@ export default function ProfielPagina() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Standaard straal</p>
+                <p className="label-section">Standaard straal</p>
                 <select
                   value={voorkeurStraal}
                   onChange={(e) => setVoorkeurStraal(Number(e.target.value))}
@@ -474,7 +474,7 @@ export default function ProfielPagina() {
               </div>
 
               <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Vervoer</p>
+                <p className="label-section">Vervoer</p>
                 <div className="flex gap-1">
                   {(["driving", "cycling", "walking"] as const).map((v) => {
                     const icons = { driving: <Car size={15} strokeWidth={2} />, cycling: <Bike size={15} strokeWidth={2} />, walking: <PersonStanding size={15} strokeWidth={2} /> }

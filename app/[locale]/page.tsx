@@ -59,16 +59,10 @@ export default async function Home() {
           </div>
 
           <h1
-            className="font-display text-[7vw] sm:text-5xl font-extrabold tracking-tight leading-[1.08] animate-fade-up"
+            className="font-display text-5xl font-extrabold tracking-tight leading-[1.08] animate-fade-up"
             style={{ animationDelay: "70ms" }}
           >
-            <span
-              className="bg-clip-text text-transparent"
-              style={{
-                backgroundImage:
-                  "linear-gradient(130deg, oklch(0.50 0.19 152) 0%, oklch(0.62 0.17 185) 100%)",
-              }}
-            >
+            <span className="gradient-text">
               {t("titel")}
             </span>
           </h1>
@@ -108,11 +102,20 @@ export default async function Home() {
           className="mt-8 flex items-center justify-center gap-3.5 flex-wrap animate-fade-up"
           style={{ animationDelay: "280ms" }}
         >
-          {["ah", "jumbo", "dirk", "aldi", "spar", "dekamarkt", "ekoplaza", "vomar"].map((s) => (
+          {[
+            { id: "ah", naam: "Albert Heijn" },
+            { id: "jumbo", naam: "Jumbo" },
+            { id: "dirk", naam: "Dirk" },
+            { id: "aldi", naam: "Aldi" },
+            { id: "spar", naam: "Spar" },
+            { id: "dekamarkt", naam: "Dekamarkt" },
+            { id: "ekoplaza", naam: "Ekoplaza" },
+            { id: "vomar", naam: "Vomar" },
+          ].map(({ id, naam }) => (
             <img
-              key={s}
-              src={`/logos/${s}.png`}
-              alt={s}
+              key={id}
+              src={`/logos/${id}.png`}
+              alt={`${naam} logo`}
               height={28}
               className="grayscale opacity-30 hover:opacity-60 hover:grayscale-0 transition-all duration-300 object-contain"
               style={{ height: 28, width: "auto", maxWidth: 72 }}
