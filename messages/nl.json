@@ -71,7 +71,7 @@
     "verwijderAdres": "Verwijder adres",
     "gpsKnop": "Gebruik huidige locatie",
     "gpsLaden": "Locatie ophalen…",
-    "gpsFout": "Locatie niet beschikbaar"
+    "gpsFout": "Locatie ophalen mislukt — voer je adres handmatig in"
   },
   "resultaten": {
     "geenResultaten": "Geen resultaten gevonden.",
@@ -116,8 +116,8 @@
     "lijstOpgeslagen": "Lijst opgeslagen. Bekijk je lijsten →",
     "inloggenVoorOpslaan": "Log in om deze lijst op te slaan.",
     "terug": "Terug",
-    "fout": "Er is een fout opgetreden.",
-    "ophalenMislukt": "Ophalen mislukt"
+    "fout": "Resultaten ophalen mislukt. Laad de pagina opnieuw.",
+    "ophalenMislukt": "Kan resultaten niet laden — probeer het opnieuw"
   },
   "lijsten": {
     "titel": "Mijn lijsten",
@@ -240,10 +240,10 @@
     "gevarenzone": "Gevaarlijke zone",
     "verwijderTekst": "Als je je account verwijdert, worden al je gegevens en opgeslagen lijsten permanent gewist. Dit kan niet ongedaan worden gemaakt.",
     "verwijderKnop": "Account verwijderen",
-    "verwijderBevestigVraag": "Weet je het zeker? Dit kan niet ongedaan worden gemaakt.",
+    "verwijderBevestigVraag": "Je account en alle opgeslagen lijsten worden permanent verwijderd. Dit kan niet ongedaan worden gemaakt.",
     "verwijderBevestigKnop": "Ja, verwijder mijn account",
     "verwijderSucces": "Je account is verwijderd.",
-    "verwijderFout": "Accountverwijdering mislukt. Probeer het opnieuw.",
+    "verwijderFout": "Account verwijderen mislukt. Probeer het opnieuw of neem contact op.",
     "annuleer": "Annuleer",
     "bezig": "Bezig…"
   }

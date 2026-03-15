@@ -114,7 +114,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
         : `/resultaten/${job.job_id}${actiefLocatie.trim() ? `?locatie=${encodeURIComponent(actiefLocatie.trim())}` : ""}`
       router.push(url)
     } catch {
-      setFout("Vergelijking starten mislukt")
+      setFout("Vergelijking starten mislukt. Probeer het opnieuw.")
       setVergelijkBezig(false)
     }
   }
@@ -127,7 +127,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       await supabase.from("lijsten").update({ naam: nieuweNaam.trim() }).eq("id", lijst.id)
       setNaam(nieuweNaam.trim())
       setHernoemen(false)
-    } catch { setFout("Hernoemen mislukt") }
+    } catch { setFout("Naam wijzigen mislukt. Probeer het opnieuw.") }
     setBezig(false)
   }
 
@@ -147,7 +147,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       setProducten(nieuweProducten)
       setBewerken(false)
       setFiltersOpen(false)
-    } catch { setFout("Opslaan mislukt") }
+    } catch { setFout("Opslaan mislukt. Probeer het opnieuw.") }
     setBezig(false)
   }
 
@@ -157,7 +157,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       const supabase = createClient()
       await supabase.from("lijsten").delete().eq("id", lijst.id)
       router.refresh()
-    } catch { setFout("Verwijderen mislukt"); setBezig(false) }
+    } catch { setFout("Lijst verwijderen mislukt. Probeer het opnieuw."); setBezig(false) }
   }
 
   function annuleerBewerken() {

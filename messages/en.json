@@ -71,7 +71,7 @@
     "verwijderAdres": "Remove address",
     "gpsKnop": "Use current location",
     "gpsLaden": "Getting location…",
-    "gpsFout": "Location unavailable"
+    "gpsFout": "Couldn't get your location — enter your address manually"
   },
   "resultaten": {
     "geenResultaten": "No results found.",
@@ -116,8 +116,8 @@
     "lijstOpgeslagen": "List saved. View your lists →",
     "inloggenVoorOpslaan": "Log in to save this list.",
     "terug": "Back",
-    "fout": "An error occurred.",
-    "ophalenMislukt": "Failed to load"
+    "fout": "Failed to load results. Please refresh the page.",
+    "ophalenMislukt": "Couldn't load results — please try again"
   },
   "lijsten": {
     "titel": "My lists",
@@ -240,10 +240,10 @@
     "gevarenzone": "Danger zone",
     "verwijderTekst": "Deleting your account permanently removes all your data and saved lists. This cannot be undone.",
     "verwijderKnop": "Delete account",
-    "verwijderBevestigVraag": "Are you sure? This cannot be undone.",
+    "verwijderBevestigVraag": "Your account and all saved lists will be permanently deleted. This cannot be undone.",
     "verwijderBevestigKnop": "Yes, delete my account",
     "verwijderSucces": "Your account has been deleted.",
-    "verwijderFout": "Account deletion failed. Please try again.",
+    "verwijderFout": "Account deletion failed. Please try again or contact us.",
     "annuleer": "Cancel",
     "bezig": "Please wait…"
   }
