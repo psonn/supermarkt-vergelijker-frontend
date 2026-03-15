@@ -121,7 +121,9 @@ export default async function Home() {
               key={id}
               src={`/logos/${id}.png`}
               alt={`${naam} logo`}
+              width={72}
               height={28}
+              loading="lazy"
               className="opacity-50 hover:opacity-100 transition-all duration-300 object-contain"
               style={{ height: 28, width: "auto", maxWidth: 72 }}
             />

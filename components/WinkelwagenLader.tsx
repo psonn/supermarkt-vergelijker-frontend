@@ -43,7 +43,7 @@ export default function WinkelwagenLader() {
           <div className="wagen-stuitert">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-transparant.svg"
+              src="/logo-transparant.png"
               alt=""
               aria-hidden
               style={{ height: "68px", width: "80px", objectFit: "contain", imageRendering: "auto" }}

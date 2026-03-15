@@ -316,7 +316,7 @@ export default function BoodschappenlijstForm() {
           </div>
         )}
         {adresOpgeslagen && (
-          <p className="text-xs text-green-600">{t("adresOpgeslagen")}</p>
+          <p className="text-xs text-success">{t("adresOpgeslagen")}</p>
         )}
 
         <p className="text-xs text-muted-foreground">{t("locatieHint")}</p>

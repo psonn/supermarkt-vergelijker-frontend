@@ -44,7 +44,7 @@ export default function Nav() {
       <div className="container max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="CheaperSupermarkets logo" className="h-8 w-auto group-hover:scale-105 transition-transform duration-200" />
+          <img src="/logo.svg" alt="CheaperSupermarkets logo" width={32} height={32} fetchPriority="high" className="h-8 w-auto group-hover:scale-105 transition-transform duration-200" />
           <span className="hidden sm:inline font-display font-bold text-[15px] tracking-tight">
             Cheaper<span className="text-primary">Supermarkets</span>
           </span>

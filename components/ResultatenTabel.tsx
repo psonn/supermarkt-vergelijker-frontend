@@ -213,7 +213,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               </div>
               <div className="flex flex-col items-center gap-1 shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
+                <img src="/logo-transparant.png" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
                 <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest leading-none">beste keuze</span>
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 {!aanbevolen && (
                   <div className="flex flex-col items-center gap-1 shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/logo-transparant.svg" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
+                    <img src="/logo-transparant.png" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
                     <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest leading-none">beste keuze</span>
                   </div>
                 )}
