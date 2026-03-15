@@ -119,7 +119,10 @@
     "inloggenVoorOpslaan": "Log in to save this list.",
     "terug": "Back",
     "fout": "Failed to load results. Please refresh the page.",
-    "ophalenMislukt": "Couldn't load results — please try again"
+    "ophalenMislukt": "Couldn't load results — please try again",
+    "deel": "Share",
+    "gekopieerd": "Copied!",
+    "deelTitel": "Price comparison results via CheaperSupermarkets"
   },
   "lijsten": {
     "titel": "My lists",

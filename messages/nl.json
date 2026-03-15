@@ -119,7 +119,10 @@
     "inloggenVoorOpslaan": "Log in om deze lijst op te slaan.",
     "terug": "Terug",
     "fout": "Resultaten ophalen mislukt. Laad de pagina opnieuw.",
-    "ophalenMislukt": "Kan resultaten niet laden — probeer het opnieuw"
+    "ophalenMislukt": "Kan resultaten niet laden — probeer het opnieuw",
+    "deel": "Deel",
+    "gekopieerd": "Gekopieerd!",
+    "deelTitel": "Vergelijkingsresultaten via CheaperSupermarkets"
   },
   "lijsten": {
     "titel": "Mijn lijsten",
