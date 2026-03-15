@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og"
 import { createClient } from "@supabase/supabase-js"
 import { maakShareImageElement } from "@/lib/shareImageElement"
+import { laadLogoBase64, winnaarUitResultaat } from "@/lib/loadLogoBase64"
 
 export const runtime = "nodejs"
 
@@ -31,9 +32,12 @@ export async function GET(
       return new Response("Lijst niet gevonden", { status: 404 })
     }
 
+    const winnaar = winnaarUitResultaat(lijst.laatste_resultaat)
+    const logoSrc = await laadLogoBase64(winnaar)
+
     return new ImageResponse(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      maakShareImageElement({ resultaat: lijst.laatste_resultaat as any }),
+      maakShareImageElement({ resultaat: lijst.laatste_resultaat as any, logoSrc }),
       { width: WIDTH, height: HEIGHT }
     )
   } catch (err) {

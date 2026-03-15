@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og"
 import { maakShareImageElement } from "@/lib/shareImageElement"
+import { laadLogoBase64, winnaarUitResultaat } from "@/lib/loadLogoBase64"
 
 export const runtime = "nodejs"
 
@@ -30,8 +31,11 @@ export async function GET(
       return new Response("Job nog niet klaar", { status: 202 })
     }
 
+    const winnaar = winnaarUitResultaat(job.resultaat)
+    const logoSrc = await laadLogoBase64(winnaar)
+
     return new ImageResponse(
-      maakShareImageElement({ resultaat: job.resultaat }),
+      maakShareImageElement({ resultaat: job.resultaat, logoSrc }),
       { width: WIDTH, height: HEIGHT }
     )
   } catch (err) {
