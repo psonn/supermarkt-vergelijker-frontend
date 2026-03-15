@@ -103,12 +103,8 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
   const [bezig, setBezig] = useState(false)
   const [kanNatief, setKanNatief] = useState(false)
 
-  // Controleer of native share met bestanden mogelijk is
   useEffect(() => {
-    setKanNatief(
-      typeof navigator !== "undefined" &&
-      typeof navigator.share === "function"
-    )
+    setKanNatief(typeof navigator !== "undefined" && typeof navigator.share === "function")
   }, [])
 
   // Escape key + scroll lock
@@ -134,40 +130,34 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
     }
   }, [shareImagePath])
 
-  const download = useCallback(async () => {
-    setBezig(true)
-    const blob = await haalAfbeelding()
-    if (blob) {
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = "cheapersupermarkets-vergelijking.png"
-      a.click()
-      URL.revokeObjectURL(url)
-    }
-    setBezig(false)
-  }, [haalAfbeelding])
-
+  // Deelt altijd de afbeelding — geen stille fallback naar link-only
   const natiefDelen = useCallback(async () => {
     setBezig(true)
     const blob = await haalAfbeelding()
-    const url = deelUrl ?? window.location.href
     try {
       if (blob) {
         const file = new File([blob], "vergelijking.png", { type: "image/png" })
-        if (navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file], url, title: "CheaperSupermarkets vergelijking" })
-          setBezig(false)
-          return
-        }
+        await navigator.share({
+          files: [file],
+          title: "CheaperSupermarkets vergelijking",
+        })
+      } else {
+        // Alleen als de afbeelding niet geladen kon worden: deel link
+        await navigator.share({
+          url: deelUrl ?? window.location.href,
+          title: "CheaperSupermarkets vergelijking",
+        })
       }
-      // Fallback: deel alleen link
-      await navigator.share({ url, title: "CheaperSupermarkets vergelijking" })
     } catch {
-      // geannuleerd
+      // Geannuleerd of niet ondersteund
     }
     setBezig(false)
   }, [haalAfbeelding, deelUrl])
+
+  // Opent de afbeelding in een nieuw tabblad — long-press (mobiel) of rechtermuisknop (desktop) om op te slaan
+  const slaOp = useCallback(() => {
+    window.open(shareImagePath, "_blank", "noopener,noreferrer")
+  }, [shareImagePath])
 
   const kopieerLink = useCallback(async () => {
     const url = deelUrl ?? window.location.href
@@ -205,7 +195,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
         </div>
 
         <div className="p-5 space-y-5">
-          {/* Afbeelding preview */}
+          {/* Afbeelding preview — lang indrukken op mobiel om op te slaan */}
           <div className="relative rounded-xl overflow-hidden border border-border/60 bg-muted/30" style={{ aspectRatio: "4/5" }}>
             {afbeeldingLaden && !afbeeldingFout && (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -230,7 +220,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
             )}
           </div>
 
-          {/* Natief delen (mobiel) */}
+          {/* Natief delen — deelt de afbeelding zelf */}
           {kanNatief && (
             <Button
               className="w-full gap-2"
@@ -238,7 +228,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
               disabled={bezig}
             >
               <Smartphone size={16} strokeWidth={2} />
-              Deel via app (WhatsApp, Instagram, Signal…)
+              {bezig ? "Laden…" : "Deel afbeelding via app"}
             </Button>
           )}
 
@@ -255,10 +245,10 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
                       if (href) {
                         window.open(href, "_blank", "noopener,noreferrer")
                       } else {
-                        download()
+                        slaOp()
                       }
                     }}
-                    title={href ? `Deel op ${p.naam}` : `Download voor ${p.naam}`}
+                    title={href ? `Deel op ${p.naam}` : `Opslaan voor ${p.naam}`}
                     className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl hover:opacity-90 active:scale-95 transition-all"
                     style={{ background: p.kleur, color: p.fg }}
                   >
@@ -269,20 +259,19 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
               })}
             </div>
             <p className="text-[11px] text-muted-foreground mt-2">
-              Instagram &amp; TikTok: download de afbeelding en post hem in de app.
+              Instagram &amp; TikTok: sla de afbeelding op en post hem in de app.
             </p>
           </div>
 
-          {/* Download + Link */}
+          {/* Opslaan + Link */}
           <div className="flex gap-2">
             <Button
               variant="outline"
               className="flex-1 gap-2"
-              onClick={download}
-              disabled={bezig}
+              onClick={slaOp}
             >
               <Download size={15} strokeWidth={2} />
-              Afbeelding downloaden
+              Afbeelding opslaan
             </Button>
             <Button
               variant="outline"
