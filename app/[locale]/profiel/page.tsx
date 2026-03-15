@@ -352,6 +352,7 @@ export default function ProfielPagina() {
                       placeholder="Naam"
                       className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                       autoFocus
+                      maxLength={50}
                     />
                     <LocatieInput
                       waarde={bewerkAdres}
@@ -379,6 +380,7 @@ export default function ProfielPagina() {
                       onClick={() => { setBewerkAdresId(a.id); setBewerkNaam(a.naam); setBewerkAdres(a.adres) }}
                       className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
                       title="Bewerken"
+                      aria-label={`${a.naam} bewerken`}
                     >
                       <Pencil size={13} strokeWidth={2} />
                     </button>
@@ -387,6 +389,7 @@ export default function ProfielPagina() {
                       onClick={() => verwijderAdres(a.id)}
                       className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
                       title="Verwijderen"
+                      aria-label={`${a.naam} verwijderen`}
                     >
                       <Trash2 size={13} strokeWidth={2} />
                     </button>
@@ -404,6 +407,7 @@ export default function ProfielPagina() {
                   placeholder="Naam (bijv. Thuis, Werk)"
                   className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   autoFocus
+                  maxLength={50}
                 />
                 <LocatieInput
                   waarde={nieuwAdresAdres}

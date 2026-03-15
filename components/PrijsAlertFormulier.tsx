@@ -65,7 +65,7 @@ export default function PrijsAlertFormulier({
       const data = {
         user_id: user.id,
         lijst_id: lijstId,
-        email,
+        email: email.trim(),
         drempel_procent: drempel,
         frequentie,
         check_dag: toonDag ? checkDag : null,
@@ -199,7 +199,7 @@ export default function PrijsAlertFormulier({
                 id={`dag-${lijstId}`}
                 type="number"
                 min={1}
-                max={28}
+                max={31}
                 value={checkDag}
                 onChange={(e) => setCheckDag(Number(e.target.value))}
                 disabled={laden}

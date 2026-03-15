@@ -75,7 +75,7 @@ function PrijsTrend({ product, t }: { product: Product; t: ReturnType<typeof use
 
   if (product.prijs_historisch_laag) {
     badges.push(
-      <span key="low" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200 inline-flex items-center gap-0.5">
+      <span key="low" className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-success-subtle text-success-foreground border border-success-border inline-flex items-center gap-0.5">
         <Flame size={9} strokeWidth={2.5} />{t("historischLaag")}
       </span>
     )
@@ -97,7 +97,7 @@ function PrijsTrend({ product, t }: { product: Product; t: ReturnType<typeof use
       badges.push(
         <span
           key="trend"
-          className={`text-[10px] font-semibold flex items-center gap-0.5 ${omhoog ? "text-red-600" : "text-emerald-600"}`}
+          className={`text-[10px] font-semibold flex items-center gap-0.5 ${omhoog ? "text-red-600" : "text-success"}`}
         >
           {omhoog ? "↑" : "↓"}{Math.abs(pct).toFixed(0)}%
         </span>
@@ -120,7 +120,7 @@ function PrijsHistorieTip({ product, t }: { product: Product; t: ReturnType<type
       </span>
       <span className="absolute bottom-full left-0 mb-1 z-50 hidden group-hover:flex flex-col gap-0.5 min-w-max bg-popover border rounded-md shadow-lg p-2 text-xs">
         {product.prijs_min_jaar != null && (
-          <span className="text-emerald-600">{t("laagste", { prijs: product.prijs_min_jaar.toFixed(2) })}</span>
+          <span className="text-success">{t("laagste", { prijs: product.prijs_min_jaar.toFixed(2) })}</span>
         )}
         {product.prijs_gem_jaar != null && (
           <span className="text-muted-foreground">{t("gemiddelde", { prijs: product.prijs_gem_jaar.toFixed(2) })}</span>
@@ -192,9 +192,9 @@ export default function ResultatenTabel({ resultaat }: Props) {
     <div className="space-y-6">
       {/* Aanbeveling */}
       {aanbevolen && (
-        <Card className="border-emerald-300 bg-gradient-to-br from-emerald-50 to-green-100/50 dark:from-emerald-950/20 dark:to-green-900/10">
+        <Card className="border-success-border bg-gradient-to-br from-success-subtle to-transparent">
           <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+            <CardTitle className="text-sm font-semibold text-success flex items-center gap-1.5">
               <Trophy size={14} strokeWidth={2} />{t("aanbeveling")}
             </CardTitle>
           </CardHeader>
@@ -204,7 +204,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <div className="flex-1 min-w-0">
                 <p className="text-xl font-bold leading-tight">{aanbevolen}</p>
                 {locatieMap[aanbevolen] && <AdresTekst loc={locatieMap[aanbevolen]} />}
-                <p className="font-display font-bold text-3xl nums text-emerald-700 dark:text-emerald-400 mt-1 leading-none">
+                <p className="font-display font-bold text-3xl nums text-success mt-1 leading-none">
                   €{verg.totaal_per_supermarkt[aanbevolen].toFixed(2)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -214,7 +214,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <div className="flex flex-col items-center gap-1 shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/logo-transparant.png" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
-                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest leading-none">beste keuze</span>
+                <span className="text-xs font-bold text-success uppercase tracking-widest leading-none">beste keuze</span>
               </div>
             </div>
             {aanbevelingReden && (
@@ -227,9 +227,9 @@ export default function ResultatenTabel({ resultaat }: Props) {
       {/* Samenvatting kaarten */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {goedkoopste && (
-          <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-100/40 dark:from-emerald-950/20 dark:to-green-900/10">
+          <Card className="border-success-border bg-gradient-to-br from-success-subtle to-transparent">
             <CardHeader className="pb-1">
-              <CardTitle className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+              <CardTitle className="text-sm font-semibold text-success flex items-center gap-1.5">
                 <TrendingDown size={14} strokeWidth={2} />{t("goedkoopste")}
               </CardTitle>
             </CardHeader>
@@ -244,12 +244,12 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   <div className="flex flex-col items-center gap-1 shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/logo-transparant.png" alt="" aria-hidden style={{ height: "72px", width: "auto" }} />
-                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest leading-none">beste keuze</span>
+                    <span className="text-xs font-bold text-success uppercase tracking-widest leading-none">beste keuze</span>
                   </div>
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
-                <span className="font-display font-bold text-lg nums text-emerald-700 dark:text-emerald-400">
+                <span className="font-display font-bold text-lg nums text-success">
                   €{verg.totaal_per_supermarkt[goedkoopste].toFixed(2)}
                 </span>
                 {" "}· {t("dekking", { gevonden: verg.dekking_per_supermarkt[goedkoopste] ?? "?", totaal: aantalProducten })}
@@ -297,9 +297,9 @@ export default function ResultatenTabel({ resultaat }: Props) {
 
       {/* Besparingsbanner */}
       {besparing != null && besparing > 0.10 && (
-        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-3">
-          <Lightbulb size={18} className="text-emerald-600 dark:text-emerald-400 shrink-0" strokeWidth={2} />
-          <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
+        <div className="flex items-center gap-2 rounded-xl border border-success-border bg-success-subtle px-4 py-3">
+          <Lightbulb size={18} className="text-success shrink-0" strokeWidth={2} />
+          <p className="text-sm font-medium text-success-foreground">
             {t("besparing", { bedrag: besparing.toFixed(2) })}
           </p>
         </div>
@@ -320,12 +320,12 @@ export default function ResultatenTabel({ resultaat }: Props) {
               key={sm}
               className={`relative rounded-xl border p-3 flex items-center gap-3 ${
                 isGoedkoopste
-                  ? "border-emerald-200 bg-gradient-to-r from-emerald-50/80 to-transparent"
+                  ? "border-success-border bg-gradient-to-r from-success-subtle/80 to-transparent"
                   : "bg-card"
               }`}
             >
               {idx === 0 && (
-                <span className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center">
+                <span className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-success text-white text-[10px] font-bold flex items-center justify-center">
                   1
                 </span>
               )}
@@ -334,7 +334,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 <div className="flex flex-wrap items-center gap-1 mb-0.5">
                   <span className="font-semibold text-sm">{sm}</span>
                   {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">{t("badgeAanbevolen")}</Badge>}
-                  {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">{t("badgeGoedkoopst")}</Badge>}
+                  {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-success-subtle text-success-foreground border border-success-border">{t("badgeGoedkoopst")}</Badge>}
                   {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-blue-100 text-blue-800 border border-blue-200">{t("badgeMeesteProducten")}</Badge>}
                 </div>
                 {loc && <AdresTekst loc={loc} />}
@@ -346,8 +346,8 @@ export default function ResultatenTabel({ resultaat }: Props) {
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <span className={`nums font-bold ${isGoedkoopste ? "font-display text-lg text-emerald-700" : "text-base"}`}>
-                  €{totaal.toFixed(2)}
+                <span className={`nums font-bold ${isGoedkoopste ? "font-display text-lg text-success" : "text-base"}`}>
+                  {isFinite(totaal) ? `€${totaal.toFixed(2)}` : "—"}
                 </span>
               </div>
             </div>
@@ -380,11 +380,11 @@ export default function ResultatenTabel({ resultaat }: Props) {
               return (
                 <tr
                   key={sm}
-                  className={isGoedkoopste ? "bg-emerald-50/60 dark:bg-emerald-950/10" : "hover:bg-muted/30 transition-colors"}
+                  className={isGoedkoopste ? "bg-success-subtle/60" : "hover:bg-muted/30 transition-colors"}
                 >
                   <td className="px-4 py-3">
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      idx === 0 ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"
+                      idx === 0 ? "bg-success text-white" : "bg-muted text-muted-foreground"
                     }`}>
                       {idx + 1}
                     </span>
@@ -396,7 +396,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                         <div className="flex flex-wrap items-center gap-1.5 font-medium">
                           {sm}
                           {isAanbevolen && <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800 border border-purple-200">{t("badgeAanbevolen")}</Badge>}
-                          {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-200">{t("badgeGoedkoopst")}</Badge>}
+                          {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-success-subtle text-success-foreground border border-success-border">{t("badgeGoedkoopst")}</Badge>}
                           {isBesteMatch && !isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 border border-blue-200">{t("badgeMeesteProducten")}</Badge>}
                         </div>
                         {loc && <AdresTekst loc={loc} />}
@@ -417,8 +417,8 @@ export default function ResultatenTabel({ resultaat }: Props) {
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : t("geenData")}
                   </td>
                   <td className="px-4 py-3 text-right align-top whitespace-nowrap w-28">
-                    <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-emerald-700 dark:text-emerald-400" : "text-base"}`}>
-                      €{totaal.toFixed(2)}
+                    <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-success" : "text-base"}`}>
+                      {isFinite(totaal) ? `€${totaal.toFixed(2)}` : "—"}
                     </span>
                   </td>
                 </tr>
@@ -540,21 +540,21 @@ export default function ResultatenTabel({ resultaat }: Props) {
             const nietGevonden = items.filter((i) => i.product === null)
 
             return (
-              <div key={sm} className={`rounded-xl border overflow-hidden ${isGoedkoopste ? "border-emerald-200" : ""}`}>
-                <div className={`flex items-center gap-3 p-4 ${isGoedkoopste ? "bg-gradient-to-r from-emerald-50 to-transparent" : "bg-muted/30"}`}>
+              <div key={sm} className={`rounded-xl border overflow-hidden ${isGoedkoopste ? "border-success-border" : ""}`}>
+                <div className={`flex items-center gap-3 p-4 ${isGoedkoopste ? "bg-gradient-to-r from-success-subtle to-transparent" : "bg-muted/30"}`}>
                   <SupermarktLogo naam={sm} size="md" />
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
                       <span className="font-bold text-sm">{sm}</span>
                       {isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-purple-100 text-purple-800 border border-purple-200">{t("badgeAanbevolen")}</Badge>}
-                      {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">{t("badgeGoedkoopst")}</Badge>}
+                      {isGoedkoopste && !isAanbevolen && <Badge variant="secondary" className="text-[10px] px-1.5 bg-success-subtle text-success-foreground border border-success-border">{t("badgeGoedkoopst")}</Badge>}
                     </div>
                     {loc && <AdresTekst loc={loc} />}
                     <span className="text-xs text-muted-foreground">{t("dekkingDetail", { gevonden: gevonden.length, totaal: aantalProducten })}</span>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className={`font-display font-bold nums block ${isGoedkoopste ? "text-xl text-emerald-700" : "text-base"}`}>
-                      €{totaal.toFixed(2)}
+                    <span className={`font-display font-bold nums block ${isGoedkoopste ? "text-xl text-success" : "text-base"}`}>
+                      {isFinite(totaal) ? `€${totaal.toFixed(2)}` : "—"}
                     </span>
                     {loc?.afstand_km != null && (
                       <span className="text-xs text-muted-foreground block">

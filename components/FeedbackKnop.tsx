@@ -39,7 +39,7 @@ export default function FeedbackKnop({ productZoekterm, productNaam, supermarkt 
 
   if (verstuurd) {
     return (
-      <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600">
+      <span className="inline-flex items-center gap-0.5 text-[10px] text-success">
         <Check size={10} strokeWidth={2.5} />bedankt
       </span>
     )

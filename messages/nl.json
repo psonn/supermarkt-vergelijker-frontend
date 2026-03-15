@@ -63,7 +63,9 @@
     "placeholderToevoegen": "Product toevoegen…",
     "eerderGebruikt": "eerder gebruikt",
     "helpTekst": "Typ en druk Enter, of kies een suggestie · gebruik +/− voor meerdere stuks",
-    "verwijderLabel": "{product} verwijderen"
+    "verwijderLabel": "{product} verwijderen",
+    "minLabel": "{product} hoeveelheid verminderen",
+    "plusLabel": "{product} hoeveelheid vermeerderen"
   },
   "locatieInput": {
     "placeholder": "Kalverstraat 1, Amsterdam of 1234AB 12",

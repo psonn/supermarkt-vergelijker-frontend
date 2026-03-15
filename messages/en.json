@@ -63,7 +63,9 @@
     "placeholderToevoegen": "Add product…",
     "eerderGebruikt": "previously used",
     "helpTekst": "Type and press Enter, or pick a suggestion · use +/− for multiple units",
-    "verwijderLabel": "Remove {product}"
+    "verwijderLabel": "Remove {product}",
+    "minLabel": "Decrease {product} quantity",
+    "plusLabel": "Increase {product} quantity"
   },
   "locatieInput": {
     "placeholder": "Main Street 1, Amsterdam or 1234AB 12",

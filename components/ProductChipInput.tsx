@@ -140,6 +140,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
                   type="button"
                   onClick={() => wijzigAantal(chip.naam, -1)}
                   disabled={disabled}
+                  aria-label={t("minLabel", { product: chip.naam })}
                   className="w-4 h-4 rounded-full hover:bg-muted-foreground/20 flex items-center justify-center text-xs leading-none"
                 >
                   −
@@ -149,6 +150,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
                   type="button"
                   onClick={() => wijzigAantal(chip.naam, 1)}
                   disabled={disabled}
+                  aria-label={t("plusLabel", { product: chip.naam })}
                   className="w-4 h-4 rounded-full hover:bg-muted-foreground/20 flex items-center justify-center text-xs leading-none"
                 >
                   +
@@ -180,6 +182,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
           disabled={disabled}
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           autoComplete="off"
+          maxLength={80}
         />
 
         {dropdownOpen && suggesties.length > 0 && (
@@ -196,7 +199,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
                   i === geselecteerdIndex ? "bg-muted" : ""
                 }`}
               >
-                <span>{s.naam}</span>
+                <span className="truncate min-w-0">{s.naam}</span>
                 {s.categorie && (
                   <span className="text-xs text-muted-foreground ml-2">{s.categorie}</span>
                 )}

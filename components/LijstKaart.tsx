@@ -187,11 +187,12 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                   className="h-7 text-sm font-semibold"
                   autoFocus
                   disabled={bezig}
+                  maxLength={100}
                 />
-                <button type="button" onClick={slaHernoemingOp} disabled={bezig} className="text-primary hover:opacity-70">
+                <button type="button" onClick={slaHernoemingOp} disabled={bezig} className="text-primary hover:opacity-70" aria-label="Naam opslaan">
                   <Check size={15} strokeWidth={2.5} />
                 </button>
-                <button type="button" onClick={() => setHernoemen(false)} className="text-muted-foreground hover:opacity-70">
+                <button type="button" onClick={() => setHernoemen(false)} className="text-muted-foreground hover:opacity-70" aria-label="Hernoemen annuleren">
                   <X size={15} strokeWidth={2.5} />
                 </button>
               </div>
@@ -203,6 +204,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                   onClick={() => { setNieuweNaam(naam); setHernoemen(true) }}
                   className="opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity text-muted-foreground"
                   title="Hernoemen"
+                  aria-label={`${naam} hernoemen`}
                 >
                   <Pencil size={12} strokeWidth={2} />
                 </button>

@@ -296,6 +296,7 @@ export default function BoodschappenlijstForm() {
                   className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); slaAdresOp() } }}
                   autoFocus
+                  maxLength={50}
                 />
                 <Button type="button" size="sm" onClick={slaAdresOp} disabled={!adresOpslaanNaam.trim()}>
                   {t("opslaan")}
