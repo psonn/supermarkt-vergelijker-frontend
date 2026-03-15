@@ -6,6 +6,17 @@ import GoogleAd from "@/components/GoogleAd"
 
 const ALLE_SUPERMARKTEN = ["Albert Heijn", "Jumbo", "Dirk", "Aldi", "Ekoplaza", "Dekamarkt", "Spar"]
 
+const LOGO: Record<string, string> = {
+  "Albert Heijn": "/logos/ah.png",
+  "Jumbo":        "/logos/jumbo.png",
+  "Dirk":         "/logos/dirk.png",
+  "Aldi":         "/logos/aldi.png",
+  "Ekoplaza":     "/logos/ekoplaza.png",
+  "Dekamarkt":    "/logos/dekamarkt.png",
+  "Spar":         "/logos/spar.png",
+  "Vomar":        "/logos/vomar.png",
+}
+
 /** Logo rijdt over een track als laadanimatie. */
 export default function WinkelwagenLader() {
   const t = useTranslations("lader")
@@ -52,15 +63,20 @@ export default function WinkelwagenLader() {
         </div>
       </div>
 
-      {/* Supermarkt-pills */}
-      <div className="flex gap-2.5 flex-wrap justify-center">
+      {/* Supermarkt-logo's */}
+      <div className="flex gap-3 flex-wrap justify-center">
         {supermarkten.map((sm, i) => (
           <span
             key={sm}
-            className="pill-verschijnt text-xs text-muted-foreground px-3 py-1 rounded-full border border-border/70 bg-card shadow-sm"
+            className="pill-verschijnt flex items-center justify-center rounded-xl border border-border/70 bg-card shadow-sm p-2"
             style={{ animationDelay: `${300 + i * 120}ms` }}
           >
-            {sm}
+            {LOGO[sm] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={LOGO[sm]} alt={sm} title={sm} width={40} height={40} style={{ objectFit: "contain", height: "32px", width: "auto" }} />
+            ) : (
+              <span className="text-xs text-muted-foreground px-1">{sm}</span>
+            )}
           </span>
         ))}
       </div>
