@@ -72,7 +72,9 @@ export default async function LijstResultatenPagina({ params }: Props) {
           <h1 className="text-lg sm:text-xl font-bold truncate">{lijst.naam}</h1>
         </div>
         <div className="flex gap-2 shrink-0">
-          {lijst.laatste_resultaat && <DeelKnop />}
+          {lijst.laatste_resultaat && (
+            <DeelKnop shareImagePath={`/api/share-image/lijst/${lijst_id}`} />
+          )}
           <ZoekOpnieuwKnop
             producten={lijst.producten as string[]}
             locatie={lijst.locatie}

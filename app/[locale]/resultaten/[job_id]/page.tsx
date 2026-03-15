@@ -125,7 +125,7 @@ function ResultatenInhoud() {
               <Button variant="ghost" size="sm">← Mijn lijsten</Button>
             </Link>
           )}
-          <DeelKnop />
+          <DeelKnop shareImagePath={`/api/share-image/job/${job_id}`} />
           <Link href="/">
             <Button variant="outline" size="sm">{t("nieuweVergelijking")}</Button>
           </Link>
