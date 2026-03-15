@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { useRouter } from "@/lib/i18n-navigation"
 import { Link } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
-import { Share2 } from "lucide-react"
+import DeelKnop from "@/components/DeelKnop"
 import ResultatenTabel from "@/components/ResultatenTabel"
 import WinkelwagenLader from "@/components/WinkelwagenLader"
 import { haalJobOp, type JobResponse } from "@/lib/api"
@@ -29,7 +29,6 @@ function ResultatenInhoud() {
   const [opgeslagen, setOpgeslagen] = useState(false)
   const [opgeslagenLijstId, setOpgeslagenLijstId] = useState<string | null>(null)
   const [gebruiker, setGebruiker] = useState<{ id: string } | null>(null)
-  const [gedeeld, setGedeeld] = useState(false)
 
   useEffect(() => {
     try {
@@ -94,22 +93,6 @@ function ResultatenInhoud() {
     if (!error && data) { setOpgeslagen(true); setOpgeslagenLijstId(data.id) }
   }
 
-  const deel = useCallback(async () => {
-    const url = window.location.href
-    const title = t("deelTitel")
-    try {
-      if (navigator.share) {
-        await navigator.share({ url, title })
-      } else {
-        await navigator.clipboard.writeText(url)
-        setGedeeld(true)
-        setTimeout(() => setGedeeld(false), 2000)
-      }
-    } catch {
-      // geannuleerd of niet ondersteund
-    }
-  }, [t])
-
   if (fout) {
     return (
       <div className="container max-w-xl mx-auto px-4 py-16 text-center">
@@ -142,10 +125,7 @@ function ResultatenInhoud() {
               <Button variant="ghost" size="sm">← Mijn lijsten</Button>
             </Link>
           )}
-          <Button variant="outline" size="sm" onClick={deel} className="gap-1.5">
-            <Share2 size={14} strokeWidth={2} />
-            {gedeeld ? t("gekopieerd") : t("deel")}
-          </Button>
+          <DeelKnop />
           <Link href="/">
             <Button variant="outline" size="sm">{t("nieuweVergelijking")}</Button>
           </Link>

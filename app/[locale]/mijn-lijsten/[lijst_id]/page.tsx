@@ -8,6 +8,7 @@ import { getLocale } from "next-intl/server"
 import { ChevronLeft, Play } from "lucide-react"
 import type { Metadata } from "next"
 import TijdLabel from "@/components/TijdLabel"
+import DeelKnop from "@/components/DeelKnop"
 
 export const metadata: Metadata = { robots: { index: false } }
 
@@ -70,12 +71,15 @@ export default async function LijstResultatenPagina({ params }: Props) {
           </Link>
           <h1 className="text-lg sm:text-xl font-bold truncate">{lijst.naam}</h1>
         </div>
-        <ZoekOpnieuwKnop
-          producten={lijst.producten as string[]}
-          locatie={lijst.locatie}
-          supermarkten={supermarkten}
-          updateLijstId={lijst.id}
-        />
+        <div className="flex gap-2 shrink-0">
+          {lijst.laatste_resultaat && <DeelKnop />}
+          <ZoekOpnieuwKnop
+            producten={lijst.producten as string[]}
+            locatie={lijst.locatie}
+            supermarkten={supermarkten}
+            updateLijstId={lijst.id}
+          />
+        </div>
       </div>
 
       {/* Timestamp */}
