@@ -134,7 +134,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
               key={chip.naam}
               className="flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 text-primary px-3 py-1 text-sm font-medium"
             >
-              <span className="max-w-[120px] truncate">{chip.naam}</span>
+              <span>{chip.naam}</span>
               <div className="flex items-center gap-0.5 ml-1">
                 <button
                   type="button"
