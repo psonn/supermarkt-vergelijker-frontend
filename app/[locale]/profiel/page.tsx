@@ -237,7 +237,9 @@ export default function ProfielPagina() {
         >
           ← {t("terug")}
         </Link>
-        <h1 className="text-2xl font-bold font-display mt-2">{t("titel")}</h1>
+        <h1 className="font-display text-2xl font-bold mt-2">
+          <span className="gradient-text">{t("titel")}</span>
+        </h1>
         {huidigeEmail && (
           <p className="text-sm text-muted-foreground mt-1">{huidigeEmail}</p>
         )}

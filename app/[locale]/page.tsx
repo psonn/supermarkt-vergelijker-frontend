@@ -39,13 +39,18 @@ export default async function Home() {
       <div aria-hidden className="pointer-events-none absolute inset-0 dot-grid" />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-48 -left-48 w-[640px] h-[640px] rounded-full"
-        style={{ background: "radial-gradient(circle, oklch(0.50 0.19 152 / 0.10), transparent 65%)" }}
+        className="pointer-events-none absolute -top-48 -left-48 w-[700px] h-[700px] rounded-full"
+        style={{ background: "radial-gradient(circle, oklch(0.50 0.19 152 / 0.18), transparent 65%)" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-0 -right-32 w-[480px] h-[480px] rounded-full"
-        style={{ background: "radial-gradient(circle, oklch(0.62 0.17 200 / 0.07), transparent 65%)" }}
+        className="pointer-events-none absolute bottom-0 -right-32 w-[520px] h-[520px] rounded-full"
+        style={{ background: "radial-gradient(circle, oklch(0.62 0.17 200 / 0.14), transparent 65%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full"
+        style={{ background: "radial-gradient(circle, oklch(0.72 0.20 50 / 0.06), transparent 70%)" }}
       />
 
       <div className="container max-w-xl mx-auto px-4 py-14 relative">
@@ -117,7 +122,7 @@ export default async function Home() {
               src={`/logos/${id}.png`}
               alt={`${naam} logo`}
               height={28}
-              className="grayscale opacity-30 hover:opacity-60 hover:grayscale-0 transition-all duration-300 object-contain"
+              className="opacity-50 hover:opacity-100 transition-all duration-300 object-contain"
               style={{ height: 28, width: "auto", maxWidth: 72 }}
             />
           ))}

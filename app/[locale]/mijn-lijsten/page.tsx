@@ -54,17 +54,26 @@ export default async function MijnLijstenPagina() {
   return (
     <main className="container max-w-2xl mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">{t("titel")}</h1>
+        <h1 className="font-display text-2xl font-bold">
+          <span className="gradient-text">{t("titel")}</span>
+        </h1>
         <Link href="/">
           <Button size="sm">{t("nieuweVergelijking")}</Button>
         </Link>
       </div>
 
       {!lijsten || lijsten.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="mb-4">{t("geenLijsten")}</p>
+        <div className="text-center py-20">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-primary">
+              <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+            </svg>
+          </div>
+          <p className="text-foreground font-medium mb-1">{t("geenLijsten")}</p>
+          <p className="text-sm text-muted-foreground mb-5">{t("geenLijstenSub", { defaultValue: "Vergelijk supermarktprijzen en bewaar je resultaten." })}</p>
           <Link href="/">
-            <Button variant="outline">{t("startVergelijking")}</Button>
+            <Button>{t("startVergelijking")}</Button>
           </Link>
         </div>
       ) : (
