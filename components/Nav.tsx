@@ -57,7 +57,7 @@ export default function Nav() {
           {/* Taalschakelaar */}
           <button
             onClick={schakelTaal}
-            className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted tracking-widest uppercase"
+            className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors px-3 py-2.5 sm:px-2 sm:py-1 rounded-md hover:bg-muted tracking-widest uppercase"
             title={t("taalLabel")}
           >
             {locale === "nl" ? "EN" : "NL"}

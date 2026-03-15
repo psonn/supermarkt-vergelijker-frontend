@@ -379,14 +379,16 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                 </Button>
               </div>
             ) : (
-              <button
+              <Button
                 type="button"
+                size="icon-sm"
+                variant="ghost"
                 onClick={() => setVerwijderConfirm(true)}
                 className="ml-auto text-muted-foreground hover:text-destructive transition-colors"
                 title="Verwijderen"
               >
                 <Trash2 size={15} strokeWidth={2} />
-              </button>
+              </Button>
             )}
           </div>
         )}

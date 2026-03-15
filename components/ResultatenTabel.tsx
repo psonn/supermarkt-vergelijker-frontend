@@ -318,14 +318,14 @@ export default function ResultatenTabel({ resultaat }: Props) {
           return (
             <div
               key={sm}
-              className={`rounded-xl border p-3 flex items-center gap-3 ${
+              className={`relative rounded-xl border p-3 flex items-center gap-3 ${
                 isGoedkoopste
                   ? "border-emerald-200 bg-gradient-to-r from-emerald-50/80 to-transparent"
                   : "bg-card"
               }`}
             >
               {idx === 0 && (
-                <span className="absolute ml-[-8px] mt-[-8px] w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center">
+                <span className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center">
                   1
                 </span>
               )}
