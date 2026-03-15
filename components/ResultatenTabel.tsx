@@ -13,14 +13,14 @@ function isLocatieResultaat(r: unknown): r is LocatieResultaat {
 }
 
 const SUPERMARKT_STIJL: Record<string, { bg: string; fg: string; kort: string; logo: string }> = {
-  "Albert Heijn": { bg: "#0057A8", fg: "#fff", kort: "AH", logo: "/logos/ah.svg" },
-  "Jumbo":        { bg: "#FFC800", fg: "#222", kort: "JU", logo: "/logos/jumbo.svg" },
-  "Dirk":         { bg: "#D91B1B", fg: "#fff", kort: "DK", logo: "/logos/dirk.svg" },
-  "Aldi":         { bg: "#003087", fg: "#fff", kort: "AL", logo: "/logos/aldi.svg" },
-  "Ekoplaza":     { bg: "#3D8127", fg: "#fff", kort: "EK", logo: "/logos/ekoplaza.svg" },
-  "Dekamarkt":    { bg: "#E8511E", fg: "#fff", kort: "DM", logo: "/logos/dekamarkt.svg" },
-  "Spar":         { bg: "#007B3E", fg: "#fff", kort: "SP", logo: "/logos/spar.svg" },
-  "Vomar":        { bg: "#00387A", fg: "#fff", kort: "VM", logo: "/logos/vomar.svg" },
+  "Albert Heijn": { bg: "#0057A8", fg: "#fff", kort: "AH", logo: "/logos/ah.png" },
+  "Jumbo":        { bg: "#FFC800", fg: "#222", kort: "JU", logo: "/logos/jumbo.png" },
+  "Dirk":         { bg: "#D91B1B", fg: "#fff", kort: "DK", logo: "/logos/dirk.png" },
+  "Aldi":         { bg: "#003087", fg: "#fff", kort: "AL", logo: "/logos/aldi.png" },
+  "Ekoplaza":     { bg: "#3D8127", fg: "#fff", kort: "EK", logo: "/logos/ekoplaza.png" },
+  "Dekamarkt":    { bg: "#E8511E", fg: "#fff", kort: "DM", logo: "/logos/dekamarkt.png" },
+  "Spar":         { bg: "#007B3E", fg: "#fff", kort: "SP", logo: "/logos/spar.png" },
+  "Vomar":        { bg: "#00387A", fg: "#fff", kort: "VM", logo: "/logos/vomar.png" },
 }
 
 function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md" }) {
@@ -35,7 +35,7 @@ function SupermarktLogo({ naam, size = "sm" }: { naam: string; size?: "sm" | "md
         alt={naam}
         width={dim}
         height={dim}
-        className="rounded flex-shrink-0 object-cover"
+        className="rounded flex-shrink-0 object-contain bg-white p-0.5"
         style={{ width: dim, height: dim }}
         onError={() => setImgFout(true)}
       />

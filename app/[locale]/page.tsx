@@ -111,11 +111,11 @@ export default async function Home() {
           {["ah", "jumbo", "dirk", "aldi", "spar", "dekamarkt", "ekoplaza", "vomar"].map((s) => (
             <img
               key={s}
-              src={`/logos/${s}.svg`}
+              src={`/logos/${s}.png`}
               alt={s}
-              width={26}
-              height={26}
-              className="grayscale opacity-30 hover:opacity-60 hover:grayscale-0 transition-all duration-300"
+              height={28}
+              className="grayscale opacity-30 hover:opacity-60 hover:grayscale-0 transition-all duration-300 object-contain"
+              style={{ height: 28, width: "auto", maxWidth: 72 }}
             />
           ))}
         </div>
