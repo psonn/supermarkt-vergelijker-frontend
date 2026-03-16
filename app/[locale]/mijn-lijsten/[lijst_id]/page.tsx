@@ -73,7 +73,10 @@ export default async function LijstResultatenPagina({ params }: Props) {
         </div>
         <div className="flex gap-2 shrink-0">
           {lijst.laatste_resultaat && (
-            <DeelKnop shareImagePath={`/api/share-image/lijst/${lijst_id}`} />
+            <DeelKnop
+              shareImagePath={`/api/share-image/lijst/${lijst_id}`}
+              deelUrl={`https://www.cheapersupermarkets.com/lijst/${lijst_id}`}
+            />
           )}
           <ZoekOpnieuwKnop
             producten={lijst.producten as string[]}

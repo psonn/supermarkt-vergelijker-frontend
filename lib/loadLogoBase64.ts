@@ -1,6 +1,15 @@
 import { readFile } from "fs/promises"
 import path from "path"
 
+export async function laadAppLogoBase64(): Promise<string | undefined> {
+  try {
+    const buf = await readFile(path.join(process.cwd(), "public/logo-transparant.png"))
+    return `data:image/png;base64,${buf.toString("base64")}`
+  } catch {
+    return undefined
+  }
+}
+
 const LOGO_BESTAND: Record<string, string> = {
   "Albert Heijn": "ah.png",
   "Jumbo":        "jumbo.png",

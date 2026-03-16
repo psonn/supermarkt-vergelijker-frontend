@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og"
 import { createClient } from "@supabase/supabase-js"
 import { maakShareImageElement } from "@/lib/shareImageElement"
-import { laadLogoBase64, winnaarUitResultaat } from "@/lib/loadLogoBase64"
+import { laadLogoBase64, winnaarUitResultaat, laadAppLogoBase64 } from "@/lib/loadLogoBase64"
+import { laadBarlowCondensed900 } from "@/lib/loadFont"
 
 export const runtime = "nodejs"
 
@@ -33,12 +34,22 @@ export async function GET(
     }
 
     const winnaar = winnaarUitResultaat(lijst.laatste_resultaat)
-    const logoSrc = await laadLogoBase64(winnaar)
+    const [logoSrc, appLogoSrc, fontData] = await Promise.all([
+      laadLogoBase64(winnaar),
+      laadAppLogoBase64(),
+      laadBarlowCondensed900(),
+    ])
 
     return new ImageResponse(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      maakShareImageElement({ resultaat: lijst.laatste_resultaat as any, logoSrc }),
-      { width: WIDTH, height: HEIGHT }
+      maakShareImageElement({ resultaat: lijst.laatste_resultaat as any, logoSrc, appLogoSrc }),
+      {
+        width: WIDTH,
+        height: HEIGHT,
+        fonts: fontData
+          ? [{ name: "Barlow Condensed", data: fontData, weight: 900, style: "normal" as const }]
+          : [],
+      }
     )
   } catch (err) {
     console.error("[share-image/lijst]", err)
