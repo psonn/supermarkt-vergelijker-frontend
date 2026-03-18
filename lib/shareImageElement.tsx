@@ -438,7 +438,7 @@ function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSr
           }}>
             <span style={{
               fontFamily: BC, fontSize: 34, fontWeight: 900,
-              color: "#d1d5db", textDecoration: "line-through", letterSpacing: -1,
+              color: "#6b7280", textDecoration: "line-through", letterSpacing: -1,
             }}>
               {`€${gemiddelde.toFixed(2).replace(".", ",")}`}
             </span>
