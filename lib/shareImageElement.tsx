@@ -45,12 +45,12 @@ function s(lang: string) {
     beginTekst: "Begin vandaag nog met besparen",
   }
   const en = {
-    wauwRegel1: "Wow! I save",
+    wauwRegel1: "Wow! I saved",
     wauwRegel2: "on my shopping list! 🎉",
     goedkoopsteOptie: "💰 Cheapest option",
     mijnLijst: "MY LIST",
     meerProducten: (n: number) => `+ ${n} more ${n === 1 ? "product" : "products"}`,
-    footerTitel: "Save too with CheaperSupermarkets.com",
+    footerTitel: "Save as well with CheaperSupermarkets.com",
     footerSub: (n: number) => `Free price comparison for your shopping list · ${n} products · all supermarkets`,
     besparingLabel: "SAVINGS VS. AVERAGE",
     totaalprijs: "TOTAL PRICE",

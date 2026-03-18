@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { Link, useRouter } from "@/lib/i18n-navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { startVergelijking } from "@/lib/api"
 import { Bell, Pencil, Trash2, Check, X, Play, BarChart2, Car, Bike, PersonStanding, ChevronDown, ChevronUp } from "lucide-react"
