@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <title>Share Image Preview — CheaperSupermarkets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+      gap: 32px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .meta {
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .meta strong { color: rgba(255,255,255,0.8); }
+
+    /* ─── CARD ─── */
+    .card {
+      width: 360px;
+      height: 450px;
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* BG gradient — donker, diep */
+    .bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 80% 0%, rgba(185,28,28,0.22) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 20% 100%, rgba(34,197,94,0.18) 0%, transparent 55%),
+        linear-gradient(160deg, #0d1f0e 0%, #0c1929 55%, #130d1f 100%);
+    }
+
+    /* Subtle noise texture overlay */
+    .noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* Decoratieve glow blobs */
+    .glow-top-right {
+      position: absolute;
+      width: 200px; height: 200px;
+      top: -60px; right: -60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(185,28,28,0.35) 0%, transparent 65%);
+      filter: blur(30px);
+      pointer-events: none;
+    }
+    .glow-bottom-left {
+      position: absolute;
+      width: 180px; height: 180px;
+      bottom: -50px; left: -50px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34,197,94,0.28) 0%, transparent 65%);
+      filter: blur(28px);
+      pointer-events: none;
+    }
+    .glow-center {
+      position: absolute;
+      width: 220px; height: 120px;
+      top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(34,197,94,0.08) 0%, transparent 70%);
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    /* ─── CONTENT ─── */
+    .content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 20px 16px;
+    }
+
+    /* ── Branding ── */
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .brand-logo {
+      width: 28px; height: 28px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .brand-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.3px;
+      line-height: 1;
+    }
+
+    .brand-cheaper {
+      color: #4ade80;
+      filter: drop-shadow(0 0 8px rgba(74,222,128,0.5));
+    }
+
+    .brand-super {
+      color: rgba(255,255,255,0.85);
+    }
+
+    .brand-beta {
+      background: rgba(74,222,128,0.12);
+      border: 1px solid rgba(74,222,128,0.3);
+      color: #86efac;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+
+    /* ── Supermarkt hero ── */
+    .sm-hero {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .sm-logo-box {
+      width: 38px; height: 38px;
+      border-radius: 9px;
+      background: #B91C1C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(185,28,28,0.5);
+    }
+
+    .sm-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: #fca5a5;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .sm-badge {
+      margin-left: auto;
+      background: rgba(185,28,28,0.18);
+      border: 1px solid rgba(185,28,28,0.35);
+      color: #fca5a5;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* ── Savings ── */
+    .savings {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .savings-label {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: rgba(74,222,128,0.55);
+      margin-bottom: 2px;
+    }
+
+    .savings-amount {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 68px;
+      font-weight: 900;
+      color: #4ade80;
+      line-height: 0.9;
+      letter-spacing: -2px;
+      filter:
+        drop-shadow(0 0 16px rgba(74,222,128,0.6))
+        drop-shadow(0 0 40px rgba(74,222,128,0.25));
+    }
+
+    .savings-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.38);
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Comparison bar ── */
+    .comparison {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 10px;
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .cmp-avg { flex: 1; }
+
+    .cmp-label {
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 1px;
+      text-transform: uppercase;
+    }
+
+    .cmp-price-avg {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.22);
+      text-decoration: line-through;
+      text-decoration-color: rgba(255,255,255,0.2);
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .cmp-arrow {
+      font-size: 16px;
+      color: rgba(74,222,128,0.5);
+      flex-shrink: 0;
+    }
+
+    .cmp-new { flex: 1; text-align: right; }
+
+    .cmp-price-new {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #fca5a5;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    /* ── Products ── */
+    .products {
+      flex: 1;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .products-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .divider-label {
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .product-row:last-child { border-bottom: none; }
+
+    .product-name {
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+
+    .product-price {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(74,222,128,0.8);
+      flex-shrink: 0;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: rgba(74,222,128,0.07);
+      border: 1px solid rgba(74,222,128,0.15);
+      border-radius: 10px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-cta {
+      font-size: 10px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .footer-url {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #4ade80;
+      filter: drop-shadow(0 0 6px rgba(74,222,128,0.4));
+    }
+
+    /* ─── VARIANTS ─── */
+    .variants {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .variant-label {
+      color: rgba(255,255,255,0.3);
+      font-size: 11px;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* Albert Heijn variant */
+    .card.ah .glow-top-right {
+      background: radial-gradient(circle, rgba(0,87,168,0.4) 0%, transparent 65%);
+    }
+    .card.ah .sm-logo-box {
+      background: #0057A8;
+      box-shadow: 0 0 16px rgba(0,87,168,0.5);
+    }
+    .card.ah .sm-name { color: #93c5fd; }
+    .card.ah .sm-badge {
+      background: rgba(0,87,168,0.2);
+      border-color: rgba(0,87,168,0.4);
+      color: #93c5fd;
+    }
+    .card.ah .cmp-price-new { color: #93c5fd; }
+    .card.ah .bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 80% 0%, rgba(0,87,168,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 20% 100%, rgba(34,197,94,0.15) 0%, transparent 55%),
+        linear-gradient(160deg, #050d1a 0%, #0a1529 55%, #0a1015 100%);
+    }
+
+    /* Jumbo variant */
+    .card.jumbo .glow-top-right {
+      background: radial-gradient(circle, rgba(230,168,0,0.35) 0%, transparent 65%);
+    }
+    .card.jumbo .sm-logo-box {
+      background: #E6A800;
+      box-shadow: 0 0 16px rgba(230,168,0,0.4);
+    }
+    .card.jumbo .sm-name { color: #fcd34d; }
+    .card.jumbo .sm-badge {
+      background: rgba(230,168,0,0.15);
+      border-color: rgba(230,168,0,0.35);
+      color: #fcd34d;
+    }
+    .card.jumbo .cmp-price-new { color: #fcd34d; }
+    .card.jumbo .bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 80% 0%, rgba(230,168,0,0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 20% 100%, rgba(34,197,94,0.15) 0%, transparent 55%),
+        linear-gradient(160deg, #111008 0%, #1a1607 55%, #0a130d 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="meta">
+    <strong>Share Image Preview</strong> — CheaperSupermarkets<br>
+    Proportioneel 1:1 met het echte formaat (1080×1350). Glassmorphism werkt hier in de browser; in Satori valt de <code>backdrop-filter</code> weg.
+  </div>
+
+  <div class="variants">
+
+    <!-- Dirk -->
+    <div>
+      <div class="variant-label">Dirk</div>
+      <div class="card">
+        <div class="bg"></div>
+        <div class="noise"></div>
+        <div class="glow-top-right"></div>
+        <div class="glow-bottom-left"></div>
+        <div class="glow-center"></div>
+
+        <div class="content">
+          <div class="brand">
+            <div class="brand-logo">🛒</div>
+            <div class="brand-name">
+              <span class="brand-cheaper">Cheaper</span><span class="brand-super">Supermarkets</span>
+            </div>
+            <span class="brand-beta">BETA</span>
+          </div>
+
+          <div class="sm-hero">
+            <div class="sm-logo-box">DI</div>
+            <div class="sm-name">Dirk</div>
+            <div class="sm-badge">★ GOEDKOOPST</div>
+          </div>
+
+          <div class="savings">
+            <div class="savings-label">BESPARING T.O.V. GEMIDDELDE</div>
+            <div class="savings-amount">€36,31</div>
+            <div class="savings-sub">op 8 producten</div>
+          </div>
+
+          <div class="comparison">
+            <div class="cmp-avg">
+              <div class="cmp-label">Gemiddeld elders</div>
+              <div class="cmp-price-avg">€56,12</div>
+            </div>
+            <div class="cmp-arrow">→</div>
+            <div class="cmp-new">
+              <div class="cmp-label">Bij Dirk</div>
+              <div class="cmp-price-new">€19,81</div>
+            </div>
+          </div>
+
+          <div class="products">
+            <div class="products-divider">
+              <div class="divider-line"></div>
+              <div class="divider-label">JOUW LIJST</div>
+              <div class="divider-line"></div>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Oatly haver drink</span>
+              <span class="product-price">€1,89</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Magere yoghurt</span>
+              <span class="product-price">€0,99</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Bruine bollen</span>
+              <span class="product-price">€2,49</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Beemster Kaas</span>
+              <span class="product-price">€4,99</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Paprika rood</span>
+              <span class="product-price">€1,79</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            <span class="footer-cta">Begin vandaag met besparen</span>
+            <span class="footer-url">cheapersupermarkets.com →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Albert Heijn -->
+    <div>
+      <div class="variant-label">Albert Heijn</div>
+      <div class="card ah">
+        <div class="bg"></div>
+        <div class="noise"></div>
+        <div class="glow-top-right"></div>
+        <div class="glow-bottom-left"></div>
+        <div class="glow-center"></div>
+
+        <div class="content">
+          <div class="brand">
+            <div class="brand-logo">🛒</div>
+            <div class="brand-name">
+              <span class="brand-cheaper">Cheaper</span><span class="brand-super">Supermarkets</span>
+            </div>
+            <span class="brand-beta">BETA</span>
+          </div>
+
+          <div class="sm-hero">
+            <div class="sm-logo-box">AH</div>
+            <div class="sm-name">Albert Heijn</div>
+            <div class="sm-badge">★ GOEDKOOPST</div>
+          </div>
+
+          <div class="savings">
+            <div class="savings-label">BESPARING T.O.V. GEMIDDELDE</div>
+            <div class="savings-amount">€12,50</div>
+            <div class="savings-sub">op 6 producten</div>
+          </div>
+
+          <div class="comparison">
+            <div class="cmp-avg">
+              <div class="cmp-label">Gemiddeld elders</div>
+              <div class="cmp-price-avg">€34,80</div>
+            </div>
+            <div class="cmp-arrow">→</div>
+            <div class="cmp-new">
+              <div class="cmp-label">Bij Albert Heijn</div>
+              <div class="cmp-price-new">€22,30</div>
+            </div>
+          </div>
+
+          <div class="products">
+            <div class="products-divider">
+              <div class="divider-line"></div>
+              <div class="divider-label">JOUW LIJST</div>
+              <div class="divider-line"></div>
+            </div>
+            <div class="product-row">
+              <span class="product-name">AH Melk halfvol 1L</span>
+              <span class="product-price">€1,19</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Heinz Tomatenketchup</span>
+              <span class="product-price">€2,79</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Nescafé Gold 200g</span>
+              <span class="product-price">€7,49</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Pindakaas 350g</span>
+              <span class="product-price">€3,29</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Mozzarella 125g</span>
+              <span class="product-price">€1,49</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            <span class="footer-cta">Begin vandaag met besparen</span>
+            <span class="footer-url">cheapersupermarkets.com →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jumbo -->
+    <div>
+      <div class="variant-label">Jumbo</div>
+      <div class="card jumbo">
+        <div class="bg"></div>
+        <div class="noise"></div>
+        <div class="glow-top-right"></div>
+        <div class="glow-bottom-left"></div>
+        <div class="glow-center"></div>
+
+        <div class="content">
+          <div class="brand">
+            <div class="brand-logo">🛒</div>
+            <div class="brand-name">
+              <span class="brand-cheaper">Cheaper</span><span class="brand-super">Supermarkets</span>
+            </div>
+            <span class="brand-beta">BETA</span>
+          </div>
+
+          <div class="sm-hero">
+            <div class="sm-logo-box">JU</div>
+            <div class="sm-name">Jumbo</div>
+            <div class="sm-badge">★ GOEDKOOPST</div>
+          </div>
+
+          <div class="savings">
+            <div class="savings-label">BESPARING T.O.V. GEMIDDELDE</div>
+            <div class="savings-amount">€8,74</div>
+            <div class="savings-sub">op 5 producten</div>
+          </div>
+
+          <div class="comparison">
+            <div class="cmp-avg">
+              <div class="cmp-label">Gemiddeld elders</div>
+              <div class="cmp-price-avg">€24,50</div>
+            </div>
+            <div class="cmp-arrow">→</div>
+            <div class="cmp-new">
+              <div class="cmp-label">Bij Jumbo</div>
+              <div class="cmp-price-new">€15,76</div>
+            </div>
+          </div>
+
+          <div class="products">
+            <div class="products-divider">
+              <div class="divider-line"></div>
+              <div class="divider-label">JOUW LIJST</div>
+              <div class="divider-line"></div>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Campina Halfvolle melk</span>
+              <span class="product-price">€1,09</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Jumbo Speculaas</span>
+              <span class="product-price">€1,49</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Pasta penne 500g</span>
+              <span class="product-price">€0,89</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Tomatensaus basilicum</span>
+              <span class="product-price">€1,29</span>
+            </div>
+            <div class="product-row">
+              <span class="product-name">Gouda kaas jong 500g</span>
+              <span class="product-price">€4,99</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            <span class="footer-cta">Begin vandaag met besparen</span>
+            <span class="footer-url">cheapersupermarkets.com →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="meta" style="max-width: 560px; text-align: center;">
+    <strong>Satori-beperkingen:</strong> <code>backdrop-filter: blur()</code> werkt niet in de share image route (Satori ondersteunt het niet).
+    De glassmorphism-cards worden dan gewone semi-transparante panels met een subtiele border.
+    Alle andere effecten (glow via <code>filter: drop-shadow</code>, gradient bg, grote groene cijfers) werken wél.
+  </div>
+</body>
+</html>
