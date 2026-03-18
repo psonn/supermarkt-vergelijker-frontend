@@ -66,7 +66,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
   }, [haalAfbeelding, deelUrl])
 
   // Sla afbeelding op:
-  // - iOS Safari: <a download> werkt niet → native share zodat gebruiker "Bewaar afbeelding" kan kiezen
+  // - iOS: navigator.share({ files }) → native sheet → tik "Bewaar afbeelding" voor camerarol
   // - Android / desktop: blob-download via <a download>
   const slaOp = useCallback(async () => {
     setBezig(true)
@@ -106,7 +106,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4"
       style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(3px)" }}
       onClick={onClose}
     >
