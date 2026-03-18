@@ -5,21 +5,18 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
   // Zorg dat public/ bestanden (logos, font) beschikbaar zijn in de share-image serverless functions
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  experimental: {
-    outputFileTracingIncludes: {
-      "/api/share-image/job/[job_id]": [
-        "./public/fonts/**",
-        "./public/logos/**",
-        "./public/logo-transparant.png",
-      ],
-      "/api/share-image/lijst/[lijst_id]": [
-        "./public/fonts/**",
-        "./public/logos/**",
-        "./public/logo-transparant.png",
-      ],
-    },
-  } as any,
+  outputFileTracingIncludes: {
+    "/api/share-image/job/[job_id]": [
+      "./public/fonts/**",
+      "./public/logos/**",
+      "./public/logo-transparant.png",
+    ],
+    "/api/share-image/lijst/[lijst_id]": [
+      "./public/fonts/**",
+      "./public/logos/**",
+      "./public/logo-transparant.png",
+    ],
+  },
 
   // Serve static assets with long-lived cache headers
   async headers() {
