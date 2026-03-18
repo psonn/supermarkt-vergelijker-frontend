@@ -7,21 +7,65 @@ import DeelKnop from "@/components/DeelKnop"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
-export const metadata: Metadata = { robots: { index: false } }
+const BASE = "https://www.cheapersupermarkets.com"
 
 interface Props {
-  params: Promise<{ lijst_id: string }>
+  params: Promise<{ lijst_id: string; locale: string }>
+}
+
+function supabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) return null
+  return createClient(url, key)
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lijst_id, locale } = await params
+  const isEn = locale === "en"
+  const pageUrl = `${BASE}${isEn ? "/en" : ""}/lijst/${lijst_id}`
+  const imageUrl = `${BASE}/api/share-image/lijst/${lijst_id}`
+
+  const supabase = supabaseClient()
+  const naam = supabase
+    ? (await supabase.from("lijsten").select("naam").eq("id", lijst_id).single()).data?.naam
+    : null
+
+  const title = naam
+    ? (isEn ? `${naam} — CheaperSupermarkets` : `${naam} — CheaperSupermarkets`)
+    : (isEn ? "Shared grocery list" : "Gedeelde boodschappenlijst")
+
+  const description = isEn
+    ? "Check out this supermarket price comparison — made with CheaperSupermarkets."
+    : "Bekijk deze supermarktprijsvergelijking, gemaakt met CheaperSupermarkets."
+
+  return {
+    title,
+    description,
+    robots: { index: false },
+    alternates: { canonical: pageUrl },
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      type: "website",
+      images: [{ url: imageUrl, width: 1080, height: 1350, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  }
 }
 
 export default async function PubliekeLijstPagina({ params }: Props) {
   const { lijst_id } = await params
 
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const supabase = supabaseClient()
+  if (!supabase) notFound()
 
-  if (!SUPABASE_URL || !SERVICE_KEY) notFound()
-
-  const supabase = createClient(SUPABASE_URL, SERVICE_KEY)
   const { data: lijst } = await supabase
     .from("lijsten")
     .select("id, naam, laatste_resultaat, laatste_vergelijking")
@@ -37,7 +81,7 @@ export default async function PubliekeLijstPagina({ params }: Props) {
         <h1 className="text-lg sm:text-xl font-bold truncate">{lijst.naam}</h1>
         <DeelKnop
           shareImagePath={`/api/share-image/lijst/${lijst_id}`}
-          deelUrl={`https://www.cheapersupermarkets.com/lijst/${lijst_id}`}
+          deelUrl={`${BASE}/lijst/${lijst_id}`}
         />
       </div>
 

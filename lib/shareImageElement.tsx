@@ -13,23 +13,20 @@ const KLEUREN: Record<string, { bg: string; fg: string }> = {
 
 export interface ShareImageData {
   resultaat: VergelijkingsResultaat | LocatieResultaat
-  logoSrc?: string     // base64 supermarkt-logo
-  appLogoSrc?: string  // base64 CheaperSupermarkets app-logo
+  logoSrc?: string
+  appLogoSrc?: string
 }
 
-// Maximaal 5 producten zodat alles in 1350px hoogte past
 const MAX_PRODUCTEN = 5
 
-const CREAM = "#FEF9F0"
-const DARK  = "#1C0800"
+const CREAM  = "#FEF9F0"
+const CREAM2 = "#F9F0E4"
+const DARK   = "#1C0800"
+const BC     = "Barlow Condensed, sans-serif"
 
-// Nederlandse decimale opmaak
 function fmt(n: number) {
   return `€${n.toFixed(2).replace(".", ",")}`
 }
-
-// Alles staat op 1080×1350px canvas (= 2× de 540×675 HTML-mockup).
-// Alle waarden zijn dus 2× de waarden in dirk-social-image.html.
 
 export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc }: ShareImageData) {
   const verg: VergelijkingsResultaat =
@@ -49,11 +46,14 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc }: ShareI
     naam:  p.matches[winnaar]?.naam  ?? p.zoekopdracht,
     prijs: p.matches[winnaar]?.prijs ?? null,
   }))
-  const tonen       = productenRijen.slice(0, MAX_PRODUCTEN)
-  const aantalMeer  = productenRijen.length - tonen.length
+  const tonen          = productenRijen.slice(0, MAX_PRODUCTEN)
+  const aantalMeer     = productenRijen.length - tonen.length
   const aantalProducten = productenRijen.length
 
-  const BC = "Barlow Condensed, sans-serif"  // condensed font — alleen geladen als fontData beschikbaar
+  // Lichtere variant van de supermarktkleur voor decoratieve elementen
+  const kleurLicht = kleur.fg === "#fff"
+    ? "rgba(255,255,255,0.12)"
+    : "rgba(0,0,0,0.06)"
 
   return (
     <div
@@ -64,198 +64,267 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc }: ShareI
         fontFamily: "sans-serif",
       }}
     >
-      {/* ── TOP BAND (supermarkt-kleur) ── */}
+      {/* ── HERO TOP BAND ── */}
       <div
         style={{
           display: "flex", flexDirection: "column",
-          padding: "36px 56px 32px",
+          alignItems: "center",
           background: kleur.bg,
+          padding: "40px 56px 44px",
           flexShrink: 0,
+          position: "relative",
         }}
       >
-        {/* Branding */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-            {appLogoSrc && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={appLogoSrc}
-                width={60} height={60}
-                alt="logo"
-                style={{ borderRadius: 14, flexShrink: 0 }}
-              />
-            )}
-            <span style={{ fontSize: 40, fontWeight: 700, color: "white", fontFamily: BC, letterSpacing: -0.5 }}>
-              Cheaper
-              <span style={{ color: "rgba(255,255,255,0.45)", fontWeight: 600 }}>Supermarkets</span>
-            </span>
-          </div>
-          <span
-            style={{
-              fontSize: 20, fontWeight: 600,
-              color: "rgba(255,255,255,0.75)",
-              border: "2.5px solid rgba(255,255,255,0.28)",
-              borderRadius: 999, padding: "6px 20px",
-            }}
-          >
-            beta
-          </span>
+        {/* Decoratieve cirkels op de achtergrond */}
+        <div style={{
+          position: "absolute", top: -60, right: -60,
+          width: 260, height: 260,
+          borderRadius: "50%",
+          background: kleurLicht,
+          display: "flex",
+        }} />
+        <div style={{
+          position: "absolute", bottom: -80, left: -40,
+          width: 200, height: 200,
+          borderRadius: "50%",
+          background: kleurLicht,
+          display: "flex",
+        }} />
+
+        {/* App-logo — grote witte cirkel centraal */}
+        <div
+          style={{
+            width: 148, height: 148,
+            borderRadius: "50%",
+            background: "white",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            marginBottom: 22,
+            borderWidth: 4, borderStyle: "solid",
+            borderColor: "rgba(255,255,255,0.35)",
+          }}
+        >
+          {appLogoSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={appLogoSrc} width={100} height={100} alt="CheaperSupermarkets" />
+          ) : (
+            <span style={{ fontSize: 72 }}>🛒</span>
+          )}
         </div>
 
-        {/* Supermarkt hero */}
-        <div style={{ display: "flex", alignItems: "center", gap: 28, marginTop: 28 }}>
-          {/* Logo box */}
-          <div
-            style={{
-              width: 112, height: 112,
-              borderRadius: 24,
-              background: "white",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0, overflow: "hidden",
-            }}
-          >
-            {logoSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={logoSrc} width={88} height={88} alt={winnaar} style={{ objectFit: "contain" }} />
-            ) : (
-              <span style={{ fontSize: 40, fontWeight: 900, color: kleur.bg, fontFamily: BC }}>
-                {winnaar.slice(0, 2).toUpperCase()}
-              </span>
-            )}
-          </div>
+        {/* Brand naam */}
+        <span style={{
+          fontSize: 46, fontWeight: 900, color: "white",
+          fontFamily: BC, letterSpacing: -0.5,
+        }}>
+          Cheaper
+          <span style={{ color: "rgba(255,255,255,0.45)", fontWeight: 700 }}>Supermarkets</span>
+        </span>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <span style={{ fontSize: 96, fontWeight: 900, color: "white", lineHeight: 1, letterSpacing: -2, fontFamily: BC }}>
-              {winnaar}
-            </span>
-            <div
-              style={{
-                display: "flex", alignItems: "center", gap: 12,
-                background: "rgba(255,255,255,0.15)",
-                borderRadius: 12, padding: "8px 22px",
-              }}
-            >
-              <span style={{ fontSize: 24, color: "#FDE68A" }}>★</span>
-              <span style={{ fontSize: 24, fontWeight: 700, color: "white", letterSpacing: 2, fontFamily: BC }}>
-                GOEDKOOPSTE KEUZE
-              </span>
-            </div>
-          </div>
+        {/* Winnaar badge */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10,
+          marginTop: 18,
+          background: "rgba(255,255,255,0.18)",
+          borderRadius: 999,
+          padding: "10px 28px",
+        }}>
+          <span style={{ fontSize: 22, color: "#FDE68A" }}>★</span>
+          <span style={{
+            fontSize: 22, fontWeight: 700,
+            color: "white", letterSpacing: 3, fontFamily: BC,
+          }}>
+            GOEDKOOPST GEVONDEN
+          </span>
+          <span style={{ fontSize: 22, color: "#FDE68A" }}>★</span>
         </div>
       </div>
 
-      {/* ── MAIN CONTENT ── */}
+      {/* ── SUPERMARKT HERO ── */}
+      <div
+        style={{
+          display: "flex", alignItems: "center",
+          gap: 24, padding: "28px 56px 24px",
+          background: CREAM2,
+          flexShrink: 0,
+        }}
+      >
+        {/* Supermarkt logo */}
+        <div
+          style={{
+            width: 96, height: 96,
+            borderRadius: 22,
+            background: "white",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0,
+            borderWidth: 2, borderStyle: "solid", borderColor: "#EDE3DA",
+          }}
+        >
+          {logoSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoSrc} width={74} height={74} alt={winnaar} />
+          ) : (
+            <span style={{ fontSize: 36, fontWeight: 900, color: kleur.bg, fontFamily: BC }}>
+              {winnaar.slice(0, 2).toUpperCase()}
+            </span>
+          )}
+        </div>
+
+        {/* Naam */}
+        <span style={{
+          fontSize: 82, fontWeight: 900,
+          color: kleur.bg, lineHeight: 1, letterSpacing: -2, fontFamily: BC,
+        }}>
+          {winnaar}
+        </span>
+      </div>
+
+      {/* ── BESPARING ── */}
+      <div
+        style={{
+          display: "flex", flexDirection: "column",
+          padding: "28px 56px 0",
+          flexShrink: 0,
+        }}
+      >
+        <span style={{
+          fontSize: 19, fontWeight: 700,
+          letterSpacing: 5, color: kleur.bg, opacity: 0.65,
+        }}>
+          {besparing != null ? "BESPARING T.O.V. GEMIDDELDE" : "TOTAALPRIJS"}
+        </span>
+        <span style={{
+          fontSize: 164, fontWeight: 900,
+          color: kleur.bg, lineHeight: 0.88, letterSpacing: -4,
+          fontFamily: BC,
+        }}>
+          {besparing != null ? fmt(besparing) : (prijs != null && isFinite(prijs) ? fmt(prijs) : "—")}
+        </span>
+        <span style={{
+          fontSize: 26, fontWeight: 400,
+          color: "#8a6a55", marginTop: 14,
+        }}>
+          op {aantalProducten} {aantalProducten === 1 ? "product" : "producten"}
+        </span>
+      </div>
+
+      {/* ── VERGELIJKINGSBALK ── */}
+      {gemiddelde != null && isFinite(gemiddelde) && (
+        <div
+          style={{
+            display: "flex", alignItems: "stretch",
+            margin: "24px 56px 0",
+            borderRadius: 20,
+            borderWidth: 2, borderStyle: "solid", borderColor: "#EDE3DA",
+            overflow: "hidden",
+            flexShrink: 0,
+          }}
+        >
+          <div style={{
+            display: "flex", flexDirection: "column", gap: 4,
+            padding: "18px 28px", flexGrow: 1, background: "#FFF7F2",
+          }}>
+            <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: 2, color: "#c4927e" }}>
+              GEMIDDELD ELDERS
+            </span>
+            <span style={{
+              fontSize: 64, fontWeight: 900, color: "#c4927e",
+              letterSpacing: -2, textDecoration: "line-through", fontFamily: BC,
+            }}>
+              {fmt(gemiddelde)}
+            </span>
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center",
+            padding: "0 16px", background: "#FFF7F2",
+          }}>
+            <span style={{ fontSize: 36, color: kleur.bg, fontWeight: 700, opacity: 0.35 }}>→</span>
+          </div>
+          <div style={{
+            display: "flex", flexDirection: "column", gap: 4,
+            padding: "18px 28px", background: kleur.bg,
+          }}>
+            <span style={{
+              fontSize: 17, fontWeight: 700,
+              letterSpacing: 2, color: "rgba(255,255,255,0.55)",
+            }}>
+              BIJ {winnaar.toUpperCase()}
+            </span>
+            <span style={{
+              fontSize: 64, fontWeight: 900, color: "white",
+              letterSpacing: -2, fontFamily: BC,
+            }}>
+              {prijs != null && isFinite(prijs) ? fmt(prijs) : "—"}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* ── PRODUCTENLIJST ── */}
       <div
         style={{
           flex: 1, display: "flex", flexDirection: "column",
-          padding: "36px 56px 0",
+          padding: "20px 56px 0",
         }}
       >
-        {/* Besparing hero */}
-        <div style={{ display: "flex", flexDirection: "column", marginBottom: 28 }}>
-          <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: 5, color: kleur.bg, opacity: 0.6 }}>
-            BESPARING
+        {/* Header */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 16, marginBottom: 8,
+        }}>
+          <div style={{ flex: 1, height: 1, background: "#EDE3DA", display: "flex" }} />
+          <span style={{
+            fontSize: 17, fontWeight: 700, letterSpacing: 3, color: "#C4A898",
+          }}>
+            JOUW LIJST
           </span>
-          <span
-            style={{
-              fontSize: 192, fontWeight: 900,
-              color: kleur.bg, lineHeight: 0.88, letterSpacing: -5,
-              fontFamily: BC,
-            }}
-          >
-            {besparing != null ? fmt(besparing) : (prijs != null && isFinite(prijs) ? fmt(prijs) : "—")}
-          </span>
-          <span style={{ fontSize: 28, fontWeight: 400, color: "#8a6a55", marginTop: 18 }}>
-            op je boodschappenlijst van {aantalProducten} producten
-          </span>
+          <div style={{ flex: 1, height: 1, background: "#EDE3DA", display: "flex" }} />
         </div>
-
-        {/* Prijsvergelijkingsbalk */}
-        {gemiddelde != null && isFinite(gemiddelde) && (
-          <div
-            style={{
-              display: "flex", alignItems: "stretch",
-              borderRadius: 24, border: "3px solid #F0D0C5",
-              overflow: "hidden", marginBottom: 32,
-            }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "24px 36px", flex: 1, background: "#FFF5F2" }}>
-              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: 2, color: "#c4927e" }}>
-                GEMIDDELD ELDERS
-              </span>
-              <span style={{ fontSize: 76, fontWeight: 900, color: "#c4927e", letterSpacing: -2, textDecoration: "line-through", fontFamily: BC }}>
-                {fmt(gemiddelde)}
-              </span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", padding: "0 20px", background: "#FFF5F2" }}>
-              <span style={{ fontSize: 40, color: kleur.bg, fontWeight: 700, opacity: 0.4 }}>→</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "24px 36px", background: kleur.bg }}>
-              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: 2, color: "rgba(255,255,255,0.55)" }}>
-                BIJ {winnaar.toUpperCase()}
-              </span>
-              <span style={{ fontSize: 76, fontWeight: 900, color: "white", letterSpacing: -2, fontFamily: BC }}>
-                {prijs != null && isFinite(prijs) ? fmt(prijs) : "—"}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Divider */}
-        <div style={{ height: 2, background: "#EDE3DA", marginBottom: 20 }} />
-
-        {/* Productenlijst */}
-        <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: 3, color: "#C4A898", marginBottom: 10 }}>
-          JOUW LIJST
-        </span>
 
         {tonen.map((p, i) => (
           <div
             key={i}
             style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "13px 0", borderBottom: "1.5px solid #F0E8E0",
+              padding: "11px 0",
+              borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "#F0E8E0",
             }}
           >
-            <span style={{ fontSize: 26, color: "#3a2a1a", fontWeight: 400, maxWidth: 680 }}>
+            <span style={{ fontSize: 24, color: "#3a2a1a", fontWeight: 400, maxWidth: 680 }}>
               {p.naam}
             </span>
-            <span style={{ fontSize: 28, fontWeight: 700, color: "#1c0a00", flexShrink: 0, fontFamily: BC }}>
+            <span style={{
+              fontSize: 26, fontWeight: 700, color: kleur.bg, flexShrink: 0, fontFamily: BC,
+            }}>
               {p.prijs != null ? fmt(p.prijs) : "—"}
             </span>
           </div>
         ))}
 
         {aantalMeer > 0 && (
-          <span style={{ fontSize: 24, color: "#B8A898", marginTop: 12, fontWeight: 400 }}>
+          <span style={{ fontSize: 22, color: "#B8A898", marginTop: 10, fontWeight: 400 }}>
             + {aantalMeer} meer {aantalMeer === 1 ? "product" : "producten"}
           </span>
         )}
 
-        {/* Totaalregel */}
-        <div style={{ height: 2, background: "#EDE3DA", marginTop: 20 }} />
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "16px 0" }}>
-          <span style={{ fontSize: 30, fontWeight: 500, color: "#3a2a1a" }}>
-            Totaal ({aantalProducten} {aantalProducten === 1 ? "product" : "producten"})
-          </span>
-          <span style={{ fontSize: 76, fontWeight: 900, color: kleur.bg, letterSpacing: -2, fontFamily: BC }}>
-            {prijs != null && isFinite(prijs) ? fmt(prijs) : "—"}
-          </span>
-        </div>
       </div>
 
       {/* ── FOOTER ── */}
       <div
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "22px 56px",
+          padding: "0 56px",
+          height: 76,
           background: DARK,
+          flexShrink: 0,
+          marginTop: 20,
         }}
       >
-        <span style={{ fontSize: 22, color: "#6b4a38", fontWeight: 400 }}>
+        <span style={{ fontSize: 21, color: "#6b4a38", fontWeight: 400 }}>
           Begin vandaag nog met besparen
         </span>
-        <span style={{ fontSize: 26, fontWeight: 700, color: "#4ade80", letterSpacing: -0.5, fontFamily: BC }}>
+        <span style={{
+          fontSize: 24, fontWeight: 700, color: "#4ade80",
+          letterSpacing: -0.5, fontFamily: BC,
+        }}>
           cheapersupermarkets.com →
         </span>
       </div>
