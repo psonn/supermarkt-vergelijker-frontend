@@ -139,13 +139,13 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
         const file = new File([blob], "vergelijking.png", { type: "image/png" })
         await navigator.share({
           files: [file],
-          title: "CheaperSupermarkets vergelijking",
+          title: "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!",
         })
       } else {
         // Alleen als de afbeelding niet geladen kon worden: deel link
         await navigator.share({
           url: deelUrl ?? window.location.href,
-          title: "CheaperSupermarkets vergelijking",
+          title: "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!",
         })
       }
     } catch {
@@ -168,7 +168,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
 
   if (!open) return null
 
-  const deelTekst = "Bekijk mijn supermarktprijsvergelijking via CheaperSupermarkets!"
+  const deelTekst = "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!"
   const huidigUrl = typeof window !== "undefined" ? (deelUrl ?? window.location.href) : ""
 
   return (

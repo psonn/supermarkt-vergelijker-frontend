@@ -209,7 +209,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
             </span>
             <span style={{
               fontFamily: BC, fontSize: 62, fontWeight: 900,
-              color: "#d1d5db", letterSpacing: -2, textDecoration: "line-through",
+              color: "#374151", letterSpacing: -2, textDecoration: "line-through",
             }}>
               {fmt(gemiddelde)}
             </span>
