@@ -3,8 +3,10 @@
 import { useState } from "react"
 import { MessageSquarePlus, X, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "next-intl"
 
 export default function FloatingFeedbackKnop() {
+  const t = useTranslations("feedback")
   const [open, setOpen] = useState(false)
   const [bericht, setBericht] = useState("")
   const [bezig, setBezig] = useState(false)
@@ -35,7 +37,7 @@ export default function FloatingFeedbackKnop() {
       {open && (
         <div className="w-72 rounded-2xl border bg-background shadow-xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/40">
-            <span className="text-sm font-semibold">Feedback</span>
+            <span className="text-sm font-semibold">{t("titel")}</span>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -49,17 +51,17 @@ export default function FloatingFeedbackKnop() {
             {verstuurd ? (
               <div className="flex items-center gap-2 text-success">
                 <Check size={16} strokeWidth={2.5} />
-                <p className="text-sm font-medium">Bedankt voor je feedback!</p>
+                <p className="text-sm font-medium">{t("bedankt")}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  Fout gevonden of suggestie? Laat het ons weten.
+                  {t("intro")}
                 </p>
                 <textarea
                   value={bericht}
                   onChange={(e) => setBericht(e.target.value)}
-                  placeholder="Beschrijf je feedback..."
+                  placeholder={t("placeholder")}
                   rows={3}
                   disabled={bezig}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
@@ -70,7 +72,7 @@ export default function FloatingFeedbackKnop() {
                   disabled={bezig || !bericht.trim()}
                   className="w-full"
                 >
-                  {bezig ? "Versturen…" : "Verstuur"}
+                  {bezig ? t("versturen") : t("verstuur")}
                 </Button>
               </form>
             )}
@@ -82,11 +84,11 @@ export default function FloatingFeedbackKnop() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        title="Feedback geven"
+        title={t("knopLabel")}
         className="flex items-center gap-2 rounded-full bg-primary text-primary-foreground shadow-lg px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
       >
         <MessageSquarePlus size={16} strokeWidth={2} />
-        Feedback
+        {t("knopTekst")}
       </button>
     </div>
   )

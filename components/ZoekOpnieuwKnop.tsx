@@ -5,7 +5,7 @@ import { useRouter } from "@/lib/i18n-navigation"
 import { Button } from "@/components/ui/button"
 import { RefreshCw } from "lucide-react"
 import { startVergelijking } from "@/lib/api"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 interface Props {
   producten: string[]
@@ -15,6 +15,7 @@ interface Props {
 }
 
 export default function ZoekOpnieuwKnop({ producten, locatie, supermarkten, updateLijstId }: Props) {
+  const t = useTranslations("resultatenpagina")
   const router = useRouter()
   const locale = useLocale()
   const [laden, setLaden] = useState(false)
@@ -46,7 +47,7 @@ export default function ZoekOpnieuwKnop({ producten, locatie, supermarkten, upda
     <div className="flex flex-col items-end gap-1">
       <Button size="sm" className="shrink-0 gap-1.5" onClick={handleClick} disabled={laden}>
         <RefreshCw size={13} strokeWidth={2.5} className={laden ? "animate-spin" : ""} />
-        {laden ? "Bezig…" : "Zoek opnieuw"}
+        {laden ? t("zoekOpnieuwBezig") : t("zoekOpnieuw")}
       </Button>
       {fout && <p className="text-xs text-destructive">{fout}</p>}
     </div>

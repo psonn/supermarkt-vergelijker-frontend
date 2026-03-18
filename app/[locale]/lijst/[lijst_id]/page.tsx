@@ -6,6 +6,7 @@ import TijdLabel from "@/components/TijdLabel"
 import DeelKnop from "@/components/DeelKnop"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 
 const BASE = "https://www.cheapersupermarkets.com"
 
@@ -61,7 +62,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PubliekeLijstPagina({ params }: Props) {
-  const { lijst_id } = await params
+  const { lijst_id, locale } = await params
+  const t = await getTranslations({ locale, namespace: "publiekeLijst" })
 
   const supabase = supabaseClient()
   if (!supabase) notFound()
@@ -88,7 +90,7 @@ export default async function PubliekeLijstPagina({ params }: Props) {
       {/* Timestamp */}
       {lijst.laatste_vergelijking && (
         <p className="text-sm text-muted-foreground mb-6">
-          Laatste vergelijking: <TijdLabel iso={lijst.laatste_vergelijking} />
+          {t("laatsVergelijking")} <TijdLabel iso={lijst.laatste_vergelijking} />
         </p>
       )}
 
@@ -99,10 +101,10 @@ export default async function PubliekeLijstPagina({ params }: Props) {
       {/* CTA */}
       <div className="mt-10 text-center space-y-3">
         <p className="text-sm text-muted-foreground">
-          Vergelijk ook jouw boodschappenlijst gratis
+          {t("cta")}
         </p>
         <Link href="/">
-          <Button>Maak mijn eigen vergelijking</Button>
+          <Button>{t("ctaKnop")}</Button>
         </Link>
       </div>
     </main>

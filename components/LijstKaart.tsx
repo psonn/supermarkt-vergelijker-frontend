@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { startVergelijking } from "@/lib/api"
 import { Bell, Pencil, Trash2, Check, X, Play, BarChart2, Car, Bike, PersonStanding, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -54,6 +54,7 @@ function chipsNaarProducten(chips: ChipItem[]): string[] {
 }
 
 export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: initieleAlert, heeft_resultaat = false, supermarkten }: Props) {
+  const t = useTranslations("lijstKaart")
   const router = useRouter()
   const locale = useLocale()
   const [alertOpen, setAlertOpen] = useState(false)
@@ -114,7 +115,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
         : `/resultaten/${job.job_id}${actiefLocatie.trim() ? `?locatie=${encodeURIComponent(actiefLocatie.trim())}` : ""}`
       router.push(url)
     } catch {
-      setFout("Vergelijking starten mislukt. Probeer het opnieuw.")
+      setFout(t("foutVergelijking"))
       setVergelijkBezig(false)
     }
   }
@@ -127,7 +128,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       await supabase.from("lijsten").update({ naam: nieuweNaam.trim() }).eq("id", lijst.id)
       setNaam(nieuweNaam.trim())
       setHernoemen(false)
-    } catch { setFout("Naam wijzigen mislukt. Probeer het opnieuw.") }
+    } catch { setFout(t("foutNaam")) }
     setBezig(false)
   }
 
@@ -147,7 +148,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       setProducten(nieuweProducten)
       setBewerken(false)
       setFiltersOpen(false)
-    } catch { setFout("Opslaan mislukt. Probeer het opnieuw.") }
+    } catch { setFout(t("foutOpslaan")) }
     setBezig(false)
   }
 
@@ -157,7 +158,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
       const supabase = createClient()
       await supabase.from("lijsten").delete().eq("id", lijst.id)
       router.refresh()
-    } catch { setFout("Lijst verwijderen mislukt. Probeer het opnieuw."); setBezig(false) }
+    } catch { setFout(t("foutVerwijderen")); setBezig(false) }
   }
 
   function annuleerBewerken() {
@@ -189,10 +190,10 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                   disabled={bezig}
                   maxLength={100}
                 />
-                <button type="button" onClick={slaHernoemingOp} disabled={bezig} className="text-primary hover:opacity-70" aria-label="Naam opslaan">
+                <button type="button" onClick={slaHernoemingOp} disabled={bezig} className="text-primary hover:opacity-70" aria-label={t("opslaan")}>
                   <Check size={15} strokeWidth={2.5} />
                 </button>
-                <button type="button" onClick={() => setHernoemen(false)} className="text-muted-foreground hover:opacity-70" aria-label="Hernoemen annuleren">
+                <button type="button" onClick={() => setHernoemen(false)} className="text-muted-foreground hover:opacity-70" aria-label={t("hernoemAnnuleer")}>
                   <X size={15} strokeWidth={2.5} />
                 </button>
               </div>
@@ -203,23 +204,23 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                   type="button"
                   onClick={() => { setNieuweNaam(naam); setHernoemen(true) }}
                   className="opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity text-muted-foreground"
-                  title="Hernoemen"
-                  aria-label={`${naam} hernoemen`}
+                  title={t("hernoemen")}
+                  aria-label={t("hernoemLabel", { naam })}
                 >
                   <Pencil size={12} strokeWidth={2} />
                 </button>
               </div>
             )}
             <CardDescription>
-              {gegroepeerd.length} producten ·{" "}
-              {new Date(lijst.aangemaakt_op).toLocaleDateString("nl-NL")}
+              {t("productenTelling", { count: gegroepeerd.length })} ·{" "}
+              {new Date(lijst.aangemaakt_op).toLocaleDateString(locale)}
             </CardDescription>
           </div>
 
           <button
             type="button"
             onClick={() => setAlertOpen((v) => !v)}
-            title={alert ? "Prijsalert actief — klik om te bewerken" : "Prijsalert instellen"}
+            title={alert ? t("alertActief") : t("alertInstellen")}
             className={`mt-0.5 transition-opacity ${alert ? "opacity-100 text-primary" : "opacity-40 hover:opacity-70"}`}
           >
             <Bell size={18} strokeWidth={2} fill={alert ? "currentColor" : "none"} />
@@ -240,20 +241,20 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
               className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               {filtersOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-              Filters {filtersOpen ? "verbergen" : "bewerken"}
+              {t("filtersLabel")} {filtersOpen ? t("filtersVerbergen") : t("filtersBewerken")}
             </button>
 
             {filtersOpen && (
               <div className="space-y-3 pl-1 border-l-2 border-muted ml-1">
                 {/* Locatie */}
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground font-medium">Locatie</p>
+                  <p className="text-xs text-muted-foreground font-medium">{t("locatieLabel")}</p>
                   <LocatieInput waarde={actiefLocatie} onChange={setActiefLocatie} disabled={bezig} />
                 </div>
 
                 {/* Supermarkten */}
                 <div className="space-y-1.5">
-                  <p className="text-xs text-muted-foreground font-medium">Supermarkten</p>
+                  <p className="text-xs text-muted-foreground font-medium">{t("supermarktenLabel")}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {ALLE_SUPERMARKTEN.map((sm) => {
                       const actief = actiefSupermarkten.includes(sm)
@@ -284,7 +285,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                 {actiefLocatie.trim() && (
                   <div className="flex gap-3 items-end">
                     <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground font-medium">Straal</p>
+                      <p className="text-xs text-muted-foreground font-medium">{t("straalLabel")}</p>
                       <select
                         value={actiefStraal}
                         onChange={(e) => setActiefStraal(Number(e.target.value))}
@@ -297,7 +298,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                       </select>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground font-medium">Vervoer</p>
+                      <p className="text-xs text-muted-foreground font-medium">{t("vervoerLabel")}</p>
                       <div className="flex gap-1">
                         {VERVOER_OPTIES.map(({ value, icon }) => (
                           <button
@@ -323,10 +324,10 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
 
             <div className="flex gap-2">
               <Button size="sm" onClick={slaBewerkingenOp} disabled={bezig || bewerkChips.length === 0}>
-                <Check size={13} strokeWidth={2.5} className="mr-1" />Opslaan
+                <Check size={13} strokeWidth={2.5} className="mr-1" />{t("opslaan")}
               </Button>
               <Button size="sm" variant="ghost" onClick={annuleerBewerken}>
-                Annuleren
+                {t("annuleren")}
               </Button>
             </div>
           </div>
@@ -339,8 +340,8 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
         {/* Alert samenvatting */}
         {alert && !alertOpen && !bewerken && (
           <p className="text-xs text-muted-foreground">
-            Alert: {alert.frequentie === "meteen" ? "zo snel mogelijk" : alert.frequentie} ·{" "}
-            {alert.drempel_procent === 0 ? "elke daling" : `≥ ${alert.drempel_procent}%`} ·{" "}
+            Alert: {alert.frequentie === "meteen" ? t("alertFreqMeteen") : alert.frequentie} ·{" "}
+            {alert.drempel_procent === 0 ? t("alertElkeDaling") : `≥ ${alert.drempel_procent}%`} ·{" "}
             {alert.email}
           </p>
         )}
@@ -354,27 +355,27 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
               <Link href={`/mijn-lijsten/${lijst.id}`}>
                 <Button size="sm" variant="outline" className="gap-1.5">
                   <BarChart2 size={13} strokeWidth={2} />
-                  Resultaten
+                  {t("resultaten")}
                 </Button>
               </Link>
             )}
             <Button size="sm" className="gap-1.5" onClick={startVergelijkNu} disabled={vergelijkBezig || bezig}>
               <Play size={12} strokeWidth={2.5} fill="currentColor" />
-              {vergelijkBezig ? "Bezig…" : "Vergelijk nu"}
+              {vergelijkBezig ? t("vergelijkBezig") : t("vergelijkNu")}
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => { setBewerkChips(groepeerProducten(producten)); setBewerken(true) }}
             >
-              <Pencil size={13} strokeWidth={2} className="mr-1" />Bewerken
+              <Pencil size={13} strokeWidth={2} className="mr-1" />{t("bewerken")}
             </Button>
 
             {verwijderConfirm ? (
               <div className="flex items-center gap-1.5 ml-auto">
-                <span className="text-xs text-muted-foreground">Zeker weten?</span>
+                <span className="text-xs text-muted-foreground">{t("zekerWeten")}</span>
                 <Button size="sm" variant="destructive" onClick={verwijder} disabled={bezig}>
-                  <Trash2 size={13} strokeWidth={2} className="mr-1" />Ja, verwijder
+                  <Trash2 size={13} strokeWidth={2} className="mr-1" />{t("jaVerwijder")}
                 </Button>
                 <Button size="sm" variant="ghost" onClick={() => setVerwijderConfirm(false)}>
                   <X size={13} strokeWidth={2} />
@@ -387,7 +388,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
                 variant="ghost"
                 onClick={() => setVerwijderConfirm(true)}
                 className="ml-auto text-muted-foreground hover:text-destructive transition-colors"
-                title="Verwijderen"
+                title={t("verwijderenLabel")}
               >
                 <Trash2 size={15} strokeWidth={2} />
               </Button>
@@ -398,9 +399,9 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
         {/* Prijsalert formulier */}
         {alertOpen && (
           <div className="pt-3 border-t space-y-2">
-            <p className="text-sm font-medium">Prijsalert</p>
+            <p className="text-sm font-medium">{t("prijsalertTitel")}</p>
             <p className="text-xs text-muted-foreground">
-              Ontvang een e-mail als de goedkoopste optie voor deze lijst daalt.
+              {t("prijsalertTekst")}
             </p>
             <PrijsAlertFormulier
               lijstId={lijst.id}

@@ -5,22 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
 import type { PrijsAlert } from "@/lib/api"
-
-const DREMPEL_OPTIES = [
-  { label: "Elke daling", value: 0 },
-  { label: "≥ 2%", value: 2 },
-  { label: "≥ 5%", value: 5 },
-  { label: "≥ 10%", value: 10 },
-]
-
-const FREQUENTIE_OPTIES = [
-  { label: "Zo snel mogelijk", value: "meteen" },
-  { label: "1× per dag", value: "dagelijks" },
-  { label: "1× per week", value: "wekelijks" },
-  { label: "1× per maand", value: "maandelijks" },
-] as const
-
-const DAGEN_WEEK = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"]
+import { useTranslations } from "next-intl"
 
 interface Props {
   lijstId: string
@@ -37,6 +22,24 @@ export default function PrijsAlertFormulier({
   onOpgeslagen,
   onVerwijderd,
 }: Props) {
+  const t = useTranslations("prijsAlert")
+
+  const DREMPEL_OPTIES = [
+    { label: t("drempelElkeDaling"), value: 0 },
+    { label: t("drempel2"), value: 2 },
+    { label: t("drempel5"), value: 5 },
+    { label: t("drempel10"), value: 10 },
+  ]
+
+  const FREQUENTIE_OPTIES = [
+    { label: t("freqMeteen"), value: "meteen" as const },
+    { label: t("freqDagelijks"), value: "dagelijks" as const },
+    { label: t("freqWekelijks"), value: "wekelijks" as const },
+    { label: t("freqMaandelijks"), value: "maandelijks" as const },
+  ]
+
+  const DAGEN_WEEK = [t("dagMa"), t("dagDi"), t("dagWo"), t("dagDo"), t("dagVr"), t("dagZa"), t("dagZo")]
+
   const [email, setEmail] = useState(bestaandeAlert?.email ?? gebruikerEmail)
   const [drempel, setDrempel] = useState(bestaandeAlert?.drempel_procent ?? 5)
   const [frequentie, setFrequentie] = useState<PrijsAlert["frequentie"]>(
@@ -121,7 +124,7 @@ export default function PrijsAlertFormulier({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* E-mailadres */}
         <div className="sm:col-span-2 space-y-1.5">
-          <label htmlFor={`email-${lijstId}`} className="label-section">E-mailadres</label>
+          <label htmlFor={`email-${lijstId}`} className="label-section">{t("emailLabel")}</label>
           <Input
             id={`email-${lijstId}`}
             type="email"
@@ -134,7 +137,7 @@ export default function PrijsAlertFormulier({
 
         {/* Drempel */}
         <div className="space-y-1.5">
-          <label className="label-section">Stuur mail bij prijsdaling van</label>
+          <label className="label-section">{t("drempelLabel")}</label>
           <div className="flex flex-wrap gap-2">
             {DREMPEL_OPTIES.map((opt) => (
               <button
@@ -156,7 +159,7 @@ export default function PrijsAlertFormulier({
 
         {/* Frequentie */}
         <div className="space-y-1.5">
-          <label className="label-section">Hoe vaak?</label>
+          <label className="label-section">{t("frequentieLabel")}</label>
           <div className="flex flex-wrap gap-2">
             {FREQUENTIE_OPTIES.map((opt) => (
               <button
@@ -180,7 +183,7 @@ export default function PrijsAlertFormulier({
         {toonDag && (
           <div className="space-y-1.5">
             <label htmlFor={`dag-${lijstId}`} className="label-section">
-              {frequentie === "wekelijks" ? "Op welke dag?" : "Op welke dag van de maand?"}
+              {frequentie === "wekelijks" ? t("dagLabelWekelijks") : t("dagLabelMaandelijks")}
             </label>
             {frequentie === "wekelijks" ? (
               <select
@@ -211,7 +214,7 @@ export default function PrijsAlertFormulier({
         {/* Tijdstip */}
         {toonUur && (
           <div className="space-y-1.5">
-            <label htmlFor={`uur-${lijstId}`} className="label-section">Tijdstip</label>
+            <label htmlFor={`uur-${lijstId}`} className="label-section">{t("tijdstipLabel")}</label>
             <select
               id={`uur-${lijstId}`}
               value={checkUur}
@@ -233,7 +236,7 @@ export default function PrijsAlertFormulier({
 
       <div className="flex gap-2">
         <Button type="submit" size="sm" disabled={laden}>
-          {laden ? "Bezig…" : bestaandeAlert ? "Bijwerken" : "Alert instellen"}
+          {laden ? t("bezig") : bestaandeAlert ? t("bijwerken") : t("instellen")}
         </Button>
         {bestaandeAlert && (
           <Button
@@ -243,7 +246,7 @@ export default function PrijsAlertFormulier({
             disabled={laden}
             onClick={verwijderen}
           >
-            Verwijderen
+            {t("verwijderen")}
           </Button>
         )}
       </div>

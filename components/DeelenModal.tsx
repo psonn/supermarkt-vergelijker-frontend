@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { X, Download, LinkIcon, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "next-intl"
 
 interface Props {
   open: boolean
@@ -13,6 +14,7 @@ interface Props {
 
 
 export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: Props) {
+  const t = useTranslations("deelModal")
   const [afbeeldingLaden, setAfbeeldingLaden] = useState(true)
   const [afbeeldingFout, setAfbeeldingFout] = useState(false)
   const [gekopieerd, setGekopieerd] = useState(false)
@@ -51,7 +53,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
     setBezig(true)
     const blob = await haalAfbeelding()
     const url = deelUrl ?? window.location.href
-    const tekst = `Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!\n${url}`
+    const tekst = `${t("deelTekst")}\n${url}`
     try {
       if (blob) {
         const file = new File([blob], "vergelijking.png", { type: "image/png" })
@@ -117,11 +119,11 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/60">
-          <span className="font-display font-bold text-base">Deel je vergelijking</span>
+          <span className="font-display font-bold text-base">{t("titel")}</span>
           <button
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors p-1 -mr-1"
-            aria-label="Sluiten"
+            aria-label={t("sluiten")}
           >
             <X size={18} strokeWidth={2} />
           </button>
@@ -139,7 +141,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={shareImagePath}
-                alt="Vergelijkingsafbeelding"
+                alt={t("afbeeldingAlt")}
                 className="w-full h-full object-contain"
                 onLoad={() => setAfbeeldingLaden(false)}
                 onError={() => { setAfbeeldingLaden(false); setAfbeeldingFout(true) }}
@@ -148,7 +150,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
             )}
             {afbeeldingFout && (
               <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-                Afbeelding kon niet worden geladen
+                {t("afbeeldingFout")}
               </div>
             )}
           </div>
@@ -161,7 +163,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
               disabled={bezig}
             >
               <Smartphone size={16} strokeWidth={2} />
-              {bezig ? "Laden…" : "Deel resultaat"}
+              {bezig ? t("laden") : t("deel")}
             </Button>
             <div className="flex gap-2">
               <Button
@@ -171,7 +173,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
                 disabled={bezig}
               >
                 <Download size={15} strokeWidth={2} />
-                Afbeelding opslaan
+                {t("opslaan")}
               </Button>
               <Button
                 variant="outline"
@@ -179,7 +181,7 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
                 onClick={kopieerLink}
               >
                 <LinkIcon size={15} strokeWidth={2} />
-                {gekopieerd ? "Gekopieerd!" : "Link kopiëren"}
+                {gekopieerd ? t("gekopieerd") : t("linkKopieren")}
               </Button>
             </div>
           </div>

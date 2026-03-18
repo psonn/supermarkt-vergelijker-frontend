@@ -298,7 +298,7 @@ export default function ProfielPagina() {
                 onChange={(e) => setWachtwoordNieuw(e.target.value)}
                 required
                 disabled={wachtwoordLaden}
-                placeholder="minimaal 6 tekens"
+                placeholder={t("wachtwoordMinPlaceholder")}
                 className="h-10 bg-background"
                 autoComplete="new-password"
               />
@@ -317,7 +317,7 @@ export default function ProfielPagina() {
                 onChange={(e) => setWachtwoordBevestig(e.target.value)}
                 required
                 disabled={wachtwoordLaden}
-                placeholder="••••••••"
+                placeholder={t("wachtwoordBevestigPlaceholder")}
                 className="h-10 bg-background"
                 autoComplete="new-password"
               />
@@ -336,10 +336,10 @@ export default function ProfielPagina() {
         </Sectie>
 
         {/* Opgeslagen adressen */}
-        <Sectie titel="Opgeslagen adressen">
+        <Sectie titel={t("adressenTitel")}>
           <div className="space-y-3">
             {adressen.length === 0 && !adresOpen && (
-              <p className="text-sm text-muted-foreground">Nog geen adressen opgeslagen.</p>
+              <p className="text-sm text-muted-foreground">{t("geenAdressen")}</p>
             )}
             {adressen.map((a) => (
               <div key={a.id} className="rounded-lg border bg-muted/30 overflow-hidden">
@@ -349,7 +349,7 @@ export default function ProfielPagina() {
                       type="text"
                       value={bewerkNaam}
                       onChange={(e) => setBewerkNaam(e.target.value)}
-                      placeholder="Naam"
+                      placeholder={t("adresNaamLabel")}
                       className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                       autoFocus
                       maxLength={50}
@@ -361,10 +361,10 @@ export default function ProfielPagina() {
                     />
                     <div className="flex gap-2">
                       <Button size="sm" onClick={slaAdresBewerkingOp} disabled={adresLaden || !bewerkNaam.trim() || !bewerkAdres.trim()}>
-                        {adresLaden ? "…" : "Opslaan"}
+                        {adresLaden ? "…" : t("adresOpslaan")}
                       </Button>
                       <Button size="sm" variant="ghost" onClick={() => setBewerkAdresId(null)}>
-                        Annuleer
+                        {t("adresAnnuleer")}
                       </Button>
                     </div>
                   </div>
@@ -379,8 +379,8 @@ export default function ProfielPagina() {
                       type="button"
                       onClick={() => { setBewerkAdresId(a.id); setBewerkNaam(a.naam); setBewerkAdres(a.adres) }}
                       className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                      title="Bewerken"
-                      aria-label={`${a.naam} bewerken`}
+                      title={t("adresBewerkenLabel", { naam: a.naam })}
+                      aria-label={t("adresBewerkenLabel", { naam: a.naam })}
                     >
                       <Pencil size={13} strokeWidth={2} />
                     </button>
@@ -388,8 +388,8 @@ export default function ProfielPagina() {
                       type="button"
                       onClick={() => verwijderAdres(a.id)}
                       className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                      title="Verwijderen"
-                      aria-label={`${a.naam} verwijderen`}
+                      title={t("adresVerwijderenLabel", { naam: a.naam })}
+                      aria-label={t("adresVerwijderenLabel", { naam: a.naam })}
                     >
                       <Trash2 size={13} strokeWidth={2} />
                     </button>
@@ -404,7 +404,7 @@ export default function ProfielPagina() {
                   type="text"
                   value={nieuwAdresNaam}
                   onChange={(e) => setNieuwAdresNaam(e.target.value)}
-                  placeholder="Naam (bijv. Thuis, Werk)"
+                  placeholder={t("adresNieuweNaamPlaceholder")}
                   className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   autoFocus
                   maxLength={50}
@@ -416,10 +416,10 @@ export default function ProfielPagina() {
                 />
                 <div className="flex gap-2">
                   <Button size="sm" onClick={voegAdresToe} disabled={adresLaden || !nieuwAdresNaam.trim() || !nieuwAdresAdres.trim()}>
-                    {adresLaden ? "Opslaan…" : "Opslaan"}
+                    {adresLaden ? t("adresOpslaanBezig") : t("adresOpslaan")}
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => { setAdresOpen(false); setNieuwAdresNaam(""); setNieuwAdresAdres("") }}>
-                    Annuleer
+                    {t("adresAnnuleer")}
                   </Button>
                 </div>
               </div>
@@ -429,17 +429,17 @@ export default function ProfielPagina() {
                 onClick={() => setAdresOpen(true)}
                 className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Plus size={14} strokeWidth={2} />Adres toevoegen
+                <Plus size={14} strokeWidth={2} />{t("adresToevoegen")}
               </button>
             )}
           </div>
         </Sectie>
 
         {/* Zoekvoorkeuren */}
-        <Sectie titel="Zoekvoorkeuren">
+        <Sectie titel={t("voorkeurenTitel")}>
           <div className="space-y-5">
             <div className="space-y-2">
-              <p className="label-section">Supermarkten</p>
+              <p className="label-section">{t("supermarktenLabel")}</p>
               <div className="flex flex-wrap gap-2">
                 {ALLE_SUPERMARKTEN.map((sm) => {
                   const actief = voorkeurSupermarkten.includes(sm)
@@ -467,7 +467,7 @@ export default function ProfielPagina() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <p className="label-section">Standaard straal</p>
+                <p className="label-section">{t("standaardStraalLabel")}</p>
                 <select
                   value={voorkeurStraal}
                   onChange={(e) => setVoorkeurStraal(Number(e.target.value))}
@@ -480,7 +480,7 @@ export default function ProfielPagina() {
               </div>
 
               <div className="space-y-2">
-                <p className="label-section">Vervoer</p>
+                <p className="label-section">{t("vervoerLabel")}</p>
                 <div className="flex gap-1">
                   {(["driving", "cycling", "walking"] as const).map((v) => {
                     const icons = { driving: <Car size={15} strokeWidth={2} />, cycling: <Bike size={15} strokeWidth={2} />, walking: <PersonStanding size={15} strokeWidth={2} /> }
@@ -503,7 +503,7 @@ export default function ProfielPagina() {
               </div>
             </div>
 
-            {voorkeurSucces && <Succesbox tekst="Voorkeuren opgeslagen" />}
+            {voorkeurSucces && <Succesbox tekst={t("voorkeurenOpgeslagen")} />}
             <Button
               type="button"
               variant="outline"
@@ -511,7 +511,7 @@ export default function ProfielPagina() {
               onClick={handleVoorkeurenOpslaan}
               disabled={voorkeurLaden}
             >
-              {voorkeurLaden ? "Opslaan…" : "Voorkeuren opslaan"}
+              {voorkeurLaden ? t("voorkeurenOpslaanBezig") : t("voorkeurenOpslaan")}
             </Button>
           </div>
         </Sectie>

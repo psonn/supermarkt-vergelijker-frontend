@@ -42,12 +42,12 @@ export default function DeelKnop({ shareImagePath, deelUrl }: Props) {
             onClick={() => setModalOpen(false)}
           >
             <div className="bg-background rounded-xl p-5 shadow-xl w-full max-w-sm space-y-3" onClick={(e) => e.stopPropagation()}>
-              <p className="font-semibold text-sm">Link kopiëren</p>
+              <p className="font-semibold text-sm">{t("kopierenLink")}</p>
               <Button className="w-full" onClick={async () => {
                 await navigator.clipboard.writeText(deelUrl ?? window.location.href)
                 setModalOpen(false)
               }}>
-                Kopieer link
+                {t("kopierenKnop")}
               </Button>
             </div>
           </div>
