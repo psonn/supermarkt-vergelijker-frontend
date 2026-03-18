@@ -42,8 +42,6 @@ const sentryConfig = {
   // Geen Sentry-wrapper als DSN niet geconfigureerd
   disableServerWebpackPlugin: !process.env.SENTRY_DSN && !process.env.NEXT_PUBLIC_SENTRY_DSN,
   disableClientWebpackPlugin: !process.env.SENTRY_DSN && !process.env.NEXT_PUBLIC_SENTRY_DSN,
-  // Verberg Sentry-tunnelroute om ad-blockers te omzeilen
-  tunnelRoute: "/monitoring",
 }
 
 export default withSentryConfig(withNextIntl(nextConfig), sentryConfig)
