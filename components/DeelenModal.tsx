@@ -130,24 +130,18 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
     }
   }, [shareImagePath])
 
-  // Deelt afbeelding + link via native share sheet
+  // Deelt afbeelding + link + tekst via native share sheet
   const natiefDelen = useCallback(async () => {
     setBezig(true)
     const blob = await haalAfbeelding()
     const url = deelUrl ?? window.location.href
+    const tekst = `Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!\n${url}`
     try {
       if (blob) {
         const file = new File([blob], "vergelijking.png", { type: "image/png" })
-        await navigator.share({
-          files: [file],
-          title: "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!",
-          text: url,
-        })
+        await navigator.share({ files: [file], text: tekst })
       } else {
-        await navigator.share({
-          url,
-          title: "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!",
-        })
+        await navigator.share({ url, text: tekst })
       }
     } catch {
       // Geannuleerd of niet ondersteund
@@ -155,17 +149,18 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
     setBezig(false)
   }, [haalAfbeelding, deelUrl])
 
-  // Platform-knop: op mobiel afbeelding meesturen via native share, op desktop URL openen
+  // Platform-knop: op mobiel native share met afbeelding, op desktop URL openen
   const platformDelen = useCallback(async (href: string | null) => {
     if (kanNatief) {
-      // Mobiel: native share met afbeelding — gebruiker kiest app uit het systeemmenu
       await natiefDelen()
     } else if (href) {
       window.open(href, "_blank", "noopener,noreferrer")
     }
   }, [kanNatief, natiefDelen])
 
-  // Sla afbeelding op als bestand (foto-rol op mobiel, downloads op desktop)
+  // Sla afbeelding op:
+  // - iOS Safari: <a download> werkt niet → native share zodat gebruiker "Bewaar afbeelding" kan kiezen
+  // - Android / desktop: blob-download via <a download>
   const slaOp = useCallback(async () => {
     setBezig(true)
     const blob = await haalAfbeelding()
@@ -174,14 +169,21 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
       window.open(shareImagePath, "_blank", "noopener,noreferrer")
       return
     }
-    const objectUrl = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = objectUrl
-    a.download = "cheapersupermarkets-vergelijking.png"
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(objectUrl)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+    if (isIOS && typeof navigator.share === "function") {
+      const file = new File([blob], "cheapersupermarkets-vergelijking.png", { type: "image/png" })
+      try { await navigator.share({ files: [file] }) } catch { /* geannuleerd */ }
+    } else {
+      const objectUrl = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = objectUrl
+      a.download = "cheapersupermarkets-vergelijking.png"
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(objectUrl)
+    }
   }, [haalAfbeelding, shareImagePath])
 
   const kopieerLink = useCallback(async () => {
