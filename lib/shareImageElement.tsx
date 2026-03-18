@@ -320,7 +320,7 @@ interface WauwProps {
   besparingsBedrag: string
 }
 
-function maakWauwVariant({ winnaar, prijs, besparing, gemiddelde, kleur, logoSrc, appLogoSrc, tonen, aantalMeer, aantalProducten, besparingsBedrag }: WauwProps) {
+function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSrc, tonen, aantalMeer, aantalProducten, besparingsBedrag }: WauwProps) {
   return (
     <div style={{
       width: 1080, height: 1350,
