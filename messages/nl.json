@@ -106,7 +106,9 @@
     "nietGevonden": "niet gevonden",
     "prijsMetAantal": "(€{prijs} × {count})",
     "ontbrekendeProducten": "Niet gevonden: {producten}",
-    "dekkingDetail": "{gevonden}/{totaal} producten gevonden"
+    "dekkingDetail": "{gevonden}/{totaal} producten gevonden",
+    "besteKeuze": "beste keuze",
+    "aanbevelingLocatieTekst": "Beste balans van prijs en reistijd voor jouw lijst."
   },
   "resultatenpagina": {
     "titel": "Vergelijkingsresultaten",
@@ -132,7 +134,11 @@
     "titel": "Mijn lijsten",
     "nieuweVergelijking": "Nieuwe vergelijking",
     "geenLijsten": "Je hebt nog geen lijsten opgeslagen.",
-    "startVergelijking": "Start een vergelijking"
+    "startVergelijking": "Start een vergelijking",
+    "terug": "Mijn lijsten",
+    "laatsVergelijking": "Laatste vergelijking:",
+    "geenResultatenVoorLijst": "Er zijn nog geen opgeslagen resultaten voor deze lijst.",
+    "vergelijkNu": "Vergelijk nu"
   },
   "login": {
     "inloggen": "Inloggen",

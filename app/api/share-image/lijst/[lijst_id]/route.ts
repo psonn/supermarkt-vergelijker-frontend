@@ -10,10 +10,11 @@ const WIDTH = 1080
 const HEIGHT = 1350
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ lijst_id: string }> }
 ) {
   const { lijst_id } = await params
+  const lang = new URL(request.url).searchParams.get("lang") ?? "nl"
   const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -42,7 +43,7 @@ export async function GET(
 
     return new ImageResponse(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      maakShareImageElement({ resultaat: lijst.laatste_resultaat as any, logoSrc, appLogoSrc }),
+      maakShareImageElement({ resultaat: lijst.laatste_resultaat as any, logoSrc, appLogoSrc, lang }),
       {
         width: WIDTH,
         height: HEIGHT,

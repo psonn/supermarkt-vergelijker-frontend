@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/server"
 import ResultatenTabel from "@/components/ResultatenTabel"
 import ZoekOpnieuwKnop from "@/components/ZoekOpnieuwKnop"
-import { getLocale } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import { ChevronLeft, Play } from "lucide-react"
 import type { Metadata } from "next"
 import TijdLabel from "@/components/TijdLabel"
@@ -21,6 +21,7 @@ export default async function LijstResultatenPagina({ params }: Props) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const locale = await getLocale()
+  const t = await getTranslations({ locale, namespace: "lijsten" })
 
   if (!user) {
     redirect({ href: `/login?redirect=/mijn-lijsten/${lijst_id}`, locale })
@@ -66,7 +67,7 @@ export default async function LijstResultatenPagina({ params }: Props) {
           <Link href="/mijn-lijsten">
             <Button variant="ghost" size="sm" className="shrink-0 -ml-2">
               <ChevronLeft size={16} strokeWidth={2} className="mr-1" />
-              Mijn lijsten
+              {t("terug")}
             </Button>
           </Link>
           <h1 className="text-lg sm:text-xl font-bold truncate">{lijst.naam}</h1>
@@ -74,7 +75,7 @@ export default async function LijstResultatenPagina({ params }: Props) {
         <div className="flex gap-2 shrink-0">
           {lijst.laatste_resultaat && (
             <DeelKnop
-              shareImagePath={`/api/share-image/lijst/${lijst_id}`}
+              shareImagePath={`/api/share-image/lijst/${lijst_id}${locale === "en" ? "?lang=en" : ""}`}
               deelUrl={`https://www.cheapersupermarkets.com/lijst/${lijst_id}`}
             />
           )}
@@ -90,7 +91,7 @@ export default async function LijstResultatenPagina({ params }: Props) {
       {/* Timestamp */}
       {lijst.laatste_vergelijking && (
         <p className="text-sm text-muted-foreground mb-6">
-          Laatste vergelijking: <TijdLabel iso={lijst.laatste_vergelijking} />
+          {t("laatsVergelijking")} <TijdLabel iso={lijst.laatste_vergelijking} />
         </p>
       )}
 
@@ -100,11 +101,11 @@ export default async function LijstResultatenPagina({ params }: Props) {
         <ResultatenTabel resultaat={lijst.laatste_resultaat as any} />
       ) : (
         <div className="text-center py-16 text-muted-foreground space-y-4">
-          <p>Er zijn nog geen opgeslagen resultaten voor deze lijst.</p>
+          <p>{t("geenResultatenVoorLijst")}</p>
           <Link href={vergelijkUrl}>
             <Button className="gap-2">
               <Play size={13} strokeWidth={2.5} fill="currentColor" />
-              Vergelijk nu
+              {t("vergelijkNu")}
             </Button>
           </Link>
         </div>

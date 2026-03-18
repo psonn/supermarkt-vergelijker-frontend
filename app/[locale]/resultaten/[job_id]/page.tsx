@@ -11,7 +11,7 @@ import WinkelwagenLader from "@/components/WinkelwagenLader"
 import { haalJobOp, type JobResponse } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
 import { Suspense } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 
 const POLL_INTERVAL_MS = 2000
 
@@ -22,6 +22,7 @@ function ResultatenInhoud() {
   const locatie = searchParams.get("locatie") ?? ""
   const updateLijstId = searchParams.get("update_lijst_id") ?? null
   const t = useTranslations("resultatenpagina")
+  const locale = useLocale()
 
   const [job, setJob] = useState<JobResponse | null>(null)
   const [fout, setFout] = useState<string | null>(null)
@@ -125,7 +126,7 @@ function ResultatenInhoud() {
               <Button variant="ghost" size="sm">← Mijn lijsten</Button>
             </Link>
           )}
-          <DeelKnop shareImagePath={`/api/share-image/job/${job_id}`} />
+          <DeelKnop shareImagePath={`/api/share-image/job/${job_id}${locale === "en" ? "?lang=en" : ""}`} />
           <Link href="/">
             <Button variant="outline" size="sm">{t("nieuweVergelijking")}</Button>
           </Link>

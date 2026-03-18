@@ -9,10 +9,11 @@ const WIDTH  = 1080
 const HEIGHT = 1350
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ job_id: string }> }
 ) {
   const { job_id } = await params
+  const lang = new URL(request.url).searchParams.get("lang") ?? "nl"
   const API_URL = process.env.SUPERMARKET_API_URL
   const API_KEY = process.env.SUPERMARKET_API_KEY
 
@@ -40,7 +41,7 @@ export async function GET(
     ])
 
     return new ImageResponse(
-      maakShareImageElement({ resultaat: job.resultaat, logoSrc, appLogoSrc }),
+      maakShareImageElement({ resultaat: job.resultaat, logoSrc, appLogoSrc, lang }),
       {
         width: WIDTH,
         height: HEIGHT,

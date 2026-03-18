@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import { X, Download, LinkIcon, Smartphone } from "lucide-react"
+import { X, LinkIcon, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTranslations } from "next-intl"
 
@@ -19,11 +19,6 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
   const [afbeeldingFout, setAfbeeldingFout] = useState(false)
   const [gekopieerd, setGekopieerd] = useState(false)
   const [bezig, setBezig] = useState(false)
-  const [kanNatief, setKanNatief] = useState(false)
-
-  useEffect(() => {
-    setKanNatief(typeof navigator !== "undefined" && typeof navigator.share === "function")
-  }, [])
 
   // Escape key + scroll lock
   useEffect(() => {
@@ -66,34 +61,6 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
     }
     setBezig(false)
   }, [haalAfbeelding, deelUrl])
-
-  // Sla afbeelding op:
-  // - iOS: navigator.share({ files }) → native sheet → tik "Bewaar afbeelding" voor camerarol
-  // - Android / desktop: blob-download via <a download>
-  const slaOp = useCallback(async () => {
-    setBezig(true)
-    const blob = await haalAfbeelding()
-    setBezig(false)
-    if (!blob) {
-      window.open(shareImagePath, "_blank", "noopener,noreferrer")
-      return
-    }
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-    if (isIOS && typeof navigator.share === "function") {
-      const file = new File([blob], "cheapersupermarkets-vergelijking.png", { type: "image/png" })
-      try { await navigator.share({ files: [file] }) } catch { /* geannuleerd */ }
-    } else {
-      const objectUrl = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = objectUrl
-      a.download = "cheapersupermarkets-vergelijking.png"
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(objectUrl)
-    }
-  }, [haalAfbeelding, shareImagePath])
 
   const kopieerLink = useCallback(async () => {
     const url = deelUrl ?? window.location.href
@@ -165,25 +132,14 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
               <Smartphone size={16} strokeWidth={2} />
               {bezig ? t("laden") : t("deel")}
             </Button>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex-1 gap-2"
-                onClick={slaOp}
-                disabled={bezig}
-              >
-                <Download size={15} strokeWidth={2} />
-                {t("opslaan")}
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 gap-2"
-                onClick={kopieerLink}
-              >
-                <LinkIcon size={15} strokeWidth={2} />
-                {gekopieerd ? t("gekopieerd") : t("linkKopieren")}
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              onClick={kopieerLink}
+            >
+              <LinkIcon size={15} strokeWidth={2} />
+              {gekopieerd ? t("gekopieerd") : t("linkKopieren")}
+            </Button>
           </div>
         </div>
       </div>

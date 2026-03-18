@@ -82,7 +82,7 @@ export default async function PubliekeLijstPagina({ params }: Props) {
       <div className="flex items-center justify-between mb-6 sm:mb-8 gap-3">
         <h1 className="text-lg sm:text-xl font-bold truncate">{lijst.naam}</h1>
         <DeelKnop
-          shareImagePath={`/api/share-image/lijst/${lijst_id}`}
+          shareImagePath={`/api/share-image/lijst/${lijst_id}${locale === "en" ? "?lang=en" : ""}`}
           deelUrl={`${BASE}/lijst/${lijst_id}`}
         />
       </div>

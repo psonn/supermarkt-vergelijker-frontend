@@ -16,6 +16,7 @@ export interface ShareImageData {
   logoSrc?: string
   appLogoSrc?: string
   variant?: "wauw" | "standaard"
+  lang?: string
 }
 
 const MAX_PRODUCTEN = 5
@@ -25,7 +26,45 @@ function fmt(n: number) {
   return `€${n.toFixed(2).replace(".", ",")}`
 }
 
-export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant = "wauw" }: ShareImageData) {
+function s(lang: string) {
+  const nl = {
+    wauwRegel1: "Wauw! Ik bespaar",
+    wauwRegel2: "op mijn boodschappenlijstje! 🎉",
+    goedkoopsteOptie: "💰 Goedkoopste optie",
+    mijnLijst: "MIJN LIJST",
+    meerProducten: (n: number) => `+ ${n} meer ${n === 1 ? "product" : "producten"}`,
+    footerTitel: "Bespaar ook via CheaperSupermarkets.com",
+    footerSub: (n: number) => `Vergelijk gratis jouw boodschappenlijst · ${n} producten · alle supermarkten`,
+    besparingLabel: "BESPARING T.O.V. GEMIDDELDE",
+    totaalprijs: "TOTAALPRIJS",
+    opProducten: (n: number) => `op ${n} ${n === 1 ? "product" : "producten"}`,
+    gemiddeldElders: "GEMIDDELD ELDERS",
+    bij: (naam: string) => `BIJ ${naam.toUpperCase()}`,
+    jouwLijst: "JOUW LIJST",
+    meerStandaard: (n: number) => `+ ${n} meer ${n === 1 ? "product" : "producten"}`,
+    beginTekst: "Begin vandaag nog met besparen",
+  }
+  const en = {
+    wauwRegel1: "Wow! I save",
+    wauwRegel2: "on my shopping list! 🎉",
+    goedkoopsteOptie: "💰 Cheapest option",
+    mijnLijst: "MY LIST",
+    meerProducten: (n: number) => `+ ${n} more ${n === 1 ? "product" : "products"}`,
+    footerTitel: "Save too with CheaperSupermarkets.com",
+    footerSub: (n: number) => `Free price comparison for your shopping list · ${n} products · all supermarkets`,
+    besparingLabel: "SAVINGS VS. AVERAGE",
+    totaalprijs: "TOTAL PRICE",
+    opProducten: (n: number) => `on ${n} ${n === 1 ? "product" : "products"}`,
+    gemiddeldElders: "AVERAGE ELSEWHERE",
+    bij: (naam: string) => `AT ${naam.toUpperCase()}`,
+    jouwLijst: "YOUR LIST",
+    meerStandaard: (n: number) => `+ ${n} more ${n === 1 ? "product" : "products"}`,
+    beginTekst: "Start saving today",
+  }
+  return lang === "en" ? en : nl
+}
+
+export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant = "wauw", lang = "nl" }: ShareImageData) {
   const verg: VergelijkingsResultaat =
     "vergelijking" in resultaat ? resultaat.vergelijking : resultaat
   const aanbevolen: string | undefined =
@@ -49,8 +88,10 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
     ? fmt(besparing)
     : (prijs != null && isFinite(prijs) ? fmt(prijs) : "—")
 
+  const str = s(lang)
+
   if (variant === "wauw") {
-    return maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSrc, tonen, aantalMeer, aantalProducten, besparingsBedrag })
+    return maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSrc, tonen, aantalMeer, aantalProducten, besparingsBedrag, str })
   }
 
   // ── STANDAARD VARIANT ──
@@ -175,7 +216,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
           fontSize: 19, fontWeight: 700, letterSpacing: 5,
           color: kleur.bg, opacity: 0.5,
         }}>
-          {besparing != null ? "BESPARING T.O.V. GEMIDDELDE" : "TOTAALPRIJS"}
+          {besparing != null ? str.besparingLabel : str.totaalprijs}
         </span>
         <span style={{
           fontFamily: BC, fontSize: 160, fontWeight: 900,
@@ -186,7 +227,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
         <span style={{
           fontSize: 26, color: "#777", marginTop: 14,
         }}>
-          op {aantalProducten} {aantalProducten === 1 ? "product" : "producten"}
+          {str.opProducten(aantalProducten)}
         </span>
       </div>
 
@@ -205,7 +246,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
             padding: "18px 28px", flex: 1, background: "#f9fafb",
           }}>
             <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: 2, color: "#9ca3af" }}>
-              GEMIDDELD ELDERS
+              {str.gemiddeldElders}
             </span>
             <span style={{
               fontFamily: BC, fontSize: 62, fontWeight: 900,
@@ -228,7 +269,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
               fontSize: 17, fontWeight: 700, letterSpacing: 2,
               color: kleur.fg === "#fff" ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.4)",
             }}>
-              BIJ {winnaar.toUpperCase()}
+              {str.bij(winnaar)}
             </span>
             <span style={{
               fontFamily: BC, fontSize: 62, fontWeight: 900,
@@ -250,7 +291,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
         }}>
           <div style={{ flex: 1, height: 1, background: "#e5e7eb", display: "flex" }} />
           <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: 3, color: "#9ca3af" }}>
-            JOUW LIJST
+            {str.jouwLijst}
           </span>
           <div style={{ flex: 1, height: 1, background: "#e5e7eb", display: "flex" }} />
         </div>
@@ -275,7 +316,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
 
         {aantalMeer > 0 && (
           <span style={{ fontSize: 22, color: "#9ca3af", marginTop: 10 }}>
-            + {aantalMeer} meer {aantalMeer === 1 ? "product" : "producten"}
+            {str.meerStandaard(aantalMeer)}
           </span>
         )}
       </div>
@@ -293,7 +334,7 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
           fontSize: 22,
           color: kleur.fg === "#fff" ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.4)",
         }}>
-          Begin vandaag nog met besparen
+          {str.beginTekst}
         </span>
         <span style={{
           fontFamily: BC, fontSize: 26, fontWeight: 700,
@@ -307,6 +348,8 @@ export function maakShareImageElement({ resultaat, logoSrc, appLogoSrc, variant 
 }
 
 // ── WAUW VARIANT ──
+type Strings = ReturnType<typeof s>
+
 interface WauwProps {
   winnaar: string
   prijs: number | undefined
@@ -318,9 +361,10 @@ interface WauwProps {
   aantalMeer: number
   aantalProducten: number
   besparingsBedrag: string
+  str: Strings
 }
 
-function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSrc, tonen, aantalMeer, aantalProducten, besparingsBedrag }: WauwProps) {
+function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSrc, tonen, aantalMeer, aantalProducten, besparingsBedrag, str }: WauwProps) {
   return (
     <div style={{
       width: 1080, height: 1350,
@@ -376,7 +420,7 @@ function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSr
           color: "#111827", letterSpacing: -1, lineHeight: 1,
           marginBottom: 0,
         }}>
-          Wauw! Ik bespaar
+          {str.wauwRegel1}
         </span>
 
         <span style={{
@@ -391,7 +435,7 @@ function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSr
           fontFamily: BC, fontSize: 60, fontWeight: 700,
           color: "#374151", letterSpacing: -0.5, marginTop: 16,
         }}>
-          op mijn boodschappenlijstje! 🎉
+          {str.wauwRegel2}
         </span>
       </div>
 
@@ -422,7 +466,7 @@ function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSr
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
           <span style={{ fontSize: 19, color: "#6b7280", fontWeight: 600, letterSpacing: 1 }}>
-            💰 Goedkoopste optie
+            {str.goedkoopsteOptie}
           </span>
           <span style={{
             fontFamily: BC, fontSize: 64, fontWeight: 900,
@@ -462,7 +506,7 @@ function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSr
         }}>
           <div style={{ flex: 1, height: 1, background: "#e5e7eb", display: "flex" }} />
           <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: 3, color: "#9ca3af" }}>
-            MIJN LIJST
+            {str.mijnLijst}
           </span>
           <div style={{ flex: 1, height: 1, background: "#e5e7eb", display: "flex" }} />
         </div>
@@ -487,7 +531,7 @@ function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSr
 
         {aantalMeer > 0 && (
           <span style={{ fontSize: 22, color: "#9ca3af", marginTop: 10 }}>
-            + {aantalMeer} meer {aantalMeer === 1 ? "product" : "producten"}
+            {str.meerProducten(aantalMeer)}
           </span>
         )}
       </div>
@@ -505,13 +549,13 @@ function maakWauwVariant({ winnaar, prijs, gemiddelde, kleur, logoSrc, appLogoSr
           fontFamily: BC, fontSize: 38, fontWeight: 900,
           color: "white", letterSpacing: -0.5,
         }}>
-          Bespaar ook via CheaperSupermarkets.com
+          {str.footerTitel}
         </span>
         <span style={{
           fontSize: 22,
           color: kleur.fg === "#fff" ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.4)",
         }}>
-          Vergelijk gratis jouw boodschappenlijst · {aantalProducten} producten · alle supermarkten
+          {str.footerSub(aantalProducten)}
         </span>
       </div>
     </div>
