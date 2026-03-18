@@ -130,21 +130,22 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
     }
   }, [shareImagePath])
 
-  // Deelt altijd de afbeelding — geen stille fallback naar link-only
+  // Deelt afbeelding + link via native share sheet
   const natiefDelen = useCallback(async () => {
     setBezig(true)
     const blob = await haalAfbeelding()
+    const url = deelUrl ?? window.location.href
     try {
       if (blob) {
         const file = new File([blob], "vergelijking.png", { type: "image/png" })
         await navigator.share({
           files: [file],
           title: "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!",
+          text: url,
         })
       } else {
-        // Alleen als de afbeelding niet geladen kon worden: deel link
         await navigator.share({
-          url: deelUrl ?? window.location.href,
+          url,
           title: "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!",
         })
       }
@@ -154,10 +155,34 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
     setBezig(false)
   }, [haalAfbeelding, deelUrl])
 
-  // Opent de afbeelding in een nieuw tabblad — long-press (mobiel) of rechtermuisknop (desktop) om op te slaan
-  const slaOp = useCallback(() => {
-    window.open(shareImagePath, "_blank", "noopener,noreferrer")
-  }, [shareImagePath])
+  // Platform-knop: op mobiel afbeelding meesturen via native share, op desktop URL openen
+  const platformDelen = useCallback(async (href: string | null) => {
+    if (kanNatief) {
+      // Mobiel: native share met afbeelding — gebruiker kiest app uit het systeemmenu
+      await natiefDelen()
+    } else if (href) {
+      window.open(href, "_blank", "noopener,noreferrer")
+    }
+  }, [kanNatief, natiefDelen])
+
+  // Sla afbeelding op als bestand (foto-rol op mobiel, downloads op desktop)
+  const slaOp = useCallback(async () => {
+    setBezig(true)
+    const blob = await haalAfbeelding()
+    setBezig(false)
+    if (!blob) {
+      window.open(shareImagePath, "_blank", "noopener,noreferrer")
+      return
+    }
+    const objectUrl = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = objectUrl
+    a.download = "cheapersupermarkets-vergelijking.png"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(objectUrl)
+  }, [haalAfbeelding, shareImagePath])
 
   const kopieerLink = useCallback(async () => {
     const url = deelUrl ?? window.location.href
@@ -168,8 +193,8 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
 
   if (!open) return null
 
-  const deelTekst = "Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets!"
   const huidigUrl = typeof window !== "undefined" ? (deelUrl ?? window.location.href) : ""
+  const deelTekst = `Check mijn lijstje! Zie hoeveel ik bespaar via CheaperSupermarkets! ${huidigUrl}`
 
   return (
     <div
@@ -241,14 +266,8 @@ export default function DeelenModal({ open, onClose, shareImagePath, deelUrl }: 
                 return (
                   <button
                     key={p.naam}
-                    onClick={() => {
-                      if (href) {
-                        window.open(href, "_blank", "noopener,noreferrer")
-                      } else {
-                        slaOp()
-                      }
-                    }}
-                    title={href ? `Deel op ${p.naam}` : `Opslaan voor ${p.naam}`}
+                    onClick={() => platformDelen(href)}
+                    title={kanNatief ? `Deel via ${p.naam}` : (href ? `Deel op ${p.naam}` : `Opslaan voor ${p.naam}`)}
                     className="flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl hover:opacity-90 active:scale-95 transition-all"
                     style={{ background: p.kleur, color: p.fg }}
                   >
