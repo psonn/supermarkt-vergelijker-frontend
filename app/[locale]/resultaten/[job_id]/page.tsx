@@ -118,12 +118,12 @@ function ResultatenInhoud() {
 
   return (
     <main className="w-full max-w-3xl mx-auto px-3 sm:px-6 py-6 sm:py-12">
-      <div className="flex items-center justify-between mb-6 sm:mb-8">
+      <div className="flex flex-col gap-3 mb-6 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-xl sm:text-2xl font-bold">{t("titel")}</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {updateLijstId && (
             <Link href="/mijn-lijsten">
-              <Button variant="ghost" size="sm">← Mijn lijsten</Button>
+              <Button variant="ghost" size="sm">← {t("terug")}</Button>
             </Link>
           )}
           <DeelKnop shareImagePath={`/api/share-image/job/${job_id}${locale === "en" ? "?lang=en" : ""}`} />

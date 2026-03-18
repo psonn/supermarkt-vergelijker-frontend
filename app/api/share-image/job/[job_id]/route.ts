@@ -4,6 +4,7 @@ import { laadLogoBase64, winnaarUitResultaat, laadAppLogoBase64 } from "@/lib/lo
 import { laadBarlowCondensed900 } from "@/lib/loadFont"
 
 export const runtime = "nodejs"
+export const maxDuration = 30
 
 const WIDTH  = 1080
 const HEIGHT = 1350
