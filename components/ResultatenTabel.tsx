@@ -363,9 +363,8 @@ export default function ResultatenTabel({ resultaat }: Props) {
               <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">#</th>
               <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">{t("kolomSupermarkt")}</th>
               {heeftLocatieData && <th className="hidden lg:table-cell px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomAfstand")}</th>}
-              {heeftLocatieData && <th className="hidden lg:table-cell px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomReistijd")}</th>}
               <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomProducten")}</th>
-              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap w-28">{t("kolomTotaal")}</th>
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomTotaal")}</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -405,18 +404,15 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   </td>
                   {heeftLocatieData && (
                     <td className="hidden lg:table-cell px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
-                      {loc?.afstand_km != null ? `${loc.afstand_km.toFixed(1)} km` : t("geenData")}
-                    </td>
-                  )}
-                  {heeftLocatieData && (
-                    <td className="hidden lg:table-cell px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
-                      {loc?.reistijd_min != null ? `${Math.round(loc.reistijd_min)} min` : t("geenData")}
+                      {loc?.afstand_km != null
+                        ? `${loc.afstand_km.toFixed(1)} km · ${Math.round(loc.reistijd_min ?? 0)} min`
+                        : t("geenData")}
                     </td>
                   )}
                   <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : t("geenData")}
                   </td>
-                  <td className="px-4 py-3 text-right align-top whitespace-nowrap w-28">
+                  <td className="px-4 py-3 text-right align-top whitespace-nowrap">
                     <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-success" : "text-base"}`}>
                       {isFinite(totaal) ? `€${totaal.toFixed(2)}` : "—"}
                     </span>
