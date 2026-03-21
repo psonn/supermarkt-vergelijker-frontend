@@ -339,7 +339,7 @@ export default function LijstKaart({ lijst, gebruikerEmail, bestaandeAlert: init
         {/* Alert samenvatting */}
         {alert && !alertOpen && !bewerken && (
           <p className="text-xs text-muted-foreground">
-            Alert: {alert.frequentie === "meteen" ? t("alertFreqMeteen") : alert.frequentie} ·{" "}
+            Alert: {t(`alertFreq${alert.frequentie.charAt(0).toUpperCase()}${alert.frequentie.slice(1)}`)} ·{" "}
             {alert.drempel_procent === 0 ? t("alertElkeDaling") : `≥ ${alert.drempel_procent}%`} ·{" "}
             {alert.email}
           </p>
