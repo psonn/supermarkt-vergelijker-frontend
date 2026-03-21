@@ -37,6 +37,7 @@ export default function BoodschappenlijstForm() {
   const [laden, setLaden] = useState(false)
   const [fout, setFout] = useState<string | null>(null)
   const [gebruikerProducten, setGebruikerProducten] = useState<string[]>([])
+  const [lokaleGeschiedenis, setLokaleGeschiedenis] = useState<string[]>([])
 
   const [opgeslaanLijsten, setOpgeslaanLijsten] = useState<{ id: string; naam: string; producten: string[]; locatie?: string | null }[]>([])
   const [opgeslagenAdressen, setOpgeslagenAdressen] = useState<OpgeslagenAdres[]>([])
@@ -55,6 +56,12 @@ export default function BoodschappenlijstForm() {
       gevuldeChips = Object.entries(freq).map(([naam, aantal]) => ({ naam, aantal }))
       setChips(gevuldeChips)
     }
+    // Laad lokale zoekgeschiedenis (voor niet-ingelogde gebruikers)
+    try {
+      const opgeslagen = localStorage.getItem("sv_zoekgeschiedenis")
+      if (opgeslagen) setLokaleGeschiedenis(JSON.parse(opgeslagen))
+    } catch { /* negeer */ }
+
     const locatieParam = searchParams.get("locatie")
     let gevuldeLocatie = ""
     if (locatieParam) {
@@ -225,6 +232,13 @@ export default function BoodschappenlijstForm() {
       try { sessionStorage.setItem("sv_supermarkten", JSON.stringify(supermarkten)) } catch { /* negeer */ }
       // Sla filters op als voorkeur voor volgende keer
       slaVoorkeurenOp({ supermarkten, straal, vervoer })
+      // Sla zoekgeschiedenis op in localStorage
+      try {
+        const nieuw = chips.map((c) => c.naam)
+        const bestaand: string[] = JSON.parse(localStorage.getItem("sv_zoekgeschiedenis") ?? "[]")
+        const samengevoegd = [...nieuw, ...bestaand.filter((p) => !nieuw.includes(p))].slice(0, 30)
+        localStorage.setItem("sv_zoekgeschiedenis", JSON.stringify(samengevoegd))
+      } catch { /* negeer */ }
       const resultatenUrl = locatie.trim()
         ? `/resultaten/${job.job_id}?locatie=${encodeURIComponent(locatie.trim())}`
         : `/resultaten/${job.job_id}`
@@ -267,7 +281,10 @@ export default function BoodschappenlijstForm() {
         <ProductChipInput
           waarde={chips}
           onChange={setChips}
-          gebruikerProducten={gebruikerProducten}
+          gebruikerProducten={[
+            ...gebruikerProducten,
+            ...lokaleGeschiedenis.filter((p) => !gebruikerProducten.includes(p)),
+          ]}
           disabled={laden}
         />
       </div>
