@@ -357,7 +357,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
 
       {/* Desktop: tabel */}
       <div className="hidden sm:block overflow-x-auto rounded-xl border shadow-sm">
-        <table className="min-w-full text-sm">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="bg-muted/60 border-b">
               <th className="px-4 py-3 text-left font-semibold text-xs uppercase tracking-wide text-muted-foreground">#</th>
