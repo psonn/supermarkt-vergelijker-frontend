@@ -365,7 +365,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
               {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomAfstand")}</th>}
               {heeftLocatieData && <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomReistijd")}</th>}
               <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap">{t("kolomProducten")}</th>
-              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap w-28">{t("kolomTotaal")}</th>
+              <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wide text-muted-foreground whitespace-nowrap w-32 min-w-[8rem]">{t("kolomTotaal")}</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -416,7 +416,7 @@ export default function ResultatenTabel({ resultaat }: Props) {
                   <td className="px-4 py-3 text-right text-muted-foreground align-top whitespace-nowrap">
                     {dekking !== undefined ? `${dekking}/${aantalProducten}` : t("geenData")}
                   </td>
-                  <td className="px-4 py-3 text-right align-top whitespace-nowrap w-28">
+                  <td className="px-4 py-3 text-right align-top whitespace-nowrap w-32 min-w-[8rem]">
                     <span className={`nums font-bold ${isGoedkoopste ? "font-display text-xl text-success" : "text-base"}`}>
                       {isFinite(totaal) ? `€${totaal.toFixed(2)}` : "—"}
                     </span>
