@@ -38,6 +38,7 @@ export default function BoodschappenlijstForm() {
   const [fout, setFout] = useState<string | null>(null)
   const [gebruikerProducten, setGebruikerProducten] = useState<string[]>([])
   const [lokaleGeschiedenis, setLokaleGeschiedenis] = useState<string[]>([])
+  const [coSuggesties, setCoSuggesties] = useState<string[]>([])
 
   const [opgeslaanLijsten, setOpgeslaanLijsten] = useState<{ id: string; naam: string; producten: string[]; locatie?: string | null }[]>([])
   const [opgeslagenAdressen, setOpgeslagenAdressen] = useState<OpgeslagenAdres[]>([])
@@ -140,6 +141,16 @@ export default function BoodschappenlijstForm() {
       // Supabase niet geconfigureerd
     }
   }, [])
+
+  // Haal co-occurrence suggesties op wanneer chips veranderen
+  useEffect(() => {
+    if (chips.length === 0) { setCoSuggesties([]); return }
+    const namen = chips.map((c) => c.naam).join(",")
+    fetch(`/api/product-suggesties?producten=${encodeURIComponent(namen)}`)
+      .then((r) => r.json())
+      .then((data: string[]) => setCoSuggesties(data))
+      .catch(() => setCoSuggesties([]))
+  }, [chips.map((c) => c.naam).join(",")])  // eslint-disable-line react-hooks/exhaustive-deps
 
   // Laad opgeslagen voorkeuren (alleen als geen URL-params de filters overschrijven)
   useEffect(() => {
@@ -285,6 +296,7 @@ export default function BoodschappenlijstForm() {
             ...gebruikerProducten,
             ...lokaleGeschiedenis.filter((p) => !gebruikerProducten.includes(p)),
           ]}
+          coSuggesties={coSuggesties}
           disabled={laden}
         />
       </div>

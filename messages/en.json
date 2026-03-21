@@ -62,6 +62,7 @@
     "placeholderLeeg": "e.g. milk, bread, eggs…",
     "placeholderToevoegen": "Add product…",
     "eerderGebruikt": "previously used",
+    "anderenZochtenOok": "others also searched",
     "helpTekst": "Type and press Enter, or pick a suggestion · use +/− for multiple units",
     "verwijderLabel": "Remove {product}",
     "minLabel": "Decrease {product} quantity",

@@ -1,6 +1,12 @@
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import { NextResponse } from "next/server"
+import { createClient } from "@supabase/supabase-js"
+
+const supabaseAdmin =
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+    : null
 
 const API_URL = process.env.SUPERMARKET_API_URL
 const API_KEY = process.env.SUPERMARKET_API_KEY
@@ -56,6 +62,13 @@ export async function POST(request: Request) {
     if (!resp.ok) {
       console.error(`[vergelijk] Railway antwoordde ${resp.status}:`, data)
     }
+
+    // Log producten voor co-occurrence suggesties (fire & forget)
+    if (resp.ok && supabaseAdmin && Array.isArray(body.producten) && body.producten.length > 0) {
+      const uniek = [...new Set<string>(body.producten)]
+      supabaseAdmin.from("zoekgeschiedenis").insert({ producten: uniek }).then()
+    }
+
     return NextResponse.json(data, { status: resp.status })
   } catch (err) {
     console.error("[vergelijk] Fetch naar Railway mislukt:", err)

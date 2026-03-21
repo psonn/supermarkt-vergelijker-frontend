@@ -13,10 +13,11 @@ interface Props {
   waarde: ChipItem[]
   onChange: (items: ChipItem[]) => void
   gebruikerProducten?: string[]
+  coSuggesties?: string[]
   disabled?: boolean
 }
 
-export default function ProductChipInput({ waarde, onChange, gebruikerProducten = [], disabled }: Props) {
+export default function ProductChipInput({ waarde, onChange, gebruikerProducten = [], coSuggesties = [], disabled }: Props) {
   const t = useTranslations("productInput")
   const [invoer, setInvoer] = useState("")
   const [suggesties, setSuggesties] = useState<ProductSuggestie[]>([])
@@ -31,14 +32,22 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
     if (!invoer.trim()) {
       const combineer = suggestiesToevoegen(toegevoegdeNamen, 6)
       const eerderGebruikt = t("eerderGebruikt")
-      const geschiedenis = gebruikerProducten
+      const anderenZochtenOok = t("anderenZochtenOok")
+
+      const co = coSuggesties
         .filter((p) => !toegevoegdeNamen.includes(p))
-        .slice(0, 4)
+        .slice(0, 3)
+        .map((naam) => ({ naam, categorie: anderenZochtenOok }))
+
+      const geschiedenis = gebruikerProducten
+        .filter((p) => !toegevoegdeNamen.includes(p) && !co.find((c) => c.naam === p))
+        .slice(0, 3)
         .map((naam) => ({ naam, categorie: eerderGebruikt }))
 
       const alle = [
+        ...co,
         ...geschiedenis,
-        ...combineer.filter((s) => !geschiedenis.find((g) => g.naam === s.naam)),
+        ...combineer.filter((s) => !co.find((c) => c.naam === s.naam) && !geschiedenis.find((g) => g.naam === s.naam)),
       ]
       setSuggesties(alle.slice(0, 8))
     } else {
@@ -67,7 +76,7 @@ export default function ProductChipInput({ waarde, onChange, gebruikerProducten 
       setDropdownOpen(true)
     }
     setGeselecteerdIndex(-1)
-  }, [invoer, waarde.length, gebruikerProducten.length])
+  }, [invoer, waarde.length, gebruikerProducten.length, coSuggesties.length])
 
   function voegToe(naam: string) {
     const bestaand = waarde.find((c) => c.naam === naam)
